@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BBD Video Editor</title>
+<style>
+  @font-face{font-family:"Inter Tight";font-weight:800;src:url("/fonts/InterTight-wght-800.ttf")}
+  @font-face{font-family:"Inter Tight";font-weight:900;src:url("/fonts/InterTight-wght-900.ttf")}
+  :root{--bg:#0a0f16;--panel:#111923;--panel2:#16212e;--line:#233142;--text:#e8edf3;--mut:#8BA3B8;--o:#FF6B35;--o2:#ff8a5c;--red:#ff5d5d;--yel:#ffcc4d;--blue:#5ab0ff;--green:#4cd28a}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:13px/1.4 -apple-system,BlinkMacSystemFont,"Inter",system-ui,sans-serif;overflow:hidden}
+  button,select{font:inherit;color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 11px;cursor:pointer;white-space:nowrap}
+  button:hover:not(:disabled){border-color:var(--o)}
+  button:disabled{opacity:.4;cursor:default}
+  button.primary{background:var(--o);border-color:var(--o);color:#fff;font-weight:700}
+  button.icon{padding:6px 9px}
+  .app{display:grid;grid-template-rows:auto 1fr auto;height:100vh}
+  /* top bar */
+  .top{display:flex;gap:8px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);background:var(--panel)}
+  .brand{font-weight:800;margin-right:6px}.brand b{color:var(--o)}
+  .grow{flex:1}
+  .status{color:var(--mut);font-size:12px}
+  .status.busy{color:var(--yel)}
+  /* middle */
+  .mid{display:grid;grid-template-columns:300px 1fr 300px;min-height:0}
+  .side.r{border-right:0;border-left:1px solid var(--line)}
+  .sidehd{padding:11px 12px;font-weight:700;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:6px}
+  .sidehd .cnt{display:inline-block;min-width:18px;padding:0 6px;border-radius:9px;background:var(--panel2);font-size:11px;text-align:center}
+  .sidehd .cnt.hot{background:#ff4d4d;color:#fff}
+  .side{border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0;background:var(--panel)}
+  .tabs{display:flex;border-bottom:1px solid var(--line)}
+  .tabs button{flex:1;border:0;border-radius:0;background:transparent;padding:10px 4px;color:var(--mut);font-weight:600}
+  .tabs button.on{color:var(--text);box-shadow:inset 0 -2px 0 var(--o)}
+  .tabs .cnt{display:inline-block;min-width:18px;padding:0 5px;margin-left:4px;border-radius:9px;background:var(--panel2);font-size:11px}
+  .tabs .cnt.hot{background:var(--yel);color:#111}
+  .list{flex:1;overflow:auto;padding:8px}
+  .item{border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:9px 10px;margin-bottom:8px}
+  .item.done{opacity:.45}
+  .item .hd{display:flex;gap:8px;align-items:center;margin-bottom:5px;color:var(--mut);font-size:11.5px}
+  .item .hd .tag{padding:1px 7px;border-radius:9px;font-weight:700;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em}
+  .tag.dbl{background:rgba(255,77,77,.2);color:#ff7070}
+  .tag.low{background:rgba(90,176,255,.15);color:var(--blue)}
+  .tag.cut{background:rgba(255,93,93,.15);color:var(--red)}
+  .item .tx{font-size:14px;margin-bottom:8px;line-height:1.45}
+  .item .tx mark{background:rgba(255,77,77,.45);color:#fff;border-radius:3px;padding:0 2px}
+  .item.low .tx mark{background:rgba(90,176,255,.35)}
+  .item.dbl{border-color:rgba(255,77,77,.45)}
+  .item .tx s{color:#7d8ea3}
+  .item .acts{display:flex;gap:6px;flex-wrap:wrap}
+  .item .acts button{padding:4px 9px;font-size:12px}
+  .empty{color:var(--mut);padding:18px 10px;text-align:center;line-height:1.6}
+  .script{font-size:15px;line-height:1.75;padding:12px}
+  .script span{cursor:pointer;border-radius:3px;padding:0 1px}
+  .script span:hover{background:var(--panel2)}
+  .script span.now{background:var(--o);color:#fff}
+  .stage{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;padding:10px;gap:8px}
+  .vwrap{position:relative;margin:0 auto;height:100%;max-height:100%;aspect-ratio:9/16;background:#000;border-radius:12px;overflow:hidden;min-height:0;flex:1}
+  .vwrap video{width:100%;height:100%;object-fit:contain;display:block}
+  .vwrap .cap{position:absolute;left:5%;right:5%;top:62%;transform:translateY(-50%);text-align:center;font-family:"Inter Tight",Inter,sans-serif;font-weight:800;font-size:clamp(13px,2.4vh,30px);letter-spacing:-.01em;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.75);pointer-events:none;z-index:3}
+  .vwrap .cap .kw{color:var(--o);font-weight:900;font-size:1.38em}
+  #gv{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;display:none;z-index:2}
+  #vid{transition:filter .2s}
+  #vid.blur{filter:blur(10px) brightness(.85)}
+  .vwrap .gfx{position:absolute;z-index:4;left:8px;top:8px;background:rgba(255,107,53,.9);color:#fff;font-weight:700;font-size:11px;padding:3px 8px;border-radius:7px;display:none}
+  .transport{display:flex;gap:8px;align-items:center}
+  .transport .time{font:600 13px ui-monospace,Menlo,monospace;color:var(--mut);min-width:150px;text-align:center}
+  .transport .time b{color:var(--text)}
+  .play{width:42px;height:42px;border-radius:50%;background:var(--o);border:0;color:#fff;font-size:17px;font-weight:800}
+  /* timeline */
+  .tl{border-top:1px solid var(--line);background:var(--panel)}
+  .tlbar{display:flex;gap:6px;align-items:center;padding:7px 12px;border-bottom:1px solid var(--line)}
+  .tlbar .hint{color:var(--mut);font-size:12px;margin-left:6px}
+  .tlbar input[type=range]{width:140px;accent-color:var(--o)}
+  .tlwrap{position:relative;display:flex}
+  .labels{width:84px;flex:none;border-right:1px solid var(--line)}
+  .labels div{display:flex;align-items:center;padding-left:10px;color:var(--mut);font-size:11.5px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.03)}
+  canvas{display:block;cursor:pointer}
+  .hscroll{height:12px;margin-left:84px;position:relative;background:var(--panel2)}
+  .hscroll i{position:absolute;top:2px;height:8px;border-radius:4px;background:#3a4b61;cursor:grab}
+  .toast{position:fixed;right:14px;top:56px;max-width:440px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:11px 13px;white-space:pre-wrap;font-size:12.5px;display:none;box-shadow:0 12px 40px rgba(0,0,0,.5);z-index:9}
+  .toast.show{display:block}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:10}
+  .modal.show{display:flex}
+  .modal .box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;width:min(460px,92vw)}
+  .modal input{width:100%;font:15px/1.4 inherit;padding:9px 11px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text);margin:10px 0}
+  .welcome{line-height:1.6}
+  .welcome li{margin:4px 0}
+  kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:0 5px;font-size:11px}
+  @media (max-width:1150px){.mid{grid-template-columns:240px 1fr 240px}}
+  @media (max-width:680px){.mid{grid-template-columns:1fr}.side{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <span class="brand">BBD <b>Video Editor</b></span>
+    <select id="proj"></select>
+    <button class="icon" id="undo" title="Undo (⌘Z)">↶ Undo</button>
+    <button class="icon" id="redo" title="Redo (⌘⇧Z)">↷ Redo</button>
+    <span class="status" id="status">✓ Naka-save</span>
+    <span class="grow"></span>
+    <button id="help">❔ Paano?</button>
+    <button id="rPrev">Export preview</button>
+    <button class="primary" id="rFinal">Export final</button>
+  </div>
+
+  <div class="mid">
+    <aside class="side">
+      <div class="sidehd">🚩 Minarkahan mo <span class="cnt" id="cMarks">0</span></div>
+      <div id="marks" style="max-height:38%;overflow:auto;padding:8px;border-bottom:1px solid var(--line)"></div>
+      <div class="sidehd">✅ Dapat i-check <span class="cnt" id="cCheck">0</span></div>
+      <div class="list" id="listL"></div>
+    </aside>
+    <section class="stage">
+      <div class="vwrap"><video id="vid" playsinline preload="auto"></video><video id="gv" muted playsinline preload="auto"></video><div class="cap" id="cap"></div><div class="gfx" id="gfx"></div></div>
+      <div class="transport">
+        <button class="icon" id="back" title="-2s">⏪</button>
+        <button class="play" id="play" title="Space">▶</button>
+        <button class="icon" id="fwd" title="+2s">⏩</button>
+        <span class="time" id="time"><b>0:00.0</b> / 0:00.0</span>
+      </div>
+    </section>
+    <aside class="side r">
+      <div class="tabs">
+        <button data-tab="cuts" class="on">Tinanggal<span class="cnt" id="cCuts">0</span></button>
+        <button data-tab="gfx">Graphics<span class="cnt" id="cGfx">0</span></button>
+        <button data-tab="script">Script</button>
+      </div>
+      <div class="list" id="listR"></div>
+    </aside>
+  </div>
+
+  <div class="tl">
+    <div class="tlbar">
+      <button id="split" title="S">✂ Split</button>
+      <button id="del" title="Delete">🗑 Delete clip</button>
+      <button id="mark" title="M — markahan ang mali dito (aayusin ni Claude)" style="border-color:#ff4d4d">🚩 Mark mali (M)</button>
+      <span class="hint">Dead air:</span>
+      <select id="pause" title="Gaano kahaba ang natitirang pause sa pagitan ng mga linya (buong video)">
+        <option value="0.15">Mabilis · 0.15s</option><option value="0.30">Normal · 0.30s</option>
+        <option value="0.45">Natural · 0.45s</option><option value="0.60">Mabagal · 0.60s</option></select>
+      <span class="hint" id="hint"><b>I-drag ang gilid ng clip</b> para i-trim o ibalik ang dead air · <kbd>Alt</kbd> = walang snap · <kbd>S</kbd> split · <kbd>Del</kbd> delete</span>
+      <span class="grow"></span>
+      <span class="hint">Zoom</span><input type="range" id="zoom" min="0" max="100" value="0">
+    </div>
+    <div class="tlwrap">
+      <div class="labels" id="labels"></div>
+      <canvas id="cv"></canvas>
+    </div>
+    <div class="hscroll" id="hs"><i id="hsk"></i></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal"><div class="box" id="mbox"></div></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const vid = $("vid"), cv = $("cv"), ctx = cv.getContext("2d");
+const TR = { ruler: 22, video: 70, caps: 30, gfx: 26 };
+const TRH = TR.ruler + TR.video + TR.caps + TR.gfx;
+let P = null, segs = [], segOff = [], dur = 0, pieces = [], splits = [], selPiece = -1;
+let pps = 10, view0 = 0, playing = false, thumbs = null, caps = [], issues = [], dismissed = new Set(), tab = "cuts";
+let busy = false, poll = null, stopAt = null, srcMode = false, needFit = true;
+
+const tc = (t) => { t = Math.max(0, t || 0); const m = Math.floor(t / 60), s = (t % 60).toFixed(1).padStart(4, "0"); return `${m}:${s}`; };
+const norm = (w) => (w || "").toLowerCase().replace(/[^\p{L}\p{N}']+/gu, "");
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const toast = (m, ms = 3500) => { const el = $("toast"); el.textContent = m; el.classList.add("show"); clearTimeout(el._t); if (ms) el._t = setTimeout(() => el.classList.remove("show"), ms); };
+const wtext = (i) => (P.fixes[i] !== undefined ? P.fixes[i] : P.words[i].w);
+async function api(path, body) { const r = await fetch(path, body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {}); return r.json(); }
+function setBusy(b, msg) { busy = b; $("status").textContent = b ? (msg || "⏳ Ina-apply…") : "✓ Naka-save"; $("status").className = "status" + (b ? " busy" : ""); }
+
+/* ---------------- projects ---------------- */
+async function loadProjects() {
+  const items = await api("/api/projects");
+  $("proj").innerHTML = items.map((p) => `<option value="${p.name}">${esc(p.src.slice(0, 13))}…  ${tc(p.dur)} → ${p.new_dur ? tc(p.new_dur) : "?"}</option>`).join("");
+  let want = null; try { want = localStorage.getItem("proj"); } catch (e) {}
+  if (want && items.some((p) => p.name === want)) $("proj").value = want;
+  await open($("proj").value);
+  let seen = null; try { seen = localStorage.getItem("seenHelp"); } catch (e) {}
+  if (!seen) showHelp();
+}
+$("proj").onchange = () => open($("proj").value);
+
+async function open(name) {
+  needFit = true;
+  try { localStorage.setItem("proj", name); dismissed = new Set(JSON.parse(localStorage.getItem("dis:" + name) || "[]")); } catch (e) { dismissed = new Set(); }
+  apply(await api(`/api/project/${name}`));
+  waitProxy();
+  if (P.job && P.job.state === "running") watch();
+}
+
+function apply(data) {
+  P = data;
+  segs = P.segments; segOff = []; let o = 0; segs.forEach((s) => { segOff.push(o); o += s[1] - s[0]; }); dur = o || P.new_dur || 0;
+  splits = splits.filter((x) => segs.some((s) => x > s[0] + 0.05 && x < s[1] - 0.05));
+  buildPieces(); buildCaps(); findIssues();
+  if (!thumbs || thumbs.src !== P.thumbs.url) loadThumbs();
+  $("undo").disabled = !P.can_undo; $("redo").disabled = !P.can_redo;
+  const kp = (P.tuning && P.tuning.keep_pause) || 0.3, opts = [...$("pause").options].map((o) => +o.value);
+  $("pause").value = opts.reduce((a, b) => (Math.abs(b - kp) < Math.abs(a - kp) ? b : a)).toFixed(2);
+  if (needFit && W() > 50 && dur > 0) { fit(); needFit = false; }
+  renderList(); draw(); updateTime();
+  clearTimeout(apply._g);
+  const refreshGfx = async () => {  // graphic previews still converting → poll until ready
+    const q = await api(`/api/project/${P.name}`);
+    if (q.name === P.name) { P.overlays = q.overlays; updateTime(); if (P.overlays.some((o) => !o.url)) apply._g = setTimeout(refreshGfx, 4000); }
+  };
+  if (P.overlays.some((o) => !o.url)) apply._g = setTimeout(refreshGfx, 4000);
+}
+
+function waitProxy() {
+  if (P.proxy === "ready") { if (!vid.src.includes(P.name)) { vid.src = `/media/${P.name}/proxy.mp4`; vid.currentTime = segs[0] ? segs[0][0] : 0; } return; }
+  toast("Inihahanda ang video (isang beses lang, mga 1 minuto)…", 0);
+  setTimeout(async () => { const q = await api(`/api/project/${P.name}`); P.proxy = q.proxy; P.thumbs = q.thumbs; if (q.proxy === "ready") { $("toast").classList.remove("show"); loadThumbs(); } waitProxy(); }, 4000);
+}
+function loadThumbs() {
+  if (!P.thumbs.ready) { setTimeout(async () => { const q = await api(`/api/project/${P.name}`); P.thumbs = q.thumbs; loadThumbs(); }, 5000); return; }
+  const img = new Image(); img.onload = () => { thumbs = img; draw(); }; img.src = P.thumbs.url + "?v=" + P.name; thumbs = null;
+}
+
+/* ---------------- time mapping ---------------- */
+function e2s(t) { // edited → source
+  for (let k = 0; k < segs.length; k++) if (t < segOff[k] + (segs[k][1] - segs[k][0]) || k === segs.length - 1) return segs[k][0] + Math.max(0, t - segOff[k]);
+  return 0;
+}
+function s2e(t) { // source → edited (null if cut)
+  for (let k = 0; k < segs.length; k++) if (t >= segs[k][0] - 0.01 && t <= segs[k][1] + 0.01) return segOff[k] + (t - segs[k][0]);
+  return null;
+}
+const editedNow = () => { const e = s2e(vid.currentTime); return e === null ? lastE : e; };
+let lastE = 0;
+
+function buildPieces() {
+  pieces = [];
+  segs.forEach((s, k) => {
+    const cuts = splits.filter((x) => x > s[0] && x < s[1]).sort((a, b) => a - b);
+    let a = s[0];
+    for (const x of [...cuts, s[1]]) { pieces.push({ s: a, e: x, eo: segOff[k] + (a - s[0]) }); a = x; }
+  });
+  if (selPiece >= pieces.length) selPiece = -1;
+}
+
+function buildCaps() {
+  caps = []; let cur = null;
+  for (const [k, s, e] of P.words_out) {
+    const t = wtext(k); if (!t) continue;
+    const brk = cur && (cur.ids.length >= 3 || s - cur.e > 0.45 || (cur.text + " " + t).length > 18 || /[.?!,]$/.test(cur.text));
+    if (!cur || brk) { cur = { s, e, ids: [k], text: t }; caps.push(cur); }
+    else { cur.ids.push(k); cur.e = e; cur.text += (t.startsWith("-") ? "" : " ") + t; }
+  }
+}
+
+/* ---------------- issues (doubles / incomplete) ---------------- */
+function findIssues() {
+  const wo = P.words_out, n = wo.map(([k]) => norm(wtext(k)));
+  const found = [], used = new Set();
+  for (let j = 1; j < wo.length; j++) {
+    for (const g of [4, 3, 2, 1]) {
+      if (j < 2 * g - 1) continue;
+      let same = true;
+      for (let q = 0; q < g; q++) if (!n[j - q] || n[j - q] !== n[j - g - q]) { same = false; break; }
+      if (!same) continue;
+      const first = wo.slice(j - 2 * g + 1, j - g + 1).map((x) => x[0]);
+      if (first.some((i) => used.has(i))) break;
+      if (g === 1 && /^(na|ng|ang|sa|ay|po|ka|mo|ko)$/.test(n[j])) break; // common Tagalog particles repeat naturally
+      first.forEach((i) => used.add(i));
+      found.push({ kind: "dbl", ids: first, all: wo.slice(j - 2 * g + 1, j + 1).map((x) => x[0]), t: wo[j - 2 * g + 1][1] });
+      break;
+    }
+  }
+  for (const [k, s] of wo) {
+    const w = P.words[k];
+    if (w.p < 0.15 || /(\.\.\.|…)$/.test(w.w) || (/-$/.test(w.w) && w.w.length > 1)) found.push({ kind: "low", ids: [k], all: [k], t: s });
+  }
+  issues = found.sort((a, b) => a.t - b.t).map((x) => ({ ...x, key: x.kind + ":" + x.ids.join(",") }));
+  const open = issues.filter((x) => !dismissed.has(x.key)).length;
+  $("cCheck").textContent = open; $("cCheck").className = "cnt" + (open ? " hot" : "");
+  $("cCuts").textContent = P.cuts.length;
+  $("cGfx").textContent = P.overlays.length;
+}
+
+function context(ids, all, around = 5) {
+  const pos = P.words_out.findIndex(([k]) => k === all[0]);
+  const end = P.words_out.findIndex(([k]) => k === all[all.length - 1]);
+  const a = Math.max(0, pos - around), b = Math.min(P.words_out.length, end + around + 1);
+  return glue(P.words_out.slice(a, b).map(([k]) => [wtext(k), ids.includes(k) ? `<mark>${esc(wtext(k))}</mark>` : all.includes(k) ? `<b>${esc(wtext(k))}</b>` : esc(wtext(k))]));
+}
+
+const glue = (pairs) => pairs.filter(([t]) => t !== "").map(([t, h], n) => (n && t.startsWith("-") ? h : (n ? " " : "") + h)).join("");
+
+function renderList() { renderMarks(); renderChecks(); renderRight(); }
+function renderMarks() {
+  const M = P.marks || [];
+  $("cMarks").textContent = M.length; $("cMarks").className = "cnt" + (M.length ? " hot" : "");
+  $("marks").innerHTML = M.length ? M.map((m) => `<div class="item" style="border-color:rgba(255,77,77,.5)">
+      <div class="hd"><span class="tag dbl">🚩 mali</span>${tc(m.out)}</div>
+      <div class="tx">${m.note ? esc(m.note) : "<span style='color:var(--mut)'>(walang note)</span>"}</div>
+      <div class="acts"><button data-mk="play" data-id="${m.id}">▶ Pakinggan</button><button data-mk="del" data-id="${m.id}">✕ Alisin</button></div></div>`).join("")
+    : `<div class="empty" style="padding:8px">Habang nanonood, pindutin ang <b>M</b> (o 🚩) sa bawat parteng may mali — doble, putol, ingay. Si Claude na ang mag-aayos.</div>`;
+}
+async function addMark() {
+  const out = editedNow(), src = e2s(out);
+  vid.pause();
+  const note = prompt(`🚩 Markahan ang ${tc(out)} — ano ang mali? (hal. "doble ang tapos", "may ingay", "putol")`, "");
+  if (note === null) return;
+  const r = await api(`/api/project/${P.name}/mark`, { out, src, note }); P.marks = r.marks; renderMarks(); draw();
+  toast(`🚩 Namarkahan ang ${tc(out)}. Sabihin kay Claude: "ayusin ang mga minarkahan ko".`);
+}
+$("mark").onclick = addMark;
+$("marks").addEventListener("click", async (ev) => {
+  const b = ev.target.closest("button[data-mk]"); if (!b) return;
+  const m = (P.marks || []).find((x) => x.id === +b.dataset.id); if (!m) return;
+  if (b.dataset.mk === "play") playRangeE(m.out - 2, m.out + 2);
+  else { const r = await api(`/api/project/${P.name}/unmark`, { id: m.id }); P.marks = r.marks; renderMarks(); draw(); }
+});
+
+function renderChecks() {
+  const L = $("listL");
+  if (!issues.length) { L.innerHTML = `<div class="empty">Walang nakitang posibleng doble o kulang na salita. 🎉<br>Panoorin pa rin ang video para sigurado.</div>`; return; }
+  L.innerHTML = issues.map((x, n) => `<div class="item ${x.kind}${dismissed.has(x.key) ? " done" : ""}">
+    <div class="hd"><span class="tag ${x.kind}">${x.kind === "dbl" ? "posibleng doble" : "posibleng kulang"}</span>${tc(x.t)}</div>
+    <div class="tx">${context(x.ids, x.all)}</div>
+    <div class="acts"><button data-a="hear" data-n="${n}">▶ Pakinggan</button>
+    <button data-a="rm" data-n="${n}">✂ ${x.kind === "dbl" ? "Tanggalin ang una" : "Tanggalin"}</button>
+    <button data-a="ok" data-n="${n}">✓ Okay lang</button></div></div>`).join("");
+}
+
+function renderRight() {
+  document.querySelectorAll(".tabs button").forEach((b) => b.classList.toggle("on", b.dataset.tab === tab));
+  const L = $("listR");
+  if (tab === "cuts") {
+    if (!P.cuts.length) { L.innerHTML = `<div class="empty">Walang tinanggal na content.</div>`; return; }
+    L.innerHTML = P.cuts.map((c, n) => `<div class="item"><div class="hd"><span class="tag cut">tinanggal</span>sa ${tc(c.at)} · ${c.dur.toFixed(1)}s</div>
+      <div class="tx"><s>${esc(c.text.slice(0, 220))}</s></div><div class="hd" style="margin:-3px 0 7px">${esc(c.reason)}</div>
+      <div class="acts"><button data-a="hearcut" data-n="${n}">▶ Pakinggan</button><button data-a="restore" data-n="${n}">↺ Ibalik</button></div></div>`).join("");
+  } else if (tab === "gfx") {
+    if (!P.overlays.length) { L.innerHTML = `<div class="empty">Walang motion graphics.</div>`; return; }
+    L.innerHTML = P.overlays.map((o, n) => `<div class="item"><div class="hd"><span class="tag" style="background:rgba(255,107,53,.2);color:var(--o2)">${o.panel ? "center card" : "full screen"}</span>${tc(o.at)} · ${o.dur.toFixed(1)}s</div>
+      <div class="tx">✨ ${esc(o.id.replace(/^(v2_)?(s)?\d+_/, ""))}${o.stale ? `<div class="hd" style="margin-top:4px">↻ nagbago dahil sa edit mo — ire-render sa Export</div>` : ""}</div>
+      <div class="acts"><button data-a="gfxgo" data-n="${n}">▶ Panoorin</button></div></div>`).join("");
+  } else {
+    L.innerHTML = `<div class="script">${glue(P.words_out.map(([k, s]) => [wtext(k), `<span data-t="${s}">${esc(wtext(k))}</span>`]))}</div>`;
+  }
+}
+document.querySelectorAll(".tabs button").forEach((b) => (b.onclick = () => { tab = b.dataset.tab; renderRight(); }));
+async function onListClick(ev) {
+  const sp = ev.target.closest(".script span"); if (sp) { seekE(+sp.dataset.t - 0.3); return; }
+  const b = ev.target.closest("button[data-a]"); if (!b) return;
+  const a = b.dataset.a, n = +b.dataset.n;
+  if (a === "hear") { const x = issues[n]; playRangeE(x.t - 1.5, x.t + 3.5); }
+  if (a === "ok") { const x = issues[n]; dismissed.add(x.key); try { localStorage.setItem("dis:" + P.name, JSON.stringify([...dismissed])); } catch (e) {} findIssues(); renderChecks(); draw(); }
+  if (a === "rm") { await doOp({ type: "remove_words", ids: issues[n].ids }, "✓ Tinanggal. (Undo kung mali)"); }
+  if (a === "hearcut") { const c = P.cuts[n]; playRangeS(c.src_start - 1.0, c.src_end + 0.8); }
+  if (a === "restore") { const c = P.cuts[n]; await doOp({ type: "restore", after: c.after, before: c.before, src_start: c.src_start, src_end: c.src_end }, "✓ Ibinalik."); }
+  if (a === "gfxgo") { const o = P.overlays[n]; seekE(o.at + 0.05, true); }
+}
+$("listL").addEventListener("click", onListClick);
+$("listR").addEventListener("click", onListClick);
+
+/* ---------------- operations ---------------- */
+async function doOp(body, okMsg) {
+  if (busy) return;
+  setBusy(true);
+  const keepE = editedNow();
+  try { const d = await api(`/api/project/${P.name}/op`, body); apply(d); const warn = (d.msg || "").split("\n").filter((l) => l.startsWith("⚠")).join("\n"); if (okMsg || warn) toast((okMsg || "") + `\nBagong haba: ${tc(dur)}` + (warn ? "\n\n" + warn : ""), warn ? 8000 : 3500); }
+  catch (e) { toast("May error: " + e, 0); }
+  setBusy(false);
+  seekE(Math.min(keepE, dur - 0.1), false);
+}
+$("undo").onclick = () => doOp({ type: "undo" }, "↶ Na-undo.");
+$("redo").onclick = () => doOp({ type: "redo" }, "↷ Na-redo.");
+
+function snapSplit(src) {
+  // snap to the nearest gap between two kept words so a split never cuts inside a word
+  let best = null;
+  const wo = P.words_out;
+  for (let j = 0; j + 1 < wo.length; j++) {
+    const a = P.words[wo[j][0]], b = P.words[wo[j + 1][0]];
+    const gap = (Math.min(a.e, b.s) + Math.max(a.e, b.s)) / 2;
+    if (Math.abs(gap - src) < 0.45 && (!best || Math.abs(gap - src) < Math.abs(best - src))) best = gap;
+  }
+  return best;
+}
+function doSplit() {
+  const src = e2s(editedNow()), snapped = snapSplit(src), x = snapped ?? src;
+  if (!segs.some((s) => x > s[0] + 0.05 && x < s[1] - 0.05)) return toast("Hindi ma-split dito (dulo ng clip).");
+  splits.push(x); buildPieces();
+  selPiece = pieces.findIndex((p) => Math.abs(p.s - x) < 0.001);
+  draw(); toast(snapped !== null ? "✂ Na-split (inilipat sa pagitan ng salita para hindi maputol)." : "✂ Na-split.");
+}
+async function doDelete() {
+  if (selPiece < 0) return toast("Pumili muna ng clip sa timeline (i-click ito).");
+  const p = pieces[selPiece];
+  if (p.e - p.s > 20 && !confirm(`Buburahin ang ${(p.e - p.s).toFixed(1)}s na clip. Sigurado?`)) return;
+  selPiece = -1;
+  await doOp({ type: "cut", start: p.s, end: p.e }, `🗑 Na-delete ang ${(p.e - p.s).toFixed(1)}s.`);
+}
+$("split").onclick = doSplit;
+$("del").onclick = doDelete;
+
+/* ---------------- playback ---------------- */
+function seekE(t, play) { t = Math.max(0, Math.min(t, dur - 0.05)); srcMode = false; stopAt = null; lastE = t; vid.currentTime = e2s(t); if (play) vid.play().catch(() => {}); follow(t); updateTime(); draw(); }
+function playRangeE(a, b) { seekE(a, true); stopAt = { e: b }; }
+function playRangeS(a, b) { srcMode = true; vid.currentTime = Math.max(0, a); stopAt = { s: b }; vid.play().catch(() => {}); toast("▶ Pinapakinggan ang original (kasama ang tinanggal)…", 2500); }
+$("play").onclick = () => { if (vid.paused) { srcMode = false; stopAt = null; if (s2e(vid.currentTime) === null) vid.currentTime = e2s(lastE); vid.play().catch(() => {}); } else vid.pause(); };
+$("back").onclick = () => seekE(editedNow() - 2, !vid.paused);
+$("fwd").onclick = () => seekE(editedNow() + 2, !vid.paused);
+vid.onplay = () => ($("play").textContent = "❚❚");
+vid.onpause = () => ($("play").textContent = "▶");
+
+function frame() {
+  if (P && segs.length) {
+    const t = vid.currentTime;
+    if (!vid.paused && !srcMode) {
+      let k = segs.findIndex((s) => t < s[1] - 0.015);
+      if (k < 0) { vid.pause(); }
+      else if (t < segs[k][0] - 0.015) vid.currentTime = segs[k][0];
+    }
+    if (stopAt && ((stopAt.e !== undefined && editedNow() >= stopAt.e) || (stopAt.s !== undefined && t >= stopAt.s))) { vid.pause(); stopAt = null; if (srcMode) { srcMode = false; } }
+    const e = s2e(t); if (e !== null) lastE = e;
+    if (!vid.paused) { follow(lastE); draw(); }
+    updateTime();
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+function syncGfx(g) {
+  const gv = $("gv");
+  vid.classList.toggle("blur", !!(g && g.panel));
+  if (!g || !g.url) { if (gv.style.display !== "none") { gv.pause(); gv.style.display = "none"; } return; }
+  if (gv.dataset.id !== g.id) { gv.dataset.id = g.id; gv.src = g.url; }
+  gv.style.display = "block";
+  const want = lastE - g.at;
+  if (gv.readyState >= 1 && Math.abs(gv.currentTime - want) > (vid.paused ? 0.03 : 0.2)) gv.currentTime = Math.max(0, want);
+  if (!vid.paused && gv.paused) gv.play().catch(() => {});
+  if (vid.paused && !gv.paused) gv.pause();
+}
+function updateTime() {
+  $("time").innerHTML = `<b>${tc(lastE)}</b> / ${tc(dur)}`;
+  const c = caps.find((c) => lastE >= c.s && lastE < c.e + 0.2);
+  const kw = new Set((P.keywords || []).map(norm));
+  $("cap").innerHTML = c ? c.text.split(" ").map((w) => (kw.has(norm(w)) ? `<span class="kw">${esc(w)}</span>` : esc(w))).join(" ") : "";
+  const g = P.overlays.find((o) => lastE >= o.at && lastE < o.at + o.dur);
+  $("cap").style.top = !g ? "62%" : g.caption === "top" ? "18%" : g.caption === "normal" ? "62%" : "83.5%";
+  $("gfx").style.display = g && !g.url ? "block" : "none"; if (g && !g.url) $("gfx").textContent = "✨ inihahanda ang graphic preview…";
+  syncGfx(g);
+  if (tab === "script") { const sp = [...document.querySelectorAll(".script span")]; let cur = null; for (const s of sp) { if (+s.dataset.t <= lastE) cur = s; else break; } document.querySelectorAll(".script span.now").forEach((x) => x.classList.remove("now")); if (cur) cur.classList.add("now"); }
+}
+
+/* ---------------- timeline drawing ---------------- */
+function resize() {
+  const w = cv.parentElement.clientWidth - 84;
+  cv.width = w * devicePixelRatio; cv.height = TRH * devicePixelRatio; cv.style.width = w + "px"; cv.style.height = TRH + "px";
+  ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  $("labels").innerHTML = `<div style="height:${TR.ruler}px"></div><div style="height:${TR.video}px">🎬 Video</div><div style="height:${TR.caps}px">💬 Captions</div><div style="height:${TR.gfx}px">✨ Graphics</div>`;
+  if ((needFit || !P) && W() > 50 && dur > 0) { fit(); needFit = false; } draw();
+}
+window.addEventListener("resize", resize);
+const W = () => cv.width / devicePixelRatio;
+function fit() { const minp = (W() - 20) / Math.max(dur, 1); pps = minp; zoomFromPps(); view0 = 0; }
+function zoomFromPps() { const minp = (W() - 20) / Math.max(dur, 1); $("zoom").value = Math.round(100 * Math.log(pps / minp) / Math.log(120 / minp)); }
+$("zoom").oninput = () => { const minp = (W() - 20) / Math.max(dur, 1), maxp = 120; const c = editedNow(); pps = minp * Math.pow(maxp / minp, $("zoom").value / 100); view0 = Math.max(0, c - (W() / pps) / 2); clampView(); draw(); };
+function clampView() { view0 = Math.max(0, Math.min(view0, Math.max(0, dur - W() / pps + 0.5))); }
+function follow(t) { const span = W() / pps; if (t < view0 || t > view0 + span * 0.92) { view0 = t - span * 0.15; clampView(); } }
+const X = (t) => (t - view0) * pps;
+
+function draw() {
+  if (!P) return;
+  const w = W(); ctx.clearRect(0, 0, w, TRH);
+  ctx.fillStyle = "#0d141d"; ctx.fillRect(0, 0, w, TRH);
+  // ruler
+  const step = [0.5, 1, 2, 5, 10, 15, 30, 60, 120].find((s) => s * pps >= 70) || 300;
+  ctx.fillStyle = "#8BA3B8"; ctx.font = "11px ui-monospace,Menlo,monospace";
+  for (let t = Math.floor(view0 / step) * step; t < view0 + w / pps; t += step) {
+    const x = X(t); ctx.fillRect(x, TR.ruler - 7, 1, 7); ctx.fillText(tc(t).replace(/\.\d$/, ""), x + 3, 12);
+  }
+  // issue markers
+  for (const x of issues) { if (dismissed.has(x.key)) continue; const px = X(x.t); ctx.fillStyle = x.kind === "dbl" ? "#ff4d4d" : "#5ab0ff"; ctx.beginPath(); ctx.moveTo(px - 5, TR.ruler - 9); ctx.lineTo(px + 5, TR.ruler - 9); ctx.lineTo(px, TR.ruler - 1); ctx.fill(); }
+  // video clips
+  const y0 = TR.ruler + 3, h = TR.video - 6;
+  viewPieces().forEach((p, n) => {
+    const x0 = X(p.eo), x1 = X(p.eo + (p.e - p.s)); if (x1 < 0 || x0 > w) return;
+    ctx.save(); ctx.beginPath(); ctx.roundRect(x0 + 1, y0, Math.max(2, x1 - x0 - 2), h, 6); ctx.clip();
+    ctx.fillStyle = "#1c2a3b"; ctx.fillRect(x0, y0, x1 - x0, h);
+    if (thumbs) {
+      const T = P.thumbs, tw = (h - 18) * T.w / T.h;
+      for (let x = Math.max(x0, x0 + Math.floor((0 - x0) / tw) * tw); x < Math.min(x1, w); x += tw) {
+        const src = p.s + (x - x0) / pps, idx = Math.min(T.n - 1, Math.floor(src / T.every));
+        ctx.drawImage(thumbs, (idx % T.cols) * T.w, Math.floor(idx / T.cols) * T.h, T.w, T.h, x, y0, tw, h - 18);
+      }
+    }
+    // waveform
+    ctx.fillStyle = "rgba(255,107,53,.75)";
+    const wy = y0 + h - 9;
+    for (let x = Math.max(0, Math.floor(x0)); x < Math.min(w, x1); x += 2) {
+      const src = p.s + (x - x0) / pps, v = P.peaks[Math.floor(src * 25)] || 0;
+      ctx.fillRect(x, wy - v * 8, 1.5, Math.max(1, v * 16));
+    }
+    ctx.restore();
+    ctx.strokeStyle = n === selPiece ? "#FF6B35" : "rgba(255,255,255,.18)"; ctx.lineWidth = n === selPiece ? 3 : 1;
+    ctx.beginPath(); ctx.roundRect(x0 + 1, y0, Math.max(2, x1 - x0 - 2), h, 6); ctx.stroke();
+    if (n === selPiece) { ctx.fillStyle = "rgba(255,107,53,.18)"; ctx.fillRect(x0 + 1, y0, x1 - x0 - 2, h); }
+    if (n === selPiece || (hoverEdge && hoverEdge.i === n)) {
+      ctx.fillStyle = "#FF6B35";
+      for (const [ex, side] of [[x0 + 1, "l"], [x1 - 1, "r"]]) {
+        const on = hoverEdge && hoverEdge.i === n && hoverEdge.edge === side;
+        ctx.globalAlpha = on ? 1 : 0.85; ctx.beginPath(); ctx.roundRect(side === "l" ? ex : ex - 7, y0, 7, h, 3); ctx.fill();
+        ctx.fillStyle = "#fff"; ctx.fillRect(side === "l" ? ex + 3 : ex - 4, y0 + h / 2 - 8, 1.5, 16); ctx.fillStyle = "#FF6B35";
+      }
+      ctx.globalAlpha = 1;
+    }
+  });
+  // speech bars on the clips: white = may salita, gaps = dead air
+  if (!trim) {
+    ctx.fillStyle = "rgba(255,255,255,.75)";
+    for (const [k, s0, e0] of P.words_out) {
+      const a = X(s0), b = X(e0); if (b < 0 || a > w) continue;
+      ctx.fillRect(a, y0 + h - 3, Math.max(1, b - a - 1), 3);
+    }
+  }
+  // live trim feedback: restored part hatched green, label with the change
+  if (trim) {
+    const vp = viewPieces()[trim.i], d = trim.newSrc - trim.orig, grow = trim.edge === "r" ? d > 0 : d < 0;
+    let a, b;
+    if (trim.edge === "r") { a = X(vp.eo + (Math.min(trim.orig, trim.newSrc) - vp.s)); b = X(vp.eo + (Math.max(trim.orig, trim.newSrc) - vp.s)); }
+    else { a = X(vp.eo); b = X(vp.eo + Math.abs(d)); }
+    if (grow && b > a) {
+      ctx.save(); ctx.beginPath(); ctx.rect(a, y0, b - a, h); ctx.clip();
+      ctx.fillStyle = "rgba(76,210,138,.22)"; ctx.fillRect(a, y0, b - a, h);
+      ctx.strokeStyle = "rgba(76,210,138,.6)"; ctx.lineWidth = 2;
+      for (let x = a - h; x < b; x += 10) { ctx.beginPath(); ctx.moveTo(x, y0 + h); ctx.lineTo(x + h, y0); ctx.stroke(); }
+      ctx.restore();
+    }
+    const ex = trim.edge === "r" ? X(vp.eo + (vp.e - vp.s)) : X(vp.eo);
+    const lost = grow ? [] : wordsIn(Math.min(trim.orig, trim.newSrc), Math.max(trim.orig, trim.newSrc));
+    const label = lost.length ? `⚠ puputulin ang salita: ${lost.slice(0, 3).join(" ")}${lost.length > 3 ? "…" : ""}`
+      : `${grow ? "+" : "−"}${Math.abs(d).toFixed(2)}s ${grow ? "ibabalik" : "dead air lang ✓"}${trim.snapped ? " · snap" : ""}`;
+    ctx.font = "800 12px -apple-system,Inter,sans-serif"; const tw = ctx.measureText(label).width + 14;
+    ctx.fillStyle = grow ? "#2fae6a" : lost.length ? "#e02f2f" : "#c9832b"; ctx.beginPath(); ctx.roundRect(Math.min(w - tw - 4, Math.max(4, ex - tw / 2)), y0 + 4, tw, 20, 6); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.fillText(label, Math.min(w - tw - 4, Math.max(4, ex - tw / 2)) + 7, y0 + 18);
+    ctx.fillStyle = "#fff"; ctx.fillRect(ex - 1.5, TR.ruler, 3, TR.video);
+  }
+  // captions
+  const cy = TR.ruler + TR.video + 3; ctx.font = "600 11px -apple-system,Inter,sans-serif";
+  for (const c of caps) {
+    const x0 = X(c.s), x1 = Math.max(X(c.e), x0 + 4); if (x1 < 0 || x0 > w) continue;
+    ctx.fillStyle = "#26364a"; ctx.beginPath(); ctx.roundRect(x0, cy, x1 - x0 - 1, TR.caps - 6, 4); ctx.fill();
+    if (x1 - x0 > 24) { ctx.save(); ctx.beginPath(); ctx.rect(x0, cy, x1 - x0 - 3, TR.caps); ctx.clip(); ctx.fillStyle = "#dfe7f0"; ctx.fillText(c.text, x0 + 4, cy + 15); ctx.restore(); }
+  }
+  // graphics
+  const gy = TR.ruler + TR.video + TR.caps + 2;
+  for (const o of P.overlays) {
+    const x0 = X(o.at), x1 = X(o.at + o.dur); if (x1 < 0 || x0 > w) continue;
+    ctx.fillStyle = o.stale ? "rgba(255,107,53,.18)" : "rgba(255,107,53,.35)"; ctx.beginPath(); ctx.roundRect(x0, gy, x1 - x0 - 1, TR.gfx - 5, 4); ctx.fill();
+    if (o.stale) { ctx.setLineDash([4, 3]); ctx.strokeStyle = "#FF6B35"; ctx.lineWidth = 1.2; ctx.stroke(); ctx.setLineDash([]); }
+    if (x1 - x0 > 30) { ctx.save(); ctx.beginPath(); ctx.rect(x0, gy, x1 - x0 - 3, TR.gfx); ctx.clip(); ctx.fillStyle = "#fff"; ctx.fillText((o.stale ? "↻ " : "✨ ") + o.id.replace(/^(v2_)?(s)?\d+_/, ""), x0 + 4, gy + 14); ctx.restore(); }
+  }
+  // doubles: red band over the repeated words
+  for (const x of issues) {
+    if (x.kind !== "dbl" || dismissed.has(x.key)) continue;
+    const spans = P.words_out.filter(([k]) => x.all.includes(k));
+    if (!spans.length) continue;
+    const a = X(spans[0][1]), b = X(spans[spans.length - 1][2]);
+    if (b < 0 || a > w) continue;
+    ctx.fillStyle = "rgba(255,60,60,.32)"; ctx.fillRect(a, TR.ruler, Math.max(3, b - a), TR.video + TR.caps);
+    ctx.fillStyle = "#ff4d4d"; ctx.fillRect(a - 1, TR.ruler, 2, TR.video + TR.caps); ctx.fillRect(b - 1, TR.ruler, 2, TR.video + TR.caps);
+    if (b - a > 34) { ctx.font = "800 10px -apple-system,Inter,sans-serif"; ctx.fillStyle = "#fff"; ctx.fillText("DOBLE", a + 4, TR.ruler + 12); }
+  }
+  // Lloyd's marks: red flags on the ruler
+  for (const m of P.marks || []) {
+    const mx = X(m.out); if (mx < -10 || mx > w + 10) continue;
+    ctx.fillStyle = "#ff3b3b"; ctx.fillRect(mx - 1, 0, 2, TR.ruler + TR.video);
+    ctx.beginPath(); ctx.moveTo(mx, 2); ctx.lineTo(mx + 10, 6); ctx.lineTo(mx, 10); ctx.fill();
+  }
+  // playhead
+  const px = X(lastE); ctx.fillStyle = "#fff"; ctx.fillRect(px - 1, 0, 2, TRH);
+  ctx.beginPath(); ctx.moveTo(px - 6, 0); ctx.lineTo(px + 6, 0); ctx.lineTo(px, 8); ctx.fill();
+  // scrollbar
+  const span = w / pps, k = $("hsk"), full = $("hs").clientWidth;
+  k.style.width = Math.max(30, full * Math.min(1, span / Math.max(dur, 0.01))) + "px";
+  k.style.left = (full * view0 / Math.max(dur, 0.01)) + "px";
+}
+
+/* ---------------- timeline interaction ---------------- */
+let drag = null, trim = null, hoverEdge = null;
+function viewPieces() {
+  if (!trim) return pieces;
+  const i = trim.i, d = trim.newSrc - trim.orig;
+  return pieces.map((p, n) => {
+    if (trim.edge === "r") { if (n === i) return { ...p, e: trim.newSrc }; if (n > i) return { ...p, eo: p.eo + d }; }
+    else { if (n === i) return { ...p, s: trim.newSrc }; if (n > i) return { ...p, eo: p.eo - d }; }
+    return p;
+  });
+}
+function edgeAt(x, y) {
+  if (y < TR.ruler || y > TR.ruler + TR.video) return null;
+  let best = null;
+  pieces.forEach((p, n) => {
+    const x0 = X(p.eo), x1 = X(p.eo + p.e - p.s);
+    for (const [ex, edge] of [[x1, "r"], [x0, "l"]]) {
+      const dist = Math.abs(x - ex);
+      // at a boundary between two clips, the side the cursor is on decides which edge you grab
+      if (dist <= 8 && (edge === "r" ? x <= ex + 2 : x >= ex - 2) && (!best || dist < best.dist)) best = { i: n, edge, dist };
+    }
+  });
+  return best;
+}
+function wordsIn(a, b) {
+  const out = [];
+  for (const [k] of P.words_out) {
+    const w = P.words[k], ov = Math.min(w.e, b) - Math.max(w.s, a);
+    if (ov > 0.12 || (ov > 0 && ov > 0.45 * (w.e - w.s))) out.push(wtext(k));
+  }
+  return out;
+}
+function limits(i, edge) {
+  const p = pieces[i], prev = pieces[i - 1], next = pieces[i + 1];
+  return edge === "r" ? [p.s + 0.1, next ? next.s : P.dur] : [prev ? prev.e : 0, p.e - 0.1];
+}
+function snapSrc(t, alt) {
+  if (alt) return [t, false];
+  const tol = Math.min(8 / pps, 0.08); let best = t, hit = false;  // never jump far: big snaps used to swallow whole words
+  for (const w of P.words) for (const v of [w.s, w.e]) if (Math.abs(v - t) < tol && Math.abs(v - t) < Math.abs(best - t) + (hit ? 0 : tol)) { best = v; hit = true; }
+  return [best, hit];
+}
+cv.addEventListener("mousedown", (ev) => {
+  const r = cv.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top, t = view0 + x / pps;
+  const e = edgeAt(x, y);
+  if (e) {
+    const p = pieces[e.i];
+    trim = { i: e.i, edge: e.edge, orig: e.edge === "r" ? p.e : p.s, newSrc: e.edge === "r" ? p.e : p.s, x0: ev.clientX, snapped: false };
+    selPiece = e.i; vid.pause(); draw(); ev.preventDefault(); return;
+  }
+  if (y < TR.ruler + 3 || Math.abs(x - X(lastE)) < 6) { drag = "head"; seekE(t); return; }
+  if (y < TR.ruler + TR.video) { selPiece = pieces.findIndex((p) => t >= p.eo && t < p.eo + (p.e - p.s)); }
+  drag = "head"; seekE(t);
+});
+window.addEventListener("mousemove", (ev) => {
+  const r = cv.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top;
+  if (trim) {
+    const [lo, hi] = limits(trim.i, trim.edge);
+    let v = trim.orig + (ev.clientX - trim.x0) / pps;
+    const [sv, hit] = snapSrc(v, ev.altKey);
+    trim.newSrc = Math.max(lo, Math.min(hi, sv)); trim.snapped = hit;
+    draw(); return;
+  }
+  if (drag === "head") { seekE(view0 + x / pps); return; }
+  if (x < 0 || y < 0 || x > W() || y > TRH) { if (hoverEdge) { hoverEdge = null; draw(); } return; }
+  const e = edgeAt(x, y);
+  const changed = JSON.stringify(e && [e.i, e.edge]) !== JSON.stringify(hoverEdge && [hoverEdge.i, hoverEdge.edge]);
+  hoverEdge = e; cv.style.cursor = e ? "ew-resize" : Math.abs(x - X(lastE)) < 6 || y < TR.ruler + 3 ? "col-resize" : "pointer";
+  if (changed) draw();
+});
+window.addEventListener("mouseup", async () => {
+  drag = null;
+  if (!trim) return;
+  const t0 = trim; trim = null;
+  const d = t0.newSrc - t0.orig;
+  if (Math.abs(d) < 0.03) { draw(); return; }
+  const grow = t0.edge === "r" ? d > 0 : d < 0;
+  const a = Math.min(t0.orig, t0.newSrc), b = Math.max(t0.orig, t0.newSrc);
+  const lost = grow ? [] : wordsIn(a, b);
+  if (lost.length && !confirm(`⚠ Puputulin nito ang salita: “${lost.join(" ")}”.\n\nDead air lang ba ang gusto mong tanggalin? Pindutin ang Cancel at mag-zoom in para mas tumpak.\n\nOK = tanggalin pa rin ang salita.`)) { draw(); return; }
+  await doOp({ type: grow ? "trim_keep" : "trim_cut", a, b }, grow ? `✓ Naibalik ang ${(b - a).toFixed(2)}s.` : `✓ Natrim ang ${(b - a).toFixed(2)}s.`);
+});
+$("pause").onchange = () => doOp({ type: "tuning", keep_pause: +$("pause").value }, `✓ Dead air: ${$("pause").selectedOptions[0].text}`);
+cv.addEventListener("dblclick", (ev) => {
+  const r = cv.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top, t = view0 + x / pps;
+  if (y >= TR.ruler + TR.video && y < TR.ruler + TR.video + TR.caps) { const c = caps.find((c) => t >= c.s && t <= c.e); if (c) editCaption(c); }
+});
+cv.addEventListener("wheel", (ev) => {
+  ev.preventDefault();
+  if (ev.ctrlKey || ev.metaKey) { const r = cv.getBoundingClientRect(), at = view0 + (ev.clientX - r.left) / pps; const minp = (W() - 20) / Math.max(dur, 1); pps = Math.max(minp, Math.min(120, pps * Math.exp(-ev.deltaY / 300))); view0 = at - (ev.clientX - r.left) / pps; zoomFromPps(); }
+  else view0 += (ev.deltaX || ev.deltaY) / pps;
+  clampView(); draw();
+}, { passive: false });
+(() => { let d = null; $("hsk").addEventListener("mousedown", (e) => (d = { x: e.clientX, v: view0 })); window.addEventListener("mousemove", (e) => { if (!d) return; view0 = d.v + (e.clientX - d.x) / $("hs").clientWidth * dur; clampView(); draw(); }); window.addEventListener("mouseup", () => (d = null)); })();
+
+function editCaption(c) {
+  $("mbox").innerHTML = `<b>I-edit ang caption</b><div class="status">Captions lang ang mababago, hindi ang boses. Walang laman = itago ang caption na ito.</div>
+    <input id="capin" value="${esc(c.text)}"><div class="row" style="display:flex;gap:8px;justify-content:flex-end"><button id="capx">Cancel</button><button class="primary" id="capok">Save</button></div>`;
+  $("modal").classList.add("show"); const inp = $("capin"); inp.focus(); inp.select();
+  const close = () => $("modal").classList.remove("show");
+  $("capx").onclick = close;
+  $("capok").onclick = async () => { const v = inp.value.trim(); close(); if (v !== c.text) await doOp({ type: "caption", ids: c.ids, text: v }, "✓ Na-update ang caption."); };
+  inp.onkeydown = (e) => { if (e.key === "Enter") $("capok").click(); if (e.key === "Escape") close(); };
+}
+
+document.addEventListener("keydown", (e) => {
+  if ($("modal").classList.contains("show") || e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+  if (e.key === " ") { e.preventDefault(); $("play").click(); }
+  else if (e.key === "s" || e.key === "S") { if (!e.metaKey && !e.ctrlKey) doSplit(); }
+  else if (e.key === "m" || e.key === "M") { if (!e.metaKey && !e.ctrlKey) addMark(); }
+  else if (e.key === "Delete" || e.key === "Backspace") { e.preventDefault(); doDelete(); }
+  else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z") { e.preventDefault(); e.shiftKey ? $("redo").click() : $("undo").click(); }
+  else if (e.key === "ArrowLeft") seekE(editedNow() - (e.shiftKey ? 5 : 0.5), !vid.paused);
+  else if (e.key === "ArrowRight") seekE(editedNow() + (e.shiftKey ? 5 : 0.5), !vid.paused);
+});
+
+/* ---------------- export ---------------- */
+async function doRender(final) {
+  if (final && !confirm("I-export ang FINAL 1080p? (ilang minuto)")) return;
+  await api(`/api/project/${P.name}/render`, { final }); watch();
+}
+$("rPrev").onclick = () => doRender(false);
+$("rFinal").onclick = () => doRender(true);
+function watch() {
+  clearInterval(poll); $("rPrev").disabled = $("rFinal").disabled = true; setBusy(true, "⏳ Nag-e-export…");
+  poll = setInterval(async () => {
+    const q = await api(`/api/project/${P.name}`); const j = q.job || {};
+    toast((j.log || "…").trim() + (j.state === "running" ? "\n\n(tumatakbo…)" : ""), 0);
+    if (j.state !== "running") {
+      clearInterval(poll); $("rPrev").disabled = $("rFinal").disabled = false; setBusy(false);
+      if (j.state === "done" && j.output) { toast(`✓ Tapos ang export!\n${j.output}\nNasa output/ folder.`, 0); window.open(`/out/${j.output}`, "_blank"); }
+    }
+  }, 2500);
+}
+
+function showHelp() {
+  $("mbox").innerHTML = `<div class="welcome"><b style="font-size:16px">Paano gamitin 👋</b><ol>
+    <li><b>▶ Play</b> (o <kbd>Space</kbd>): ang edited version ang pinapanood mo.</li>
+    <li>Sa kaliwa, <b>“Dapat i-check”</b>: listahan ng posibleng <b>doble</b> (<span style="color:#ff6b6b;font-weight:700">pula</span> sa timeline) o <b>kulang</b> na salita. I-click ang <b>▶ Pakinggan</b>, tapos <b>✂ Tanggalin</b> o <b>✓ Okay lang</b>.</li>
+    <li><b>I-drag ang gilid ng clip</b> (orange na hawakan) para paikliin, o hilahin palabas para <b>ibalik ang dead air</b> / natanggal. Ang <b>puting guhit</b> sa ilalim ng clip = may salita; ang puwang = dead air. Magbababala ang editor kapag may salitang mapuputol. Ang <b>Dead air</b> menu ay para sa buong video.</li><li>Sa timeline, i-click ang lugar para pumunta doon. Pindutin ang <b>✂ Split</b> (<kbd>S</kbd>), i-click ang clip, tapos <b>🗑 Delete</b> (<kbd>Del</kbd>). Gaya sa CapCut. Hindi napuputol ang salita sa split.</li>
+    <li><b>Double-click ang caption</b> sa timeline para ayusin ang spelling.</li>
+    <li>May natanggal na dapat ibalik? Sa kanan, <b>“Tinanggal”</b> tab → <b>↺ Ibalik</b>. Ang <b>“Graphics”</b> tab ay listahan ng lahat ng motion graphics.</li>
+    <li><b>🚩 May nakita kang mali?</b> Pindutin ang <kbd>M</kbd> habang nanonood (puwedeng may maikling note). Sabihin kay Claude na “ayusin ang mga minarkahan ko” — siya na ang bahala.</li><li>Nagkamali? <b>↶ Undo</b> (<kbd>⌘Z</kbd>). Lahat ay auto-save.</li>
+    <li>Kapag okay na: <b>Export preview</b> (mabilis, 720p) o <b>Export final</b> (1080p).</li></ol>
+    <div style="text-align:right"><button class="primary" id="hok">Gets!</button></div></div>`;
+  $("modal").classList.add("show");
+  $("hok").onclick = () => { $("modal").classList.remove("show"); try { localStorage.setItem("seenHelp", "1"); } catch (e) {} };
+}
+$("help").onclick = showHelp;
+
+resize();
+loadProjects();
+</script>
+</body>
+</html>

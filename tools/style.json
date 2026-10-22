@@ -1,0 +1,50 @@
+{
+ "brand": "Beyond Breakeven Digital",
+ "source": "BBD_CapCut_EditingMasterclass.pptx (Google Drive) — confirmed by Lloyd as the correct brand guide",
+ "colors": {
+  "background": "#0D1B2A",
+  "accent": "#FF6A00",
+  "text": "#FFFFFF",
+  "secondary": "#8BA3B8",
+  "accent_hi": "#FF9A4D",
+  "glow": "rgba(255,106,0,.55)",
+  "text_2": "#D9D2CC",
+  "text_dim": "#8C837C",
+  "ink": "#1A0B04",
+  "scene_bg": "#0C0908",
+  "card": "#1D1415"
+ },
+ "fonts": {
+  "hook": "Impact",
+  "subheader": "Arial Black",
+  "captions": "Calibri",
+  "captions_fallback": "Arial"
+ },
+ "logo": {
+  "position": "top-left",
+  "width_pct": 10,
+  "opacity": 0.9
+ },
+ "grade": {
+  "brightness": 0.03,
+  "contrast": 1.12,
+  "saturation": 1.12,
+  "sharpen": 0.4,
+  "enabled": false,
+  "note": "Design system: footage stays natural (no grade/LUT/vignette/scrim). Set decisions.json \"grade\": true to use the values below."
+ },
+ "audio": {
+  "voice_level": 1.0,
+  "music_level": 0.2,
+  "sfx_level": 0.6,
+  "lufs": -14
+ },
+ "design_system": "DESIGN_SYSTEM.md (v3, 2026-10-06): measured from Inspiration video/ + Joshua 'Orange' doc + BBD rules",
+ "captions": {
+  "style": "pop",
+  "font": "Inter Tight ExtraBold",
+  "size_px_1920": 72,
+  "top_y_1920": 1150,
+  "keywords_per_video": 30
+ }
+}

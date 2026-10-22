@@ -1,0 +1,1061 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Studio</title>
+<style>
+  @font-face{font-family:"Inter Tight";font-weight:500;src:url("/fonts/InterTight-wght-500.ttf")}
+  @font-face{font-family:"Inter Tight";font-weight:600;src:url("/fonts/InterTight-wght-600.ttf")}
+  @font-face{font-family:"Inter Tight";font-weight:700;src:url("/fonts/InterTight-wght-700.ttf")}
+  @font-face{font-family:"Inter Tight";font-weight:800;src:url("/fonts/InterTight-wght-800.ttf")}
+  @font-face{font-family:"Inter Tight";font-weight:900;src:url("/fonts/InterTight-wght-900.ttf")}
+  @font-face{font-family:"Great Vibes";src:url("/fonts/GreatVibes.ttf")}
+  @font-face{font-family:"Playfair Display";font-weight:800;src:url("/fonts/PlayfairDisplay-800.ttf")}
+  @font-face{font-family:"Playfair Display";font-weight:900;src:url("/fonts/PlayfairDisplay-900.ttf")}
+  @font-face{font-family:"Anton";font-weight:400 900;src:url("/fonts/Anton-400.ttf")}
+  @font-face{font-family:"Poppins";font-weight:800;src:url("/fonts/Poppins-800.ttf")}
+  @font-face{font-family:"Poppins";font-weight:900;src:url("/fonts/Poppins-900.ttf")}
+  @font-face{font-family:"Montserrat";font-weight:800;src:url("/fonts/Montserrat-800.ttf")}
+  @font-face{font-family:"Montserrat";font-weight:900;src:url("/fonts/Montserrat-900.ttf")}
+  @font-face{font-family:"Caveat";font-weight:400 900;src:url("/fonts/Caveat-700.ttf")}
+  @font-face{font-family:"Dancing Script";font-weight:400 900;src:url("/fonts/DancingScript-700.ttf")}
+  :root{
+    --bg:#0F0D0C;--panel:#171513;--panel2:#1E1B19;--panel3:#272320;--line:#2C2724;--line2:#3A3430;
+    --text:#F4EFEA;--mut:#A39990;--dim:#6F6761;--o:#FF6A00;--o2:#FF9A4D;--osoft:rgba(255,106,0,.13);--ink:#1A0B04;
+    --ok:#3FBF7F;--bad:#FF5A4E;--r:18px;
+    --ui:-apple-system,BlinkMacSystemFont,"Inter",system-ui,sans-serif;--disp:"Inter Tight",var(--ui)}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:14px/1.45 var(--ui);-webkit-font-smoothing:antialiased}
+  button{font:inherit;color:inherit;cursor:pointer}
+  a{color:inherit}
+  .app{display:grid;grid-template-rows:60px auto 1fr 72px;height:100vh}
+  /* top bar */
+  .top{display:flex;align-items:center;gap:14px;padding:0 22px;border-bottom:1px solid var(--line)}
+  .logo{display:flex;align-items:center;gap:10px;font:900 17px var(--disp);letter-spacing:-.02em;min-width:0}
+  .logo i{width:30px;height:30px;border-radius:9px;background:var(--o);display:grid;place-items:center;color:var(--ink);font-style:normal;font-size:15px;flex:none}
+  .sname{border:1px dashed transparent;border-radius:8px;padding:3px 7px;cursor:text;white-space:nowrap;outline:none;max-width:320px;overflow:hidden;text-overflow:ellipsis}
+  .sname:hover{border-color:var(--line2)}
+  .sname:focus{border-color:var(--o);background:var(--panel2);text-overflow:clip}
+  .pen{color:var(--dim);font-size:13px;cursor:pointer;border:0;background:none;padding:2px}
+  .pen:hover{color:var(--text)}
+  .projchip{display:flex;align-items:center;gap:10px;padding:5px 12px 5px 5px;border-radius:12px;background:var(--panel2);border:1px solid var(--line);max-width:300px}
+  .projchip img{width:26px;height:40px;object-fit:cover;border-radius:6px;background:#000}
+  .projchip b{font:800 13px var(--disp);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .projchip small{color:var(--mut);white-space:nowrap}
+  .grow{flex:1}
+  .lang{display:flex;padding:3px;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+  .lang button{border:0;background:transparent;color:var(--mut);padding:4px 10px;border-radius:7px;font-weight:700;font-size:12px}
+  .lang button.on{background:var(--panel3);color:var(--text)}
+  .tlink{color:var(--mut);text-decoration:none;font-weight:600;font-size:13px;padding:7px 12px;border-radius:9px;border:1px solid var(--line);background:none}
+  .tlink:hover{color:var(--text);border-color:var(--line2)}
+  .status{display:flex;align-items:center;gap:7px;color:var(--mut);font-size:12.5px;white-space:nowrap}
+  .status:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ok)}
+  .status.busy:before{background:var(--o2);animation:pulse 1s infinite}
+  @keyframes pulse{50%{opacity:.25}}
+  /* stepper */
+  .steps{display:flex;gap:2px;padding:0 22px;border-bottom:1px solid var(--line);overflow-x:auto}
+  .steps button{border:0;background:transparent;color:var(--mut);padding:14px 14px 12px;font:700 14px var(--disp);letter-spacing:-.01em;
+    border-bottom:3px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:7px}
+  .steps button .num{color:var(--dim)}
+  .steps button.done{color:var(--text)}
+  .steps button.done .ck{color:var(--o)}
+  .steps button.on{color:var(--text);border-bottom-color:var(--o)}
+  .steps button:hover{color:var(--text)}
+  /* body */
+  .body{display:grid;grid-template-columns:minmax(300px,380px) 1fr;min-height:0}
+  .left{padding:22px;display:flex;flex-direction:column;align-items:center;gap:12px;border-right:1px solid var(--line);min-height:0}
+  .phone{position:relative;height:min(100%,640px);aspect-ratio:9/16;border-radius:24px;overflow:hidden;background:#000;flex:1 1 auto;
+    box-shadow:0 30px 70px rgba(0,0,0,.55),0 0 0 1px var(--line2)}
+  .phone video,.phone .still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .phone .still{display:none}
+  #gv{pointer-events:none;display:none;z-index:3}
+  #skb{position:absolute;inset:0;width:100%;height:100%;display:none;pointer-events:none}
+  .layer{position:absolute;inset:0;pointer-events:none;z-index:4;overflow:hidden}
+  .pbar{position:absolute;left:5.9%;right:5.9%;top:3.3%;height:.42%;border-radius:4px;background:rgba(140,106,85,.55);overflow:hidden;z-index:6;display:none}
+  .pbar i{display:block;height:100%;width:0}
+  .cap{position:absolute;left:4%;right:4%;text-align:center;color:#fff;z-index:5;line-height:1.08;pointer-events:none;
+    text-shadow:0 0 2px rgba(0,0,0,.85),0 2px 5px rgba(0,0,0,.6),0 6px 26px rgba(0,0,0,.55)}
+  .cap .bx{background:var(--acc);color:var(--ink2);padding:.05em .26em .09em;border-radius:.1em;text-shadow:none;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+  .cap.ol{text-shadow:0 .06em .08em rgba(0,0,0,.55);-webkit-text-stroke:.11em #000;paint-order:stroke fill}
+  /* demo playback (click a card → it plays here, with sound) */
+  #dv,#dc{display:none;z-index:1}
+  #dc{z-index:3;pointer-events:none}
+  #dlb{z-index:2} #dlf{z-index:4}
+  .phone.demo:not(.main) #vid,.phone.demo:not(.main) #skb,.phone.demo:not(.main) #still,.phone.demo:not(.main) #gv,.phone.demo:not(.main) #cap,.phone.demo:not(.main) #pbar,.phone.demo #hookLayer{display:none!important}
+  .phone.demo:not(.main) #dv{display:block}
+  .dbadge{position:absolute;left:10px;right:10px;bottom:10px;z-index:9;display:none;align-items:center;gap:8px;padding:7px 8px 7px 12px;border-radius:12px;
+    background:rgba(12,10,9,.8);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font:700 12px var(--ui);color:#fff;pointer-events:auto}
+  .dbadge i{width:8px;height:8px;border-radius:50%;background:var(--o);animation:pulse 1s infinite;flex:none}
+  .dbadge span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dbadge button{border:0;border-radius:8px;background:rgba(255,255,255,.14);color:#fff;padding:4px 9px;font-weight:800}
+  .phone.demo .dbadge{display:flex}
+  .ctrl{display:flex;align-items:center;gap:10px}
+  .ctrl button{border:1px solid var(--line2);background:var(--panel2);border-radius:999px;padding:7px 13px;font-weight:700;font-size:12.5px}
+  .ctrl button.play{background:var(--o);border-color:var(--o);color:var(--ink);min-width:74px}
+  .ctrl .t{font:600 12.5px ui-monospace,Menlo,monospace;color:var(--mut)}
+  .ctrl button.mini{padding:6px 9px;min-width:0;font-size:13px;color:var(--mut)}
+  .ctrl button.mini.on{color:var(--o2);border-color:rgba(255,140,60,.55)}
+  /* live graphics: the real scene page (HTML + GSAP), seeked to the playhead — no render needed */
+  .gframe{position:absolute;left:0;top:0;width:1080px;height:1920px;border:0;transform-origin:0 0;pointer-events:none;z-index:3;display:none;background:transparent;color-scheme:normal}
+  /* platform safe zones (TikTok / Reels / Shorts interface over a 1080×1920 frame) */
+  .safe{position:absolute;inset:0;z-index:8;pointer-events:none;display:none;font:700 9px var(--ui);color:#fff}
+  .safe.on{display:block}
+  .safe i{position:absolute;background:rgba(255,60,60,.16);border:1px dashed rgba(255,120,120,.75);border-radius:6px}
+  .safe b{position:absolute;left:6px;top:4px;padding:2px 6px;border-radius:5px;background:rgba(0,0,0,.6)}
+  .hintchip{font-size:11.5px;color:var(--mut);background:var(--panel2);border:1px solid var(--line);padding:3px 10px;border-radius:999px;text-align:center}
+  .right{overflow:auto;padding:26px 30px 40px}
+  .kick{font:800 12px var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--o2);margin-bottom:6px}
+  h1{font:900 30px/1.1 var(--disp);letter-spacing:-.025em;margin:0 0 8px}
+  h2{font:900 18px var(--disp);letter-spacing:-.01em;margin:26px 0 12px;display:flex;align-items:center;gap:10px}
+  h2 small{font:600 12.5px var(--ui);color:var(--mut)}
+  .lead{color:var(--mut);font-size:15px;margin:0 0 18px;max-width:760px}
+  .howto{display:inline-flex;gap:14px;flex-wrap:wrap;color:var(--mut);font-size:12.5px;margin:-6px 0 16px}
+  .howto b{color:var(--text)}
+  .seg{display:inline-flex;padding:4px;border-radius:12px;background:var(--panel2);border:1px solid var(--line);margin:0 0 18px}
+  .seg button{border:0;background:transparent;color:var(--mut);padding:7px 16px;border-radius:9px;font-weight:700}
+  .seg button.on{background:var(--o);color:var(--ink)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:16px}
+  .card{position:relative;text-align:left;border:1.5px solid var(--line);background:var(--panel);border-radius:var(--r);padding:10px 10px 14px;transition:border-color .15s,transform .15s;cursor:pointer;outline:none}
+  .card:hover{border-color:var(--line2);transform:translateY(-2px)}
+  .card:focus-visible{border-color:var(--o)}
+  .card.picked{border-color:var(--text);box-shadow:0 0 0 3px rgba(244,239,234,.12)}
+  .card.playing{border-color:var(--o);box-shadow:0 0 0 3px var(--osoft)}
+  .card .no{position:absolute;left:18px;top:18px;z-index:6;width:24px;height:24px;border-radius:50%;background:rgba(15,13,12,.8);border:1px solid var(--line2);display:grid;place-items:center;font:800 11px var(--ui)}
+  .card .pk{position:absolute;right:18px;top:18px;z-index:6;padding:3px 9px;border-radius:7px;background:var(--text);color:var(--ink);font:800 11px var(--ui);display:none}
+  .card.picked .pk{display:block}
+  .card .tag{position:absolute;right:8px;bottom:8px;z-index:6;padding:2px 8px;border-radius:6px;background:rgba(15,13,12,.85);color:var(--o2);font:700 10.5px var(--ui);border:1px solid rgba(255,140,60,.35)}
+  .pbtn{position:absolute;left:8px;bottom:8px;z-index:6;display:flex;align-items:center;gap:6px;border:0;border-radius:999px;padding:6px 11px 6px 9px;
+    background:rgba(15,13,12,.82);color:#fff;font:800 11.5px var(--ui);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 0 0 1px rgba(255,255,255,.12)}
+  .pbtn:before{content:"";width:0;height:0;border-left:8px solid var(--o);border-top:5px solid transparent;border-bottom:5px solid transparent}
+  .pbtn:hover{background:var(--o);color:var(--ink)} .pbtn:hover:before{border-left-color:var(--ink)}
+  .thumb{position:relative;aspect-ratio:9/16;border-radius:12px;overflow:hidden;background:#0B0A09;margin-bottom:12px}
+  .thumb img,.thumb video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .thumb .ov{position:absolute;inset:0;overflow:hidden}
+  .card h3{margin:0 4px 3px;font:800 15.5px var(--disp);letter-spacing:-.01em}
+  .card p{margin:0 4px;color:var(--mut);font-size:12.5px;line-height:1.35}
+  .cfoot{display:flex;gap:6px;margin:10px 4px 0}
+  .cfoot button{border:1px solid var(--line2);background:var(--panel2);border-radius:8px;padding:5px 9px;font-weight:700;font-size:12px;color:var(--mut)}
+  .cfoot button:hover{color:var(--text);border-color:var(--o)}
+  .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:6px 0 18px}
+  .field{display:flex;flex-direction:column;gap:6px;min-width:220px;flex:1}
+  .field label{font:700 12px var(--ui);color:var(--mut);letter-spacing:.04em;text-transform:uppercase}
+  .field input[type=text]{background:var(--panel2);border:1px solid var(--line2);border-radius:11px;padding:11px 13px;color:var(--text);font:700 15px var(--disp)}
+  .field input:focus{outline:none;border-color:var(--o)}
+  input[type=range]{accent-color:var(--o)}
+  .box{border:1px solid var(--line);background:var(--panel);border-radius:var(--r);padding:16px 18px;margin:0 0 18px}
+  .box h4{margin:0 0 8px;font:800 14px var(--disp)}
+  .kw{display:flex;flex-wrap:wrap;gap:7px}
+  .kw button{border:1px solid var(--line2);background:var(--panel2);border-radius:999px;padding:5px 11px;font-weight:700;font-size:12.5px;color:var(--mut)}
+  .kw button.on{color:var(--ink);border-color:transparent}
+  .meter{height:10px;border-radius:6px;background:var(--panel3);overflow:hidden;margin:8px 0 4px}
+  .meter i{display:block;height:100%}
+  .list{display:flex;flex-direction:column;gap:8px}
+  .li{display:flex;align-items:center;gap:10px;color:var(--mut)}
+  .li b{color:var(--text)}
+  .ok{color:var(--ok)} .warn{color:var(--o2)}
+  .drop{border:2px dashed var(--line2);border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;color:var(--mut);padding:18px;cursor:pointer}
+  .drop.hover{border-color:var(--o);color:var(--text);background:var(--osoft)}
+  .drop b{color:var(--text);font:800 16px var(--disp)}
+  .bigbtn{border:0;border-radius:14px;padding:14px 22px;font:900 16px var(--disp);background:var(--o);color:var(--ink)}
+  .bigbtn.sec{background:var(--panel2);color:var(--text);border:1px solid var(--line2)}
+  .bigbtn:disabled{opacity:.45;cursor:default}
+  .log{font:12px/1.55 ui-monospace,Menlo,monospace;color:var(--mut);white-space:pre-wrap;max-height:180px;overflow:auto}
+  .player{width:min(100%,360px);aspect-ratio:9/16;border-radius:20px;background:#000;overflow:hidden;box-shadow:0 0 0 1px var(--line2)}
+  .player video{width:100%;height:100%}
+  .two{display:grid;grid-template-columns:minmax(260px,360px) 1fr;gap:24px;align-items:start}
+  /* bottom bar */
+  .bottom{display:flex;align-items:center;gap:16px;padding:0 22px;border-top:1px solid var(--line);background:var(--panel)}
+  .bottom .mid{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--mut);font-weight:700;font-size:13px}
+  .bottom .mid .bar{width:160px;height:5px;border-radius:3px;background:var(--panel3);overflow:hidden}
+  .bottom .mid .bar i{display:block;height:100%;background:var(--o)}
+  .navbtn{border:1px solid var(--line2);background:var(--panel2);border-radius:999px;padding:11px 22px;font:800 14px var(--disp)}
+  .navbtn.next{background:var(--o);border-color:var(--o);color:var(--ink);min-width:170px}
+  .navbtn:disabled{opacity:.35;cursor:default}
+  .toast{position:fixed;right:22px;top:72px;max-width:420px;background:var(--panel3);border:1px solid var(--line2);border-radius:14px;padding:12px 15px;font-size:13px;white-space:pre-wrap;display:none;z-index:50;box-shadow:0 16px 44px rgba(0,0,0,.5)}
+  .toast.show{display:block}
+  .empty{color:var(--mut);padding:30px;text-align:center;border:1px dashed var(--line2);border-radius:var(--r)}
+  ::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:var(--line2);border-radius:6px}::-webkit-scrollbar-track{background:transparent}
+  .lctl{display:flex;flex-direction:column;align-items:center;gap:10px}
+  /* narrow windows: the phone stays on screen as a strip on top (it used to be hidden, so card previews played where nobody could see them) */
+  @media (max-width:900px){
+    .body{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}
+    .left{flex-direction:row;justify-content:center;padding:10px 16px;border-right:0;border-bottom:1px solid var(--line);gap:16px}
+    .phone{height:min(300px,38vh);flex:none;border-radius:16px}
+    .lctl{align-items:flex-start}
+    .two{grid-template-columns:1fr}
+    .sname{max-width:200px}
+    .right{padding:18px 16px 30px}
+    .top{gap:10px;padding:0 14px}
+  }
+  @media (max-width:560px){.projchip{display:none!important}.lctl .t{display:none}}
+
+  /* ---- the 1080×1920 stage: graphics drawn at render size, scaled to the phone / card (same layout as mograph) ---- */
+  .stage{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:0 0;pointer-events:none;font-family:"Inter Tight";color:#fff}
+  .stage .bt{position:absolute;left:0;right:0;text-align:center;font-weight:900;letter-spacing:-.045em;line-height:.8;white-space:nowrap;text-transform:uppercase;
+    filter:drop-shadow(0 10px 40px rgba(0,0,0,.35)) drop-shadow(0 0 50px var(--glow))}
+  .stage .bt span{display:inline-block;padding:0 .01em;background:var(--g);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stage .bt.o span{background:none;-webkit-text-stroke:5px var(--ol)}
+  .stage .bk{position:absolute;left:0;right:0;text-align:center;color:#fff;line-height:1;text-shadow:0 3px 10px rgba(0,0,0,.65),0 0 30px rgba(0,0,0,.35)}
+  .stage .bk.big{font-weight:900;letter-spacing:-.025em;line-height:.95;text-transform:uppercase;text-shadow:0 4px 0 rgba(0,0,0,.25),0 8px 36px rgba(0,0,0,.6)}
+  .stage .lkw{position:absolute;left:64px;right:144px;display:flex;flex-direction:column;align-items:center;gap:4px}
+  .stage .lk{white-space:nowrap;text-shadow:0 0 2px rgba(0,0,0,.85),0 2px 5px rgba(0,0,0,.6),0 6px 26px rgba(0,0,0,.55)}
+  .stage .lk.xl{font-weight:900;line-height:.86;letter-spacing:-.045em}
+  .stage .lk.sc{font-weight:400;line-height:1;padding:0 8px}
+  .stage .lk.sm{font-weight:700;line-height:1.02;font-size:40px}
+  .stage .lk.tag{font-weight:800;font-size:46px;padding:10px 30px;border-radius:999px;text-shadow:none;margin-bottom:8px}
+  .stage .tgw{position:absolute;left:64px;right:144px;display:flex;flex-direction:column;align-items:flex-start}
+  .stage .tg{display:flex;align-items:center;gap:24px;padding:20px 34px 20px 20px;border-radius:30px;background:rgba(12,9,8,.84);border:2px solid var(--accA);
+    box-shadow:0 18px 50px rgba(0,0,0,.45);max-width:872px}
+  .stage .tg.np{padding:18px 34px}
+  .stage .tg-ic{width:88px;height:88px;border-radius:22px;flex:none;display:grid;place-items:center}
+  .stage .tg-ic svg{width:44px;height:44px;stroke:#fff;fill:none;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
+  .stage .tg-tx{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .stage .tg-k{font-size:26px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;white-space:nowrap}
+  .stage .tg-t{font-size:62px;font-weight:900;letter-spacing:-.03em;line-height:1.0;white-space:nowrap}
+  .stage .tg.ty .tg-t{white-space:normal;max-width:800px}
+  .stage .tg.ct .tg-t{font-size:104px;line-height:.95;letter-spacing:-.04em}
+  .stage .tg.cm{background:#fff;border:none;border-radius:36px 36px 36px 10px;padding:24px 38px 24px 24px;align-items:flex-start;box-shadow:0 22px 60px rgba(0,0,0,.42)}
+  .stage .tg.cm .tg-ic{width:84px;height:84px;border-radius:50%}
+  .stage .tg.cm .tg-k{color:#6B6560;letter-spacing:0;text-transform:none;font-size:30px;font-weight:700}
+  .stage .tg.cm .tg-t{color:#15110F;font-size:52px;font-weight:800;letter-spacing:-.02em;white-space:normal;max-width:690px;line-height:1.08}
+  .stage .tg-m{display:flex;gap:26px;margin-top:8px;font-size:26px;font-weight:700;color:#8C837C}
+  .stage .thw{position:absolute;left:64px;right:144px;bottom:470px;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .stage .th-tag{display:inline-flex;align-items:center;gap:12px;margin-bottom:14px;padding:10px 22px;border-radius:10px;background:#151311;border:2px solid var(--acc);
+    color:#fff;font-size:34px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+  .stage .th-tag:before{content:"";width:16px;height:16px;border-radius:50%;background:var(--acc)}
+  .stage .th-row{font-weight:900;text-transform:uppercase;line-height:.92;letter-spacing:-.045em;white-space:nowrap;text-shadow:0 6px 30px rgba(0,0,0,.55)}
+  .stage .th-row .hb{display:inline-block;padding:.02em .16em .04em;border-radius:.08em;text-shadow:none;transform:rotate(-2deg)}
+  .stage .capd{position:absolute;left:43px;right:43px;text-align:center;line-height:1.08;text-shadow:0 0 2px rgba(0,0,0,.85),0 2px 5px rgba(0,0,0,.6),0 6px 26px rgba(0,0,0,.55)}
+  .stage .capd .bx{padding:.05em .26em .09em;border-radius:.1em;text-shadow:none}
+  .stage .capd.ol{-webkit-text-stroke:.11em #000;paint-order:stroke fill;text-transform:uppercase}
+  .stage .glass{position:absolute;left:90px;right:90px;top:640px;padding:46px 50px;border-radius:44px;background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.05));
+    border:2px solid rgba(255,255,255,.22);box-shadow:0 30px 90px rgba(0,0,0,.45)}
+  .stage .streak{position:absolute;left:0;width:60%;height:26px;border-radius:13px;filter:blur(6px)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="logo"><i id="logoI">S</i><span class="sname" id="sname" spellcheck="false" title=""></span><button class="pen" id="pen" title="">✎</button></div>
+    <div class="projchip" id="chip" style="display:none"><img id="chipImg" alt=""><div style="min-width:0"><b id="chipName"></b><br><small id="chipDur"></small></div></div>
+    <span class="grow"></span>
+    <span class="status" id="status"></span>
+    <div class="lang" id="lang"><button data-l="en">EN</button><button data-l="tl">TL</button></div>
+    <a class="tlink" id="fine" href="/editor" target="_blank"></a>
+  </div>
+  <nav class="steps" id="steps"></nav>
+  <div class="body">
+    <aside class="left">
+      <div class="phone" id="phone">
+        <canvas id="skb"></canvas>
+        <video id="vid" playsinline preload="auto" muted></video>
+        <img class="still" id="still" alt="">
+        <video id="gv" class="still" muted playsinline preload="auto" style="display:none"></video>
+        <iframe id="gf" class="gframe" scrolling="no" tabindex="-1" title="live graphic"></iframe>
+        <div class="safe" id="safe"></div>
+        <div class="layer" id="hookLayer"></div>
+        <div class="pbar" id="pbar"><i id="pfill"></i></div>
+        <div class="cap" id="cap"></div>
+        <video id="dv" playsinline preload="auto"></video>
+        <div class="layer" id="dlb"></div>
+        <video id="dc" playsinline preload="auto" muted></video>
+        <div class="layer" id="dlf"></div>
+        <div class="dbadge" id="dbadge"><i></i><span id="dtext"></span><button id="dstop">■</button></div>
+      </div>
+      <div class="lctl"><div class="ctrl"><button id="b5">−5s</button><button class="play" id="play"></button><button id="f5">+5s</button><span class="t" id="time">0:00 / 0:00</span><button id="liveBtn" class="mini on" title="">◎</button><button id="safeBtn" class="mini" title="">▯</button></div>
+      <span class="hintchip" id="hint"></span></div>
+    </aside>
+    <main class="right" id="main"></main>
+  </div>
+  <div class="bottom">
+    <button class="navbtn" id="back"></button>
+    <div class="mid"><span id="stepOf"></span><div class="bar"><i id="stepBar"></i></div></div>
+    <button class="navbtn next" id="next"></button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<input type="file" id="file" accept="video/*" style="display:none">
+
+<script>
+/* ============================================================ i18n */
+const I18N = {
+  en: {
+    steps: ["Start", "Colours", "Fonts", "Hook", "Captions", "Visuals", "Extras", "Watch"],
+    fine: "Fine-tune cuts ↗", saved: "Saved", saving: "Saving…", rendering: "Rendering…", rename: "Click to rename your studio",
+    play: "Play", pause: "Pause", hint: "Quick preview · graphics update when you render", hintStill: "Preview frame · press Play to hear the hook",
+    hintDemo: "Playing with sound · ■ to stop", playcard: "Play",
+    howto: ["Hover a card — it moves", "Click — pick it + play it with sound", "▶ Play — just watch it"],
+    back: "Back", next: "Next", finish: "Render", stepOf: (a, b) => `Step ${a} of ${b}`, picked: "Picked",
+    start_k: "Start", start_h: "Pick a video", start_l: "Choose a video to style, or upload a new one. Claude already cleaned the cuts — retakes, repeats and dead air are gone.",
+    upload_b: "Upload a video", upload_s: "Drag a .mov or .mp4 here, or click to choose", uploading: "Uploading", transcribing: "Transcribing and cleaning the cuts… (a few minutes)",
+    ready: "Ready to style", raw: "raw", edited: "edited",
+    did_h: "What's already done", did_cut: (n, a, b) => `${n} retakes / repeats removed · ${a} → ${b}`, did_qc: "Every join re-listened for doubles and clipped words", did_review: "Review each cut in Fine-tune",
+    col_k: "Step 1 · Colours", col_h: "Pick your colours", col_l: "One accent colour runs through captions, cards, keywords and the progress bar. Your footage stays natural.",
+    custom: "Custom", custom_n: "Any brand colour",
+    font_k: "Step 2 · Fonts", font_h: "Pick your fonts", font_l: "Each pairing has a bold headline font and a handwritten accent.",
+    hook_k: "Step 3 · Hook", hook_h: "Hook them in 3 seconds", hook_l: "The first frame is your thumbnail. 11 hook styles — each one plays on your real video, with sound.",
+    hook_word: "Hook word / title", hook_kick: "Small line (optional)", hook_line: "Your first 3 seconds",
+    hook_num: "Number", hook_num_k: "What it counts", hook_cm: "The comment", hook_cm_k: "Name (optional)", num_tip: "Tip: type a number like 2,487 so it counts up.",
+    preparing: "Getting your hook preview ready (first time only)…",
+    tips_h: "What top creators do in the hook",
+    tips: ["Lead with the payoff: “2–3 hours → 1 hour”", "Say who it's for: “Kung editor ka…”", "One big word on screen, not a sentence", "Show proof early: a number or a real comment", "Open a loop: the answer comes later"],
+    cap_k: "Step 4 · Captions", cap_h: "Style your captions", cap_l: "Big, readable captions. Key words light up in your colour. Click a style to hear it on your video.",
+    pos: "Position", size: "Size", keywords: "Keywords in colour", kw_hint: "Tap to add or remove.",
+    vis_k: "Step 5 · Visuals", vis_h: "Motion graphics", vis_l: "Animated b-roll — no stock footage. Tick what fits your content; Claude places each one on the line it explains.",
+    yours: "In this video", library: "Library", density: "How much b-roll?", coverage: (p) => `${p}% of this video is graphics now`,
+    removed: "Removed", removed_hint: "Removed from the video", remove: "✕ Remove", restore: "↺ Bring back",
+    ex_k: "Step 6 · Extras", ex_h: "Add extras", ex_l: "Add extras if you want them. Skip this step if you like it simple. Tick as many as you like.",
+    elements: "Elements", motion: "Motion", onrender: "Applies on render", claude: "Claude places it",
+    w_k: "Step 7 · Watch", w_h: "Render and watch", w_l: "Renders your edit with everything you picked. Preview first, then export the final.",
+    r_prev: "Render preview", r_final: "Export final 1080p", r_prev_s: "720p · a few minutes", r_final_s: "Full quality + captions file",
+    dl_mp4: "Download video", dl_srt: "Download captions (.srt)", none_yet: "No render yet — press Render preview.",
+    look_h: "Your look", fixcuts: "Fix a cut or a word", fixcuts_s: "Open the Fine-tune editor to restore or remove words, trim clips and flag mistakes.",
+    rebuild: "Graphics update to your new look on the next render.",
+    d_hook: "Hook preview · your video + sound", d_render: "From your last render", d_sample: "Sample from a past video", d_cap: "Caption preview", d_fx: "Preview", no_render: "Render once to hear this graphic in your video — playing it silent for now.",
+  },
+  tl: {
+    steps: ["Simula", "Kulay", "Fonts", "Hook", "Captions", "Visuals", "Extras", "Panoorin"],
+    fine: "Ayusin ang cuts ↗", saved: "Naka-save", saving: "Sine-save…", rendering: "Nagre-render…", rename: "I-click para palitan ang pangalan ng studio",
+    play: "Play", pause: "Pause", hint: "Quick preview · update ang graphics pag nag-render", hintStill: "Preview frame · pindutin ang Play para marinig",
+    hintDemo: "May tunog na nagpe-play · ■ para huminto", playcard: "Play",
+    howto: ["I-hover ang card — gagalaw", "I-click — piliin + i-play na may tunog", "▶ Play — panoorin lang"],
+    back: "Bumalik", next: "Susunod", finish: "I-render", stepOf: (a, b) => `Step ${a} sa ${b}`, picked: "Napili",
+    start_k: "Simula", start_h: "Pumili ng video", start_l: "Piliin ang video na gagandahin, o mag-upload ng bago. Nalinis na ni Claude ang cuts — wala nang retakes, ulit, at dead air.",
+    upload_b: "Mag-upload ng video", upload_s: "I-drag dito ang .mov o .mp4, o i-click para pumili", uploading: "Ina-upload", transcribing: "Tina-transcribe at nililinis ang cuts… (ilang minuto)",
+    ready: "Handa nang i-style", raw: "raw", edited: "edited",
+    did_h: "Tapos na", did_cut: (n, a, b) => `${n} na retakes / ulit ang tinanggal · ${a} → ${b}`, did_qc: "Pinakinggan ulit ang bawat dugtungan para sa doble at putol na salita", did_review: "I-review ang bawat cut sa Fine-tune",
+    col_k: "Step 1 · Kulay", col_h: "Piliin ang kulay mo", col_l: "Isang accent color sa captions, cards, keywords at progress bar. Natural pa rin ang footage mo.",
+    custom: "Custom", custom_n: "Kahit anong brand color",
+    font_k: "Step 2 · Fonts", font_h: "Piliin ang fonts mo", font_l: "Bawat pares ay may bold na headline font at handwritten na accent.",
+    hook_k: "Step 3 · Hook", hook_h: "Hook sa loob ng 3 segundo", hook_l: "Ang unang frame ang thumbnail mo. 11 hook styles — bawat isa nagpe-play sa totoong video mo, may tunog.",
+    hook_word: "Hook word / title", hook_kick: "Maliit na linya (optional)", hook_line: "Unang 3 segundo mo",
+    hook_num: "Numero", hook_num_k: "Ano ang binibilang", hook_cm: "Ang comment", hook_cm_k: "Pangalan (optional)", num_tip: "Tip: maglagay ng numero tulad ng 2,487 para mag-count up.",
+    preparing: "Inihahanda ang hook preview (unang beses lang)…",
+    tips_h: "Ginagawa ng top creators sa hook",
+    tips: ["Unahin ang resulta: “2–3 hours → 1 hour”", "Sabihin kung para kanino: “Kung editor ka…”", "Isang malaking salita lang sa screen", "Ipakita agad ang proof: numero o totoong comment", "Mag-iwan ng tanong: mamaya ang sagot"],
+    cap_k: "Step 4 · Captions", cap_h: "I-style ang captions", cap_l: "Malaki at madaling basahin. Umiilaw sa kulay mo ang keywords. I-click ang style para marinig sa video mo.",
+    pos: "Posisyon", size: "Laki", keywords: "Keywords na may kulay", kw_hint: "I-tap para magdagdag o mag-alis.",
+    vis_k: "Step 5 · Visuals", vis_h: "Motion graphics", vis_l: "Animated b-roll — walang stock footage. I-tick ang bagay sa content mo; si Claude ang maglalagay sa linyang ipinapaliwanag nito.",
+    yours: "Nasa video na ito", library: "Library", density: "Gaano karaming b-roll?", coverage: (p) => `${p}% ng video ang graphics ngayon`,
+    removed: "Inalis", removed_hint: "Inalis sa video", remove: "✕ Alisin", restore: "↺ Ibalik",
+    ex_k: "Step 6 · Extras", ex_h: "Magdagdag ng extras", ex_l: "Magdagdag kung gusto mo. I-skip kung gusto mo ng simple. Puwedeng pumili ng marami.",
+    elements: "Elements", motion: "Motion", onrender: "Gagana sa render", claude: "Ilalagay ni Claude",
+    w_k: "Step 7 · Panoorin", w_h: "I-render at panoorin", w_l: "Ire-render ang edit kasama lahat ng pinili mo. Preview muna, tapos i-export ang final.",
+    r_prev: "Render preview", r_final: "I-export ang final 1080p", r_prev_s: "720p · ilang minuto", r_final_s: "Full quality + captions file",
+    dl_mp4: "I-download ang video", dl_srt: "I-download ang captions (.srt)", none_yet: "Wala pang render — pindutin ang Render preview.",
+    look_h: "Ang look mo", fixcuts: "Ayusin ang cut o salita", fixcuts_s: "Buksan ang Fine-tune editor para magbalik o mag-alis ng salita, mag-trim ng clip at mag-flag ng mali.",
+    rebuild: "Maa-update ang graphics sa bagong look sa susunod na render.",
+    d_hook: "Hook preview · video mo + tunog", d_render: "Mula sa huling render mo", d_sample: "Sample mula sa lumang video", d_cap: "Caption preview", d_fx: "Preview", no_render: "Mag-render muna para marinig ang graphic na ito sa video mo — walang tunog muna.",
+  },
+};
+let LANG = "en"; try { LANG = localStorage.getItem("studioLang") || "en"; } catch (e) {}
+const t = (k, ...a) => { const v = (I18N[LANG] || I18N.en)[k] ?? I18N.en[k]; return typeof v === "function" ? v(...a) : v; };
+
+/* ============================================================ state */
+const STEPS = ["start", "colours", "fonts", "hook", "captions", "visuals", "extras", "watch"];
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const tc = (x) => { x = Math.max(0, x || 0); return `${Math.floor(x / 60)}:${String(Math.floor(x % 60)).padStart(2, "0")}`; };
+const norm = (w) => (w || "").toLowerCase().replace(/[^\p{L}\p{N}']+/gu, "");
+let forceVideo = false;
+let CAT = null, PROJ = [], P = null, L = null, step = 0, sub = { visuals: "yours", extras: "elements" }, poll = null, samples = {}, SET = { name: "Studio" };
+async function api(path, body) { const r = await fetch(path, body !== undefined ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {}); return r.json(); }
+function toast(m, ms = 3500) { const el = $("toast"); el.textContent = m; el.classList.add("show"); clearTimeout(el._t); if (ms) el._t = setTimeout(() => el.classList.remove("show"), ms); }
+function busy(b, msg) { $("status").className = "status" + (b ? " busy" : ""); $("status").textContent = b ? (msg || t("saving")) : t("saved"); }
+const pal = () => CAT.palettes.find((p) => p.id === L.palette) || CAT.palettes[0];
+const pair = (id) => CAT.fonts.find((f) => f.id === (id || L.fonts)) || CAT.fonts[0];
+const accent = () => L.accent || pal().accent;
+const inkFor = (hex) => { const n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255; return 0.299 * r + 0.587 * g + 0.114 * b > 120 ? "#1A0B04" : "#FFFFFF"; };
+const mix = (a, b, p) => { const x = parseInt(a.slice(1), 16), y = parseInt(b.slice(1), 16); const c = (s) => Math.round(((x >> s) & 255) * (1 - p) + ((y >> s) & 255) * p);
+  return "#" + [16, 8, 0].map((s) => c(s).toString(16).padStart(2, "0")).join(""); };
+const rgba = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
+const grad = (acc) => `linear-gradient(180deg,${mix(acc, "#FFFFFF", 0.38)} 0%,${acc} 100%)`;
+const wt = (f, w) => (f.id === "punchy" ? 400 : w);
+/* text width in a real font (so stage graphics auto-fit exactly like mograph's fontTools fit) */
+const _cv = document.createElement("canvas").getContext("2d");
+function tw(text, weight, px, family, track = 0) { _cv.font = `${weight} ${px}px "${family}"`; return _cv.measureText(text).width + text.length * track * px; }
+
+/* ============================================================ boot */
+async function boot() {
+  [CAT, SET] = await Promise.all([api("/api/catalog"), api("/api/settings")]);
+  paintName();
+  PROJ = (await api("/api/projects")).sort((a, b) => (b.mtime || 0) - (a.mtime || 0));
+  // deep links: ?p=<project>&step=hook&sub=library&lang=tl (shareable, and lets demos/screenshots open any step)
+  const q = new URLSearchParams(location.search);
+  if (q.get("lang") && I18N[q.get("lang")]) { LANG = q.get("lang"); paintName(); }
+  let want = q.get("p"); if (!want) try { want = localStorage.getItem("studioProj"); } catch (e) {}
+  if (want && PROJ.some((p) => p.name === want)) await openProject(want, false);
+  if (P && q.get("step")) { const s = q.get("step"), i = STEPS.includes(s) ? STEPS.indexOf(s) : +s; if (i >= 0 && i < STEPS.length) step = i; }
+  if (q.get("sub")) sub[STEPS[step]] = q.get("sub");
+  paintChrome(); render();
+  // every brand font, so graphics measure + draw right on first view
+  Promise.all(CAT.fonts.flatMap((f) => [document.fonts.load(`900 40px "${f.display}"`), document.fonts.load(`800 40px "${f.display}"`), document.fonts.load(`400 40px "${f.script}"`)]))
+    .then(() => { render(); lastHookKey = ""; }).catch(() => {});
+}
+async function openProject(name, go = true) {
+  busy(true, "…"); stopDemo();
+  P = await api(`/api/project/${name}`); L = await api(`/api/project/${name}/look`);
+  try { localStorage.setItem("studioProj", name); localStorage.setItem("proj", name); } catch (e) {}
+  setupPlayer(); busy(false);
+  $("chip").style.display = "flex"; $("chipImg").src = `/media/${name}/frame.jpg?t=1.5&w=120`;
+  $("chipName").textContent = prettyName(P); $("chipDur").textContent = `${tc(P.dur)} → ${tc(P.new_dur)}`;
+  if (go) { step = 1; }
+  api(`/media/${name}/hookclip`);  // start preparing the hook preview right away
+  paintChrome(); render();
+}
+const prettyName = (p) => (p.src || p.name).replace(/\.(mov|mp4|m4v)$/i, "").replace(/^([0-9A-F]{8})-.*$/, "$1");
+
+/* ---- the studio's own name (editable — it's the product name buyers see) */
+function paintName() {
+  const n = SET.name || "Studio"; $("sname").textContent = n; $("logoI").textContent = (n.trim()[0] || "S").toUpperCase();
+  document.title = n; $("sname").title = t("rename"); $("pen").title = t("rename");
+}
+$("pen").onclick = () => { const el = $("sname"); el.contentEditable = "true"; el.focus(); document.getSelection().selectAllChildren(el); };
+$("sname").onclick = () => $("pen").click();
+$("sname").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); e.target.blur(); } if (e.key === "Escape") { e.target.textContent = SET.name; e.target.blur(); } };
+$("sname").onblur = async (e) => { e.target.contentEditable = "false"; const v = e.target.textContent.trim(); if (v && v !== SET.name) { SET = await api("/api/settings", { name: v }); toast("✓ " + SET.name); } paintName(); };
+
+/* ============================================================ chrome */
+function paintChrome() {
+  document.querySelectorAll("#lang button").forEach((b) => b.classList.toggle("on", b.dataset.l === LANG));
+  $("fine").textContent = t("fine");
+  const done = new Set((L && L.done) || []);
+  $("steps").innerHTML = STEPS.map((s, i) => `<button data-i="${i}" class="${i === step ? "on" : ""} ${done.has(s) ? "done" : ""}" ${!P && i > 0 ? "disabled" : ""}>
+    ${i ? `<span class="num">${i}</span>` : ""}${esc(t("steps")[i])}${done.has(s) ? ' <span class="ck">✓</span>' : ""}</button>`).join("");
+  $("back").textContent = t("back"); $("back").disabled = step === 0;
+  $("next").textContent = step === STEPS.length - 1 ? t("finish") : `${t("next")}: ${t("steps")[step + 1]}`;
+  $("next").disabled = !P;
+  $("stepOf").textContent = t("stepOf", step + 1, STEPS.length); $("stepBar").style.width = ((step + 1) / STEPS.length * 100) + "%";
+  const playing = demo || !$("vid").paused;
+  $("play").textContent = playing ? "❚❚ " + t("pause") : "▶ " + t("play");
+  $("hint").textContent = demo ? t("hintDemo") : stillStep() && !forceVideo ? t("hintStill") : t("hint");
+  if (!$("status").textContent) busy(false);
+}
+$("lang").onclick = (e) => { const b = e.target.closest("button[data-l]"); if (!b) return; LANG = b.dataset.l; try { localStorage.setItem("studioLang", LANG); } catch (er) {} paintName(); paintChrome(); render(); };
+$("steps").onclick = (e) => { const b = e.target.closest("button[data-i]"); if (!b || b.disabled) return; go(+b.dataset.i); };
+$("back").onclick = () => go(step - 1);
+$("next").onclick = async () => { if (!P) return; await save({ done: STEPS[step] }, true); if (step === STEPS.length - 1) return doRender(false); go(step + 1); };
+function go(i) { stopDemo(); forceVideo = false; step = Math.max(0, Math.min(STEPS.length - 1, i)); $("main").scrollTop = 0; paintChrome(); render(); }
+const stillStep = () => ["hook", "colours", "fonts"].includes(STEPS[step]);
+
+let saveQ = Promise.resolve(); // saves go one after another, so quick clicks land in the order they were made
+function save(partial, quiet) {
+  if (!P) return Promise.resolve(); busy(true);
+  const run = saveQ.then(() => api(`/api/project/${P.name}/look`, partial)).then((r) => {
+    L = r; busy(false); paintChrome(); buildCaps(); if (!quiet) { render(); updatePreview(); }
+  });
+  saveQ = run.catch(() => busy(false));
+  return run;
+}
+
+/* ============================================================ sound: the render's own sfx.py sounds, via Web Audio */
+let AC = null; const BUF = {}; let live = [];
+function ac() { if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === "suspended") AC.resume(); return AC; }
+function buf(n) { if (!BUF[n]) BUF[n] = fetch(`/sfx/${n}.wav`).then((r) => r.arrayBuffer()).then((b) => ac().decodeAudioData(b)).catch(() => null); return BUF[n]; }
+async function sfxAt(list, t0, token) {
+  for (const [at, n] of list) {
+    const b = await buf(n); if (!b || !demo || demo !== token) continue;
+    const s = ac().createBufferSource(); s.buffer = b; s.connect(ac().destination);
+    s.start(Math.max(ac().currentTime, t0 + at)); live.push(s);
+  }
+}
+function stopSfx() { live.forEach((s) => { try { s.stop(); } catch (e) {} }); live = []; }
+const sfxOn = () => !L || L.extras.motion.includes("sfx");
+
+/* ============================================================ animator — mirrors mograph's GSAP moves with Web Animations */
+const EO = "cubic-bezier(.16,1,.3,1)", BACK = "cubic-bezier(.34,1.56,.64,1)", EIN = "cubic-bezier(.55,0,1,.45)";
+function runAnims(root, off = 0) {
+  const A = [];
+  const fx = (el, kf, dur, delay, ease = EO) => A.push(el.animate(kf, { duration: dur, delay, easing: ease, fill: "both" }));
+  root.querySelectorAll("[data-a],[data-out]").forEach((el) => {
+    const d0 = (off + +(el.dataset.t || 0)) * 1000, d = +(el.dataset.d || 0) * 1000, a = el.dataset.a || "";
+    if (a === "rise") { const sp = el.querySelectorAll("span"); sp.forEach((s, i) => fx(s, [{ opacity: 0, transform: "translateY(55%) scale(1.25)", filter: "blur(18px)" }, { opacity: 1, transform: "none", filter: "blur(0px)" }], 600, d0 + i * Math.min(60, 500 / sp.length)));
+      fx(el, [{ transform: "scale(1)" }, { transform: "scale(1.05)" }], 4200, d0, "linear"); }
+    else if (a === "pop") fx(el, [{ opacity: 0, transform: "scale(.6)" }, { opacity: 1, transform: "none" }], 350, d0, BACK);
+    else if (a === "big") fx(el, [{ opacity: 0, transform: "scale(.72)", filter: "blur(14px)" }, { opacity: 1, transform: "none", filter: "blur(0px)" }], 380, d0, BACK);
+    else if (a === "slam") { fx(el, [{ opacity: 0, transform: `scale(1.45) rotate(${el.dataset.r || -3}deg)` }, { opacity: 1, transform: "none" }], 320, d0, "cubic-bezier(.23,1,.32,1)");
+      A.push(el.animate([{ translate: "0px" }, { translate: "-10px" }, { translate: "8px" }, { translate: "-4px" }, { translate: "0px" }], { duration: 250, delay: d0 + 280, fill: "both" })); }
+    else if (a === "tagin") fx(el, [{ opacity: 0, transform: "translateX(-60px)", filter: "blur(14px)" }, { opacity: 1, transform: "none", filter: "blur(0px)" }], 500, d0);
+    else if (a === "type") fx(el, [{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)" }], d || 900, d0, `steps(${Math.max(8, (el.textContent || "").length)})`);
+    else if (a === "write") fx(el, [{ clipPath: "inset(-20% 100% -20% 0)" }, { clipPath: "inset(-20% 0% -20% 0)" }], d || 900, d0, "cubic-bezier(.45,0,.55,1)");
+    else if (a === "fade") fx(el, [{ opacity: 0 }, { opacity: 1 }], d || 350, d0);
+    else if (a === "dim") { fx(el, [{ opacity: 0 }, { opacity: 1 }], 160, off * 1000); A.push(el.animate([{ color: "#8C837C" }, { color: "#ffffff" }], { duration: 120, delay: d0, fill: "both" })); }
+    else if (a === "capop") fx(el, [{ opacity: 0, transform: "scale(.84)" }, { opacity: 1, transform: "none" }], 160, d0, "ease-out");
+    else if (a === "fill") fx(el, [{ width: "0%" }, { width: "100%" }], d || 4000, d0, "linear");
+    else if (a === "streak") fx(el, [{ transform: "translateX(-120%) skewX(-20deg)", opacity: 0 }, { opacity: .95, offset: .35 }, { transform: "translateX(230%) skewX(-20deg)", opacity: 0 }], d || 500, d0, "ease-in-out");
+    else if (a === "karaoke") { const acc = el.dataset.acc; el.querySelectorAll("span").forEach((s, i) =>
+      A.push(s.animate([{ color: "#fff" }, { color: acc, offset: .05 }, { color: acc, offset: .95 }, { color: "#fff" }], { duration: 330, delay: d0 + i * 330, fill: "none" }))); }
+    else if (a === "count") countUp(el, d0, d || 1200, A);
+    if (el.dataset.out) fx(el, [{ opacity: 1 }, { opacity: 0, filter: "blur(10px)" }], 300, (off + +el.dataset.out) * 1000, EIN);
+  });
+  return A;
+}
+function countUp(el, delay, dur, A) {  // like mograph's count: 0 → n, ease-out, "1,234" formatting
+  const fin = el.dataset.fin || (el.dataset.fin = el.textContent), m = fin.match(/^(\D*?)(\d[\d,]*)(.*)$/); if (!m) return;
+  const to = +m[2].replace(/,/g, ""), t0 = performance.now() + delay; el.textContent = m[1] + "0" + m[3];
+  const tick = (now) => { if (!el.isConnected || el._stop) return; const p = Math.min(1, Math.max(0, (now - t0) / dur)); el.textContent = m[1] + Math.round(to * (1 - Math.pow(1 - p, 2))).toLocaleString("en-US") + m[3]; if (p < 1) el._raf = requestAnimationFrame(tick); };
+  el._stop = false; el._raf = requestAnimationFrame(tick);
+  A.push({ cancel: () => { el._stop = true; cancelAnimationFrame(el._raf); el.textContent = fin; } });
+}
+function cancelAnims(list) { (list || []).forEach((a) => { try { a.cancel(); } catch (e) {} }); }
+const stage = (inner, extra = "") => `<div class="stage" ${extra}>${inner}</div>`;
+function fitStages(root = document) { root.querySelectorAll(".stage").forEach((s) => { const w = s.parentElement.clientWidth; if (w) s.style.transform = `scale(${w / 1080})`; }); }
+window.addEventListener("resize", () => fitStages());
+
+/* ============================================================ hooks: every variant drawn at render size (1080×1920) */
+const ICON = { user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>', eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>' };
+const isBehind = (v) => (v || "").startsWith("behind");
+function hookParts(v, text, kick) {
+  const f = pair(), acc = accent(), ink = inkFor(acc), up = (s) => (s || "").toUpperCase();
+  const st = `--acc:${acc};--accA:${rgba(acc, .75)};--g:linear-gradient(180deg,${mix(acc, "#FFFFFF", .5)} 0%,${acc} 55%,${mix(acc, "#000000", .12)} 100%);--glow:${rgba(acc, .3)};--ol:${rgba(mix(acc, "#FFFFFF", .3), .95)}`;
+  const F = (x) => `font-family:'${x}'`;
+  if (!v || v === "none") return { back: "", front: "" };
+  if (isBehind(v)) {
+    const y = v === "behind_big" ? 360 : 205, T = up(text);
+    const px = Math.min(250, 340 * 960 / Math.max(1, tw(T, wt(f, 900), 340, f.display, -.045)));
+    const spans = [...T].map((c) => `<span>${c === " " ? "&nbsp;" : esc(c)}</span>`).join("");
+    let k = "";
+    if (kick && v === "behind_big") { const kp = Math.min(96, 940 * 96 / Math.max(1, tw(up(kick), wt(f, 900), 96, f.display, -.025)));
+      k = `<div class="bk big" data-a="pop" style="top:${y - kp * 1.02}px;font-size:${kp}px;${F(f.display)};font-weight:${wt(f, 900)}">${esc(kick)}</div>`; }
+    else if (kick) { const kp = Math.min(120, 900 * 124 / Math.max(1, tw(kick, 400, 124, f.script)));
+      k = `<div class="bk" data-a="pop" data-t=".25" style="top:${y - kp * .5}px;font-size:${kp}px;${F(f.script)};z-index:2">${esc(kick)}</div>`; }
+    return { back: `<div style="${st}"><div class="bt ${v === "behind_outline" ? "o" : ""}" data-a="rise" style="top:${y}px;font-size:${px}px;${F(f.display)};font-weight:${wt(f, 900)}">${spans}</div>${k}</div>`, front: "" };
+  }
+  if (v === "lockup" || v === "lockup_tag") {
+    const w = (text || "").split(/\s+/).filter(Boolean), big = up(w.length > 1 ? w[w.length - 1] : text), rest = w.length > 1 ? w.slice(0, -1).join(" ") : "";
+    const xp = Math.max(60, Math.min(150, 150 * 860 / Math.max(1, tw(big, wt(f, 900), 150, f.display, -.045))));
+    let rows = "";
+    if (v === "lockup_tag") rows += `<div class="lk tag" data-a="big" data-t=".05" style="background:${grad(acc)};color:${ink};${F(f.display)};font-weight:${wt(f, 800)}">${esc(kick || "NEW")}</div>`;
+    else if (kick) rows += `<div class="lk sc" data-a="big" data-t=".05" style="font-size:118px;${F(f.script)}">${esc(kick)}</div>`;
+    if (rest) rows += `<div class="lk sm" data-a="dim" data-t=".05" style="${F(f.display)}">${esc(rest)}</div>`;
+    rows += `<div class="lk xl" data-a="big" data-t=".12" style="font-size:${xp}px;color:${acc};${F(f.display)};font-weight:${wt(f, 900)};filter:drop-shadow(0 0 30px ${rgba(acc, .45)})">${esc(big)}</div>`;
+    return { back: "", front: `<div class="lkw" style="top:230px;${st}">${rows}</div>` };
+  }
+  if (v === "thumb" || v === "thumb_tone") {
+    const w = up(text).split(/\s+/).filter(Boolean), mid = Math.max(1, Math.floor(w.length / 2));
+    const lines = w.length > 1 ? [w.slice(0, mid).join(" "), w.slice(mid).join(" ")] : [w.join(" ")];
+    const rows = lines.map((ln, n) => {
+      const last = n === lines.length - 1, box = v === "thumb" && last;
+      let px = n === 0 && lines.length > 1 ? 160 : 190;
+      const ww = tw(ln, wt(f, 900), px, f.display, -.045) + (box ? px * .4 : 0); px = Math.round(px * Math.min(1, 860 / Math.max(1, ww)));
+      const inner = box ? `<span class="hb" style="background:${grad(acc)};color:${ink}">${esc(ln)}</span>` : last && v === "thumb_tone" ? `<span style="color:${acc}">${esc(ln)}</span>` : esc(ln);
+      return `<div class="th-row" data-a="slam" data-r="${n % 2 ? 3 : -3}" data-t="${(.08 + n * .14).toFixed(2)}" style="font-size:${px}px;${F(f.display)};font-weight:${wt(f, 900)}">${inner}</div>`;
+    }).join("");
+    return { back: "", front: `<div class="thw" style="${st}"><div class="th-tag" data-a="pop" style="${F(f.display)}">${esc(kick || "NEW")}</div>${rows}</div>` };
+  }
+  const icon = (n) => `<div class="tg-ic" style="background:${grad(acc)};box-shadow:0 0 26px ${rgba(acc, .4)}"><svg viewBox="0 0 24 24">${ICON[n]}</svg></div>`;
+  if (v === "comment") return { back: "", front: `<div class="tgw" style="top:250px;${st}"><div class="tg cm" data-a="pop">${icon("user")}<div class="tg-tx">
+      <div class="tg-k">${esc(kick || "@viewer")}</div><div class="tg-t" style="${F(f.display)}">${esc(text)}</div>
+      <div class="tg-m" data-a="fade" data-t=".45"><span>Reply</span><b style="color:${acc}">&#9829;</b></div></div></div></div>` };
+  if (v === "counter") return { back: "", front: `<div class="tgw" style="top:250px;${st}"><div class="tg ct" data-a="tagin">${icon("eye")}<div class="tg-tx">
+      <div class="tg-k" style="color:${acc}">${esc(kick || "views in a week")}</div><div class="tg-t" data-a="count" data-t=".3" data-d="1.2" style="color:${acc};${F(f.display)};font-weight:${wt(f, 900)}">${esc(text)}</div></div></div></div>` };
+  if (v === "typing") return { back: "", front: `<div class="tgw" style="top:250px;${st}"><div class="tg np ty" data-a="tagin"><div class="tg-tx">
+      ${kick ? `<div class="tg-k" style="color:${acc}">${esc(kick)}</div>` : ""}<div class="tg-t" data-a="type" data-t=".3" data-d="${Math.min(1.4, Math.max(.5, (text || "").length * .06)).toFixed(2)}" style="${F(f.display)};font-weight:${wt(f, 900)}">${esc(text)}</div></div></div></div>` };
+  return { back: "", front: "" };
+}
+/* the sounds the render plays for each hook (sfx.py "clean" style + the scene's own cues) */
+function hookSounds(v) {
+  const ticks = Array.from({ length: 16 }, (_, k) => [.3 + k * .075, "tick"]);
+  const S = { behind: [[.02, "sw_shimmer"]], behind_big: [[.02, "sw_shimmer"]], behind_outline: [[.02, "sw_shimmer"]], lockup: [[.02, "sw_whip"]], lockup_tag: [[.02, "sw_whip"]],
+    thumb: [[.02, "sw_shimmer"]], thumb_tone: [[.02, "sw_shimmer"]], comment: [[0, "pop"]], counter: [[.02, "sw_air"], ...ticks, [1.55, "ding"]], typing: [[.02, "sw_air"], [.3, "type"]] }[v] || [];
+  return sfxOn() ? S : [];
+}
+function hookT() { const a = segs[0] ? segs[0][0] : 0; return (a + 1.2).toFixed(1); }
+const cutImg = () => `<img src="/media/${P.name}/cutout.png?t=${hookT()}&w=540" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.remove()">`;
+function hookStill(v, text, kick) { const h = hookParts(v, text, kick); return (h.back ? stage(h.back) : "") + (isBehind(v) ? cutImg() : "") + (h.front ? stage(h.front) : ""); }
+function hookTiming() { const o = (P.overlays || []).find((x) => x.id === L.hook.id); return { at: o ? o.at : .05, dur: o ? Math.min(5.6, o.dur) : 4.8 }; }
+
+/* ============================================================ demo player: click → it plays in the phone, with sound */
+let demo = null;
+const canplay = (v) => new Promise((res) => { if (v.readyState >= 3) return res(); const f = () => { v.removeEventListener("canplay", f); res(); }; v.addEventListener("canplay", f); setTimeout(res, 4000); });
+async function startDemo(o) {
+  stopDemo(); ac(); demo = o; const ph = $("phone"), dv = $("dv"), dc = $("dc"), v = $("vid");
+  if (o.capStyle) buildCaps(o.capStyle);
+  ph.classList.add("demo"); ph.classList.toggle("main", !!o.main); $("dtext").textContent = o.label || t("d_fx");
+  $("dlb").innerHTML = o.back ? stage(o.back) : ""; $("dlf").innerHTML = o.front ? stage(o.front) : ""; fitStages(ph);
+  if (o.main) { forceVideo = true; seekE(o.from || 0); v.muted = false; await canplay(v); }
+  else {
+    dv.src = o.src; dv.muted = false; dc.style.display = o.cut ? "block" : "none"; if (o.cut) { dc.src = o.cut; }
+    await Promise.all([canplay(dv), o.cut ? canplay(dc) : null]); dv.currentTime = o.from || 0; if (o.cut) dc.currentTime = o.from || 0;
+  }
+  if (demo !== o) return;
+  const zoomEls = o.main ? [v] : [dv, dc];
+  if (o.main) v.play().catch(() => {}); else { dv.play().catch(() => {}); if (o.cut) dc.play().catch(() => {}); }
+  const t0 = ac().currentTime;
+  sfxAt(o.sounds || [], t0, o);
+  o.anims = [...runAnims($("dlb"), o.off || 0), ...runAnims($("dlf"), o.off || 0)];
+  if (o.zoom) o.anims.push(...zoomEls.map((el) => el.animate(o.zoom.kf, { duration: o.zoom.dur, delay: (o.zoom.delay || 0) * 1000, easing: o.zoom.ease || EO, fill: "both" })));
+  if (o.fx) o.cleanup = o.fx(zoomEls);
+  o.timer = setTimeout(stopDemo, (o.dur || 6) * 1000);
+  dv.onended = () => { if (demo === o) stopDemo(); };
+  paintChrome();
+}
+function stopDemo() {
+  if (!demo) return; const o = demo; demo = null;
+  clearTimeout(o.timer); stopSfx(); cancelAnims(o.anims); if (o.cleanup) o.cleanup();
+  const dv = $("dv"), dc = $("dc"), v = $("vid"); dv.pause(); dc.pause(); dv.removeAttribute("src"); dc.removeAttribute("src"); dc.style.display = "none";
+  if (o.main) v.pause(); [dv, dc, v].forEach((x) => { x.style.transform = ""; x.style.filter = ""; });
+  $("phone").classList.remove("demo", "main"); $("dlb").innerHTML = ""; $("dlf").innerHTML = "";
+  document.querySelectorAll(".card.playing").forEach((c) => c.classList.remove("playing"));
+  lastHookKey = ""; updatePreview(); paintChrome();
+}
+$("dstop").onclick = (e) => { e.stopPropagation(); stopDemo(); };
+async function demoHook(v) {
+  v = v || L.hook.type; const tx = L.hook.text, kk = L.hook.kicker;
+  let hc = await api(`/media/${P.name}/hookclip`);
+  if (!hc.ready) { busy(true, t("preparing")); for (let i = 0; i < 25 && !hc.ready; i++) { await new Promise((r) => setTimeout(r, 1500)); hc = await api(`/media/${P.name}/hookclip`); } busy(false); }
+  if (!hc.ready) return toast(t("preparing"));
+  const h = hookParts(v, tx, kk), tm = hookTiming();
+  const z = L.extras.motion.includes("hookzoom") ? { kf: [{ transform: "scale(1.12)" }, { transform: "scale(1)" }], dur: 600 } : null;
+  const out = (html) => html.replace(/^<div /, `<div data-out="${tm.dur.toFixed(2)}" `);
+  startDemo({ label: t("d_hook"), src: hc.bg, cut: isBehind(v) ? hc.cut : null, back: h.back && out(h.back), front: h.front && out(h.front), off: tm.at,
+    sounds: hookSounds(v).map(([a, n]) => [a + tm.at, n]), zoom: z, dur: hc.dur || 6 });
+}
+async function demoClip(url, label, dur) { if (!url) return; startDemo({ label, src: url, dur: dur + 0.8 }); }
+function talkTime() {  // a talking-head moment (no graphic on screen) with captions, for caption / extras demos
+  const busyAt = (x) => (P.overlays || []).some((o) => x >= o.at - .3 && x < o.at + o.dur + .3);
+  const c = caps.find((c) => c.s > dur * .3 && !busyAt(c.s) && !busyAt(c.s + 4)) || caps.find((c) => !busyAt(c.s)) || caps[0];
+  return c ? Math.max(0, c.s - .15) : 0;
+}
+
+/* ============================================================ preview player (edited timeline) */
+let segs = [], segOff = [], dur = 0, caps = [], segK = 0;
+function setupPlayer() {
+  const v = $("vid");
+  segs = [...(P.hook_segs || []), ...(P.segments || [])]; segOff = []; let o = 0; segs.forEach((s) => { segOff.push(o); o += s[1] - s[0]; }); dur = o; segK = 0;
+  if (P.proxy === "ready") { v.src = `/media/${P.name}/proxy.mp4`; v.currentTime = segs[0] ? segs[0][0] : 0; }
+  else setTimeout(async () => { const q = await api(`/api/project/${P.name}`); P.proxy = q.proxy; setupPlayer(); }, 4000);
+  buildCaps();
+}
+function e2s(x) { for (let k = 0; k < segs.length; k++) if (x < segOff[k] + (segs[k][1] - segs[k][0]) || k === segs.length - 1) return segs[k][0] + Math.max(0, x - segOff[k]); return 0; }
+function s2e(x) {  // the cold open repeats a later line: prefer the segment that is playing
+  if (segs[segK] && x >= segs[segK][0] - 0.01 && x <= segs[segK][1] + 0.01) return segOff[segK] + (x - segs[segK][0]);
+  for (let k = 0; k < segs.length; k++) if (x >= segs[k][0] - 0.01 && x <= segs[k][1] + 0.01) return segOff[k] + (x - segs[k][0]); return null; }
+function seekE(x) {  // jump the player to an edited time
+  const v = $("vid"); let k = segs.findIndex((s, i) => x < segOff[i] + (s[1] - s[0])); if (k < 0) k = segs.length - 1; if (k < 0) return;
+  segK = k; v.currentTime = segs[k][0] + Math.max(0, x - segOff[k]); lastE = x; }
+let lastE = 0, lastHookKey = "", liveOn = true;
+// shrink card: the render scales the real footage into a rounded card and back (same curve + window as vedit.shrink_p /
+// shrink_mask); the page (#gv) only has the dim, ring, title and chips. Behind the card: a frosted copy of the frame (#skb).
+function shrinkP(t, c, d) {
+  const u = Math.min(1, Math.max(0, t / c.tin)), w = Math.min(1, Math.max(0, (d - t) / c.tout));
+  return Math.min(1 - (1 - u) ** 3, w < .5 ? 4 * w ** 3 : 1 - (2 - 2 * w) ** 3 / 2);
+}
+function shrinkFx(v, cv, g, t) {
+  const c = g && g.url && g.kind === "shrink" && g.card;
+  if (!c) { if (v.dataset.sk) { delete v.dataset.sk; v.style.transform = v.style.clipPath = v.style.transformOrigin = ""; cv.style.display = "none"; } return; }
+  const p = shrinkP(t, c, g.dur), k = v.clientWidth / 1080, sx = (1080 - c.w / c.s) / 2, f = (x) => (x * p * k).toFixed(2);
+  v.dataset.sk = 1; v.style.transformOrigin = "0 0";
+  v.style.transform = `translate(${f(c.x - c.s * sx)}px,${f(c.y - c.s * c.src_y)}px) scale(${1 - (1 - c.s) * p})`;
+  v.style.clipPath = `inset(${f(c.src_y)}px ${f(sx)}px ${f(1920 - c.src_y - c.h / c.s)}px ${f(sx)}px round ${f(c.r / c.s)}px)`;
+  const a = Math.max(0, Math.min(1, t / .25, (g.dur - .05 - t) / (c.tout - .05)));  // vedit: fade in .25 s, out over tout
+  const W = v.clientWidth, H = v.clientHeight;
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  if (v.readyState >= 2 && v.videoWidth) {  // object-fit: cover
+    const z = Math.max(W / v.videoWidth, H / v.videoHeight), sw = W / z, sh = H / z;
+    cv.getContext("2d").drawImage(v, (v.videoWidth - sw) / 2, (v.videoHeight - sh) / 2, sw, sh, 0, 0, W, H);
+  }
+  cv.style.filter = `blur(${(9 * a).toFixed(1)}px) brightness(${(1 - .14 * a).toFixed(3)}) saturate(${(1 - .22 * a).toFixed(3)}) contrast(${(1 - .06 * a).toFixed(3)})`;
+  cv.style.transform = `scale(${(1 + .05 * a).toFixed(3)})`; cv.style.display = "block";
+}
+const wtext = (i) => (P.fixes[i] !== undefined ? P.fixes[i] : P.words[i].w);
+const CAPLIM = { pop: [2, 14, .25], box: [2, 14, .25], highlight: [4, 24, .45], outline: [3, 18, .45], punch: [3, 18, .45], classic: [6, 30, .45], lower: [3, 20, .25], script: [2, 14, .25] };
+function buildCaps(style) {  // same grouping as vedit.caption_chunks for each style
+  if (!P) return; caps = []; let cur = null; const [maxW, maxC, gap] = CAPLIM[style || (L ? L.caption.style : "pop")] || CAPLIM.pop;
+  for (const [k, s, e] of P.words_out || []) {
+    const w = wtext(k); if (!w) continue;
+    const brk = cur && (cur.ws.length >= maxW || s - cur.e > gap || (cur.text + " " + w).length > maxC || /[.?!,]$/.test(cur.text));
+    if (!cur || brk) { cur = { s, e, ws: [[w, s, e]], text: w }; caps.push(cur); } else { cur.ws.push([w, s, e]); cur.e = e; cur.text += (w.startsWith("-") ? "" : " ") + w; }
+  }
+}
+function capHTML(c, style, f, kwSet, acc, now) {
+  const up = f.upper || style === "outline" ? "text-transform:uppercase;" : "";
+  if (style === "box") return `<span class="bx">${esc(c.text)}</span>`;
+  if (style === "lower") return esc(c.text.toLowerCase());
+  if (style === "script") return c.ws.map(([w]) => kwSet.has(norm(w)) ? `<span style="color:${acc};font-family:'${f.script}';font-weight:400;font-size:1.7em;text-transform:none">${esc(w)}</span>` : esc(w)).join(" ");
+  return c.ws.map(([w, s], i) => {
+    const k = kwSet.has(norm(w)), next = c.ws[i + 1] ? c.ws[i + 1][1] : c.e + .35;
+    if (style === "highlight") return now >= s - .02 && now < next ? `<span style="color:${acc}">${esc(w)}</span>` : esc(w);
+    if (k && style === "punch") return `<span style="color:${acc};font-family:'${f.display}';font-weight:900;font-size:1.38em;${up}">${esc(w)}</span>`;
+    return k ? `<span style="color:${acc}">${esc(w)}</span>` : esc(w);
+  }).join(" ");
+}
+function styleCap(el, H, style, size, posY, f, acc) {
+  const px = style === "classic" ? H * 0.04 : style === "punch" ? H * 0.044 : H * (size / 1920);
+  el.style.fontFamily = `"${f.display}", "Inter Tight", sans-serif`; el.style.fontWeight = f.id === "punchy" ? 400 : 800;
+  el.style.fontSize = px + "px"; el.style.letterSpacing = f.id === "punchy" ? "0.01em" : "-0.015em"; el.style.textTransform = f.upper || style === "outline" ? "uppercase" : "none";
+  el.style.top = (posY / 1920 * 100) + "%"; el.classList.toggle("ol", style === "outline");
+  el.style.setProperty("--acc", acc); el.style.setProperty("--ink2", inkFor(acc));
+}
+function updatePreview() {
+  if (!P || !L) return;
+  if (demo && !demo.main) return;
+  const v = $("vid"), H = $("phone").clientHeight, f = pair(), acc = accent();
+  const e = s2e(v.currentTime); if (e !== null) lastE = e;
+  $("time").textContent = `${tc(lastE)} / ${tc(dur)}`;
+  // hook / colours / fonts: a still of the hook moment with the real person cut-out (press Play to hear it)
+  const showHook = stillStep() && !forceVideo && !demo;
+  $("still").style.display = showHook ? "block" : "none"; v.style.visibility = showHook ? "hidden" : "visible";
+  const key = showHook ? [L.hook.type, L.hook.text, L.hook.kicker, acc, L.fonts, H].join("|") : "";
+  if (key !== lastHookKey) { lastHookKey = key; $("hookLayer").innerHTML = showHook ? hookStill(L.hook.type, L.hook.text, L.hook.kicker) : ""; fitStages($("hookLayer")); }
+  if (showHook && !$("still").src.includes(`/${P.name}/frame.jpg`)) $("still").src = `/media/${P.name}/frame.jpg?t=${hookT()}&w=540`;
+  // progress bar
+  const prog = L.extras.elements.includes("progress");
+  $("pbar").style.display = prog ? "block" : "none"; $("pfill").style.background = acc; $("pfill").style.width = (dur ? lastE / dur * 100 : 0) + "%";
+  // motion graphic currently on screen (last render) + glass blur
+  const g = !showHook && (P.overlays || []).find((o) => lastE >= o.at && lastE < o.at + o.dur);
+  const gv = $("gv"), gf = $("gf");
+  const live = g && liveOn && g.live && g.kind !== "behind" && g.kind !== "shrink";  // text-behind + shrink need the render's cut-out / mask
+  if (live) {
+    if (gf.dataset.u !== g.live) { gf.dataset.u = g.live; gf._tl = null; gf._id = g.id; gf.onload = () => { try { gf._tl = (gf.contentWindow.__timelines || {})[gf._id]; } catch (e) {} }; gf.src = g.live; }
+    gf.style.display = "block"; gf.style.transform = `scale(${H / 1920})`;
+    if (gf._tl) gf._tl.seek(Math.max(0, lastE - g.at), false);
+  } else if (gf.style.display !== "none") gf.style.display = "none";
+  if (live) { gv.style.display = "none"; if (!gv.paused) gv.pause(); }
+  else if (g && g.url) { if (gv.dataset.id !== g.id) { gv.dataset.id = g.id; gv.src = g.url; } gv.style.display = "block"; const want = lastE - g.at; if (gv.readyState >= 1 && Math.abs(gv.currentTime - want) > (v.paused ? 0.03 : 0.25)) gv.currentTime = Math.max(0, want); if (!v.paused && gv.paused) gv.play().catch(() => {}); if (v.paused && !gv.paused) gv.pause(); }
+  else { gv.style.display = "none"; if (!gv.paused) gv.pause(); }
+  if (!(demo && demo.keepFilter)) v.style.filter = g && (g.url || live) && (g.kind === "glass" || g.kind === "panel") ? "blur(9px) brightness(.72) saturate(.8)" : "";
+  shrinkFx(v, $("skb"), g, g ? lastE - g.at : 0);
+  // captions
+  const st = (demo && demo.capStyle) || L.caption.style, cap = $("cap");
+  const csize = demo && demo.capStyle && demo.capStyle !== L.caption.style ? ((CAT.captions.find((x) => x.id === st) || {}).size || L.caption.size) : L.caption.size;
+  const c = caps.find((c) => lastE >= c.s && lastE < c.e + 0.2), hide = (g && g.caption === "hide") || st === "none" || showHook || (demo && demo.hideCaps);
+  if (c && !hide) {
+    const kw = new Set((L.extras.elements.includes("keywords") ? L.keywords : []).map(norm));
+    const y = g && g.caption !== "normal" ? (g.caption === "top" ? 300 : 1380) : L.caption.y;
+    styleCap(cap, H, st, csize, y, f, acc); cap.innerHTML = capHTML(c, st, f, kw, acc, lastE);
+  } else cap.innerHTML = "";
+}
+(function loop() {
+  const v = $("vid");
+  if (P && segs.length && !v.paused) {
+    const x = v.currentTime; let k = segK;
+    if (!(segs[k] && x >= segs[k][0] - 0.3 && x < segs[k][1] + 0.3)) { k = segs.findIndex((s) => x >= s[0] - 0.02 && x < s[1]); if (k < 0) k = segs.findIndex((s) => x < s[1] - 0.015); }
+    if (k < 0) v.pause();
+    else if (x >= segs[k][1] - 0.015) { if (k + 1 < segs.length) { segK = k + 1; v.currentTime = segs[k + 1][0]; } else v.pause(); }
+    else if (x < segs[k][0] - 0.015) { segK = k; v.currentTime = segs[k][0]; }
+    else segK = k;
+  }
+  if (demo && demo.cut) { const dv = $("dv"), dc = $("dc"); if (!dv.paused && Math.abs(dc.currentTime - dv.currentTime) > .05) dc.currentTime = dv.currentTime; }
+  updatePreview(); requestAnimationFrame(loop);
+})();
+$("play").onclick = () => {
+  if (demo) return stopDemo();
+  if (P && stillStep() && !forceVideo) return demoHook();
+  const v = $("vid"); forceVideo = true; if (v.paused) { v.muted = false; v.play().catch(() => {}); } else v.pause(); setTimeout(paintChrome, 50);
+};
+$("b5").onclick = () => { stopDemo(); forceVideo = true; seekE(Math.max(0, lastE - 5)); };
+$("f5").onclick = () => { stopDemo(); forceVideo = true; seekE(Math.min(dur - 0.1, lastE + 5)); };
+$("vid").onplay = $("vid").onpause = () => paintChrome();
+
+/* ============================================================ step views */
+function header(k, h, l) { return `<div class="kick">${esc(t(k))}</div><h1>${esc(t(h))}</h1><p class="lead">${esc(t(l))}</p>`; }
+const howto = () => `<div class="howto">${t("howto").map((x, i) => `<span>${["◐", "●", "▶"][i]} <b>${esc(x.split(" — ")[0])}</b> — ${esc(x.split(" — ")[1] || "")}</span>`).join("")}</div>`;
+function card({ n, picked, img, ov, title, note, attrs = "", tag = "", video = "", play = "", foot = "" }) {
+  return `<div class="card ${picked ? "picked" : ""}" role="button" tabindex="0" ${attrs}><span class="no">${n}</span><span class="pk">${esc(t("picked"))}</span>
+    <div class="thumb">${img ? `<img src="${img}" loading="lazy" alt="">` : ""}${video}<div class="ov">${ov || ""}</div>${tag ? `<span class="tag">${esc(tag)}</span>` : ""}
+    ${play ? `<button class="pbtn" data-play="${esc(play)}">${esc(t("playcard"))}</button>` : ""}</div>
+    <h3>${esc(title)}</h3><p>${esc(note)}</p>${foot}</div>`;
+}
+const frameUrl = (tt, w = 360) => `/media/${P.name}/frame.jpg?t=${tt}&w=${w}`;
+const midT = () => { const s = segs[Math.floor(segs.length / 2)] || [P.dur / 2]; return (s[0] + 0.6).toFixed(1); };
+function render() {
+  const M = $("main");
+  const view = { start: vStart, colours: vColours, fonts: vFonts, hook: vHook, captions: vCaptions, visuals: vVisuals, extras: vExtras, watch: vWatch }[STEPS[step]];
+  M.innerHTML = view();
+  // graphics animate in from nothing, so frame 0 is blank: park each card's video on a mid-scene frame
+  M.querySelectorAll(".card video").forEach((v) => v.addEventListener("loadedmetadata", () => {
+    v.currentTime = Math.max(0, Math.min(v.duration * 0.6, v.duration - 0.25)); }, { once: true }));
+  fitStages(M); requestAnimationFrame(() => fitStages(M));
+  if (STEPS[step] === "visuals") loadSamples();
+  if (STEPS[step] === "watch" && P && P.job && P.job.state === "running") watch();
+  paintChrome();
+}
+
+/* ---- Start */
+function vStart() {
+  const cards = PROJ.map((p, i) => card({
+    n: i + 1, picked: P && P.name === p.name, img: `/media/${p.name}/frame.jpg?t=1.5&w=240`,
+    title: prettyName(p), note: `${tc(p.dur)} ${t("raw")} → ${p.new_dur ? tc(p.new_dur) + " " + t("edited") : "…"}`, attrs: `data-proj="${esc(p.name)}"`,
+  })).join("");
+  const did = P ? `<div class="box"><h4>${esc(t("did_h"))} · ${esc(prettyName(P))}</h4><div class="list">
+      <div class="li"><span class="ok">✓</span><span>${esc(t("did_cut", P.cuts.length, tc(P.dur), tc(P.new_dur)))}</span></div>
+      <div class="li"><span class="ok">✓</span><span>${esc(t("did_qc"))}</span></div>
+      <div class="li"><span class="warn">→</span><a href="/editor" target="_blank">${esc(t("did_review"))}</a></div></div></div>` : "";
+  return header("start_k", "start_h", "start_l") + did +
+    `<div class="grid"><div class="drop" id="drop"><div style="font-size:30px">⤒</div><b>${esc(t("upload_b"))}</b><span>${esc(t("upload_s"))}</span><span id="upst" class="warn"></span></div>${cards}</div>`;
+}
+/* ---- Colours */
+function vColours() {
+  const img = frameUrl(midT());
+  const ov = (hex) => `<div style="position:absolute;left:8%;right:8%;bottom:14%;padding:9px 10px;border-radius:10px;background:rgba(29,21,19,.94);border:1.5px solid ${hex}66">
+      <div style="font:800 9px var(--ui);letter-spacing:.14em;color:${hex};margin-bottom:3px">◆ STEP 1</div>
+      <div style="font:900 17px/1.05 '${pair().display}';color:#fff">Edit in <span style="color:${hex}">1 hour</span></div>
+      <div style="margin-top:7px;height:5px;border-radius:3px;background:${hex}"></div></div>
+      <div style="position:absolute;left:6%;right:6%;top:3%;height:3px;border-radius:2px;background:rgba(140,106,85,.55)"><i style="display:block;width:55%;height:100%;background:${hex}"></i></div>`;
+  const cards = CAT.palettes.map((p, i) => card({ n: i + 1, picked: L.palette === p.id && (L.accent || "").toUpperCase() === p.accent.toUpperCase(), img, ov: ov(p.accent), title: p.name, note: p.note, attrs: `data-pal="${p.id}"` })).join("");
+  const isCustom = !CAT.palettes.some((p) => p.accent.toUpperCase() === (L.accent || "").toUpperCase());
+  const custom = `<label class="card ${isCustom ? "picked" : ""}" style="cursor:pointer"><span class="no">${CAT.palettes.length + 1}</span><span class="pk">${esc(t("picked"))}</span>
+    <div class="thumb"><img src="${img}" loading="lazy" alt=""><div class="ov">${ov(isCustom ? L.accent : "#FFFFFF")}</div></div>
+    <h3>${esc(t("custom"))} <input type="color" id="custom" value="${L.accent}" style="vertical-align:middle;width:30px;height:24px;border:0;background:none"></h3><p>${esc(t("custom_n"))}</p></label>`;
+  return header("col_k", "col_h", "col_l") + `<div class="grid">${cards}${custom}</div>`;
+}
+/* ---- Fonts */
+function vFonts() {
+  const img = frameUrl(midT()), acc = accent();
+  const cards = CAT.fonts.map((f, i) => card({ n: i + 1, picked: L.fonts === f.id, img, attrs: `data-font="${f.id}"`, title: f.name, note: f.note,
+    ov: `<div style="position:absolute;left:6%;right:6%;top:16%;text-align:center;text-shadow:0 2px 10px rgba(0,0,0,.6)">
+      <div data-a="pop" style="font:400 26px/1 '${f.script}';color:#fff">film once,</div>
+      <div data-a="big" data-t=".15" style="font:${f.id === "punchy" ? 400 : 900} 30px/0.95 '${f.display}';color:${acc};letter-spacing:-.03em;${f.upper ? "text-transform:uppercase;" : ""}">post all week</div></div>
+      <div data-a="capop" data-t=".4" style="position:absolute;left:6%;right:6%;bottom:16%;text-align:center;font:${f.id === "punchy" ? 400 : 800} 20px/1.05 '${f.display}';color:#fff;${f.upper ? "text-transform:uppercase;" : ""}text-shadow:0 0 2px #000,0 3px 10px rgba(0,0,0,.7)">kahit <span style="color:${acc}">5 videos</span></div>` })).join("");
+  return header("font_k", "font_h", "font_l") + `<div class="grid">${cards}</div>`;
+}
+/* ---- Hook */
+function vHook() {
+  const img = frameUrl(hookT(), 360), v = L.hook.type;
+  const lab = v === "counter" ? ["hook_num", "hook_num_k"] : v === "comment" ? ["hook_cm", "hook_cm_k"] : ["hook_word", "hook_kick"];
+  const tip = v === "counter" && !/\d/.test(L.hook.text || "") ? `<div class="li warn" style="margin:-8px 0 14px">◆ ${esc(t("num_tip"))}</div>` : "";
+  const groups = (CAT.hook_groups || [{ id: "all", name: "" }]).map((g) => {
+    const hs = CAT.hooks.filter((h) => (h.group || "all") === g.id); if (!hs.length) return "";
+    return `<h2>${esc(g.name)} <small>${hs.length}</small></h2><div class="grid">${hs.map((h) => card({ n: CAT.hooks.indexOf(h) + 1, picked: v === h.id, img, attrs: `data-hook="${h.id}"`, title: h.name, note: h.note,
+      play: h.id === "none" ? "" : `hook:${h.id}`, ov: hookStill(h.id, L.hook.text || "WATCH THIS", L.hook.kicker) })).join("")}</div>`;
+  }).join("");
+  const line = (P.words_out || []).filter(([, s]) => s < 3.2).map(([k]) => wtext(k)).join(" ");
+  return header("hook_k", "hook_h", "hook_l") + howto() +
+    `<div class="row"><div class="field"><label>${esc(t(lab[0]))}</label><input type="text" id="hookText" value="${esc(L.hook.text)}" maxlength="40"></div>
+     <div class="field"><label>${esc(t(lab[1]))}</label><input type="text" id="hookKick" value="${esc(L.hook.kicker)}" maxlength="28"></div></div>${tip}
+     <div class="box"><h4>${esc(t("hook_line"))}</h4><div style="font:700 16px var(--disp)">“${esc(line)}…”</div></div>
+     ${groups}
+     <div class="box" style="margin-top:22px"><h4>${esc(t("tips_h"))}</h4><div class="list">${t("tips").map((x) => `<div class="li"><span class="warn">◆</span><span>${esc(x)}</span></div>`).join("")}</div></div>`;
+}
+/* ---- Captions */
+function capSample(id) {  // a caption drawn at render size, animated like the renderer (pop / karaoke / box / stroke)
+  const f = pair(), acc = accent(), ink = inkFor(acc), y = L.caption.y, c = CAT.captions.find((x) => x.id === id) || {};
+  if (id === "none") return "";
+  const px = id === "classic" ? 77 : id === "punch" ? 84 : (c.size || 104) * 1.0, fw = wt(f, 800);
+  const base = `top:${y}px;font-size:${px}px;font-family:'${f.display}';font-weight:${fw};${f.upper ? "text-transform:uppercase;" : ""}`;
+  if (id === "highlight") return `<div class="capd" data-a="karaoke" data-acc="${acc}" style="${base}">${["kahit", "limang", "videos", "pa"].map((w) => `<span>${w}</span>`).join(" ")}</div>`;
+  if (id === "box") return `<div class="capd" data-a="capop" style="${base}"><span class="bx" style="background:${acc};color:${ink}">kahit limang</span></div>`;
+  if (id === "outline") return `<div class="capd ol" data-a="capop" style="${base}">kahit <span style="color:${acc}">limang</span></div>`;
+  if (id === "punch") return `<div class="capd" data-a="capop" style="${base}">kahit limang <span style="color:${acc};font-weight:${wt(f, 900)};font-size:1.38em">videos</span></div>`;
+  if (id === "classic") return `<div class="capd" data-a="fade" style="${base}">kahit limang videos pa yan</div>`;
+  if (id === "lower") return `<div class="capd" data-a="capop" style="${base}text-transform:lowercase">kahit limang videos</div>`;
+  if (id === "script") return `<div class="capd" data-a="capop" style="${base}">kahit <span style="color:${acc};font-family:'${f.script}';font-weight:400;font-size:1.7em;text-transform:none">limang</span></div>`;
+  return `<div class="capd" data-a="capop" style="${base}">kahit <span style="color:${acc}">limang</span></div>`;
+}
+function vCaptions() {
+  const img = frameUrl(midT()), acc = accent();
+  const cards = CAT.captions.map((c, i) => card({ n: i + 1, picked: L.caption.style === c.id, img, ov: stage(capSample(c.id)), title: c.name, note: c.note, attrs: `data-cap="${c.id}"`, play: c.id === "none" ? "" : `cap:${c.id}` })).join("");
+  const pos = CAT.positions.map((p) => `<button class="${L.caption.pos === p.id ? "on" : ""}" data-pos="${p.id}" title="${esc(p.note)}">${esc(p.name)}</button>`).join("");
+  const kwAll = suggestKeywords(), on = new Set(L.keywords.map(norm));
+  const kw = kwAll.map((w) => `<button class="${on.has(norm(w)) ? "on" : ""}" data-kw="${esc(w)}" style="${on.has(norm(w)) ? `background:${acc};color:${inkFor(acc)}` : ""}">${esc(w)}</button>`).join("");
+  return header("cap_k", "cap_h", "cap_l") + howto() + `<div class="grid" style="margin-bottom:22px">${cards}</div>
+    <div class="row"><div><div class="field"><label>${esc(t("pos"))}</label></div><div class="seg" id="posSeg" style="margin:6px 0 0">${pos}</div></div>
+    <div class="field" style="max-width:280px"><label>${esc(t("size"))} · <span id="sizeV">${L.caption.size}</span></label><input type="range" id="capSize" min="60" max="130" step="2" value="${L.caption.size}"></div></div>
+    <div class="box"><h4>${esc(t("keywords"))}</h4><p class="lead" style="margin:0 0 10px;font-size:13px">${esc(t("kw_hint"))}</p><div class="kw" id="kw">${kw}</div></div>`;
+}
+function suggestKeywords() {
+  const stop = new Set("ang ng sa na ay mga kung yung so ako ka mo ko ni si and the a to of is it you i ito yan nyo pa rin lang naman dito siya natin kayo inyo".split(" "));
+  const cnt = {}; for (const [k] of P.words_out || []) { const w = wtext(k).replace(/[.,!?"]/g, ""); const n = norm(w); if (n.length < 3 || stop.has(n)) continue; cnt[w] = (cnt[w] || 0) + (/\d/.test(w) ? 3 : 1) + (/^[A-Z]/.test(w) ? 1 : 0); }
+  const top = Object.entries(cnt).sort((a, b) => b[1] - a[1]).slice(0, 24).map((x) => x[0]);
+  const have = L.keywords.filter((k) => !top.some((x) => norm(x) === norm(k)));
+  const uniq = []; for (const w of [...have, ...top]) if (!uniq.some((u) => norm(u) === norm(w))) uniq.push(w);
+  return uniq.slice(0, 32);
+}
+/* ---- Visuals */
+function vVisuals() {
+  const acc = accent(), cov = Math.round((L.visuals.coverage || 0) * 100);
+  const TYPE_NAME = Object.fromEntries([...CAT.visuals, ...CAT.hooks].map((x) => [x.id, x.name]));
+  const seg = `<div class="seg"><button data-sub="yours" class="${sub.visuals === "yours" ? "on" : ""}">${esc(t("yours"))} · ${(P.scenes || []).length}</button><button data-sub="library" class="${sub.visuals === "library" ? "on" : ""}">${esc(t("library"))}</button></div>`;
+  const dens = CAT.density.map((d) => `<button class="${L.visuals.density === d.id ? "on" : ""}" data-dens="${d.id}" title="${esc(d.note)}">${esc(d.name)}</button>`).join("");
+  const target = (CAT.density.find((d) => d.id === L.visuals.density) || CAT.density[1]).coverage * 100;
+  const meter = `<div class="box"><h4>${esc(t("density"))}</h4><div class="seg" style="margin:4px 0 8px">${dens}</div>
+    <div class="meter"><i style="width:${cov}%;background:${acc}"></i></div><div style="color:var(--mut);font-size:12.5px">${esc(t("coverage", cov))} · target ≈ ${target}%</div></div>`;
+  let body = "";
+  if (sub.visuals === "yours") {
+    const S = P.scenes || [];
+    const clear = new Set(["behind", "lockup", "thumb", "tag"]); // transparent graphics: show them over your real frame
+    body = S.length ? `<div class="grid">${S.map((s, i) => card({ n: i + 1, picked: !s.disabled, title: s.label || s.id, note: `${TYPE_NAME[s.type] || s.type} · ${s.at !== null ? tc(s.at) : ""}`,
+      attrs: `data-scene="${esc(s.id)}"`, tag: s.disabled ? t("removed") : "", play: s.disabled || s.at === null ? "" : `scene:${s.id}`,
+      ov: s.disabled ? `<div style="position:absolute;inset:0;display:grid;place-items:center;padding:14px;text-align:center;color:var(--mut);font-size:12.5px;border:1.5px dashed var(--line2);border-radius:12px">${esc(t("removed_hint"))}</div>` : "",
+      img: clear.has(s.type) && s.at !== null ? frameUrl(e2s(s.at + 0.8).toFixed(1)) : "",
+      video: s.url && !s.disabled ? `<video src="${s.url}" muted loop playsinline preload="metadata" style="background:${clear.has(s.type) ? "transparent" : "#151311"}"></video>` : "",
+      foot: `<div class="cfoot"><button data-scenetoggle="${esc(s.id)}">${esc(s.disabled ? t("restore") : t("remove"))}</button></div>` })).join("")}</div>`
+      : `<div class="empty">—</div>`;
+  } else {
+    const types = new Set(L.visuals.types || []);
+    body = `<div class="grid">${CAT.visuals.map((v, i) => card({ n: i + 1, picked: types.has(v.id), title: v.name, note: v.note, attrs: `data-vis="${v.id}"`, play: v.sample ? `sample:${v.sample}` : "",
+      video: v.sample ? `<video data-sample="${v.sample}" muted loop playsinline preload="none" style="background:#151311"></video>` : "" })).join("")}</div>`;
+  }
+  return header("vis_k", "vis_h", "vis_l") + meter + seg + howto() + body;
+}
+async function loadSamples() {
+  if (sub.visuals !== "library") return;
+  for (const v of document.querySelectorAll("video[data-sample]")) {
+    const id = v.dataset.sample;
+    const pull = async () => { const r = samples[id] && samples[id].url ? samples[id] : await api(`/gfx/sample/${id}`); samples[id] = r; if (r.url) { v.src = r.url; v.preload = "metadata"; } else setTimeout(pull, 3000); };
+    pull();
+  }
+}
+/* ---- Extras: each one drawn at render size, animated on hover, playable on your video with its sound */
+const EXDEMO = {
+  progress: { ov: (a) => `<div style="position:absolute;left:64px;right:64px;top:64px;height:8px;border-radius:4px;background:rgba(140,106,85,.55);overflow:hidden"><i data-a="fill" data-d="5" style="display:block;height:100%;width:60%;background:${a}"></i></div>` },
+  keywords: { ov: (a, f) => `<div class="capd" data-a="capop" style="top:1150px;font-size:104px;font-family:'${f.display}';font-weight:${wt(f, 800)}">in just <span style="color:${a}">1 hour</span></div>`, main: true, noLayer: true },
+  comment: { ov: (a, f) => hookParts("comment", "Paano mo na-edit to?", "@viewer").front, snd: [[0, "pop"]], t: .5 },
+  counter: { ov: (a, f) => hookParts("counter", "2,487", "views in a week").front, snd: [[.02, "sw_air"], ...Array.from({ length: 16 }, (_, k) => [.3 + k * .075, "tick"]), [1.55, "ding"]], t: .5 },
+  typing: { ov: (a, f) => hookParts("typing", "film once, post all week", "").front, snd: [[.02, "sw_air"], [.3, "type"]], t: .5 },
+  script: { ov: (a, f) => `<div data-a="write" data-d="1.1" style="position:absolute;left:0;right:0;top:330px;text-align:center;font:400 150px '${f.script}';color:#fff;text-shadow:0 4px 18px rgba(0,0,0,.5)">post all week</div>`, snd: [[0, "swish"]], t: .5 },
+  punch: { ov: (a) => `<div style="position:absolute;inset:180px 120px;border:5px dashed ${a};border-radius:30px"></div><div style="position:absolute;right:150px;top:110px;font:800 44px var(--ui);color:${a}">1.07×</div>`, punch: true },
+  hookzoom: { ov: (a) => `<div style="position:absolute;inset:80px;border:5px solid ${rgba(a, .55)};border-radius:34px"></div><div style="position:absolute;inset:240px;border:5px dashed ${a};border-radius:30px"></div>`, hz: true },
+  glass: { ov: (a, f) => `<div class="glass" data-a="big" data-t=".6" data-out="3.4"><div style="font:800 34px var(--ui);letter-spacing:.16em;color:${a}">◆ ISANG VIDEO</div><div style="font:900 92px/1 '${f.display}';margin-top:10px">Mas <span style="color:${a}">mabilis</span></div></div>`, snd: [[.6, "sw_deep"]], blur: [.6, 3.6] },
+  sfx: { ov: (a) => [0.3, 1.3, 2.3].map((x, i) => `<div class="streak" data-a="streak" data-t="${x}" style="top:${560 + i * 260}px;background:linear-gradient(90deg,transparent,${a},transparent)"></div>`).join(""), snd: [[.3, "sw_whip"], [1.3, "sw_shimmer"], [2.3, "sw_deep"]] },
+  riser: { ov: (a) => `<div style="position:absolute;left:150px;right:150px;bottom:620px;height:160px;display:flex;align-items:flex-end;gap:14px">${[16, 28, 40, 56, 76, 100, 128, 160].map((h, i) => `<i data-a="pop" data-t="${(i * .36).toFixed(2)}" style="flex:1;height:${h}px;background:${a};border-radius:6px;display:block"></i>`).join("")}</div>`, snd: [[0, "riser"], [3.0, "sw_deep"]], push: true },
+};
+function vExtras() {
+  const seg = `<div class="seg"><button data-sub="elements" class="${sub.extras === "elements" ? "on" : ""}">${esc(t("elements"))}</button><button data-sub="motion" class="${sub.extras === "motion" ? "on" : ""}">${esc(t("motion"))}</button></div>`;
+  const list = CAT.extras[sub.extras], on = new Set(L.extras[sub.extras]), img = frameUrl(midT()), acc = accent(), f = pair();
+  const cards = list.map((x, i) => card({ n: i + 1, picked: on.has(x.id), img, ov: EXDEMO[x.id] ? stage(EXDEMO[x.id].ov(acc, f)) : "", title: x.name, note: x.note,
+    tag: x.kind === "setting" ? t("onrender") : t("claude"), attrs: `data-ex="${x.id}"`, play: `ex:${x.id}` })).join("");
+  return header("ex_k", "ex_h", "ex_l") + seg + howto() + `<div class="grid">${cards}</div>`;
+}
+function demoExtra(id) {
+  const d = EXDEMO[id]; if (!d) return; const acc = accent(), f = pair(), from = talkTime(), off = d.t || 0;
+  const o = { label: `${t("d_fx")} · ${(CAT.extras.elements.concat(CAT.extras.motion).find((x) => x.id === id) || {}).name || id}`, main: true, from, dur: 5,
+    front: d.noLayer ? "" : d.ov(acc, f), off, sounds: (d.snd || []).map(([a, n]) => [a + off, n]), hideCaps: ["comment", "counter", "typing", "script", "glass"].includes(id) };
+  if (id === "progress") o.front = `<div style="position:absolute;left:64px;right:64px;top:64px;height:8px;border-radius:4px;background:rgba(140,106,85,.55);overflow:hidden"><i data-a="fill" data-d="5" style="display:block;height:100%;width:0;background:${acc}"></i></div>`;
+  if (d.punch) o.fx = ([v]) => { let k = 0; const iv = setInterval(() => { k++; v.style.transform = k % 2 ? "scale(1.07)" : ""; }, 1100); return () => clearInterval(iv); };
+  if (d.hz) o.zoom = { kf: [{ transform: "scale(1.12)" }, { transform: "scale(1)" }, { transform: "scale(1)", offset: .45 }, { transform: "scale(1.08)" }], dur: 4200 };
+  if (d.push) o.zoom = { kf: [{ transform: "scale(1)" }, { transform: "scale(1.08)" }], dur: 3000, ease: "cubic-bezier(.55,0,1,.45)" };
+  if (d.blur) { o.keepFilter = true; o.fx = ([v]) => { const a = setTimeout(() => (v.style.filter = "blur(9px) brightness(.72) saturate(.8)"), d.blur[0] * 1000), b = setTimeout(() => (v.style.filter = ""), d.blur[1] * 1000); return () => { clearTimeout(a); clearTimeout(b); }; }; }
+  if (!sfxOn() && id !== "sfx" && id !== "riser") o.sounds = [];
+  startDemo(o);
+}
+/* ---- Watch */
+function vWatch() {
+  const pv = (P.previews || []).slice().reverse(), finals = (P.outputs || []).filter((o) => /_FINAL\.mp4$/.test(o));
+  const latest = finals[0] && P.job && P.job.final ? finals[0] : pv[0] || finals[0];
+  const f = pair(), look = `<div class="box"><h4>${esc(t("look_h"))}</h4><div class="list">
+     <div class="li"><i style="width:14px;height:14px;border-radius:4px;background:${accent()};display:inline-block"></i><b>${esc(pal().name)}</b> ${esc(accent())}</div>
+     <div class="li"><b style="font-family:'${f.display}'">${esc(f.name)}</b> · <span style="font-family:'${f.script}';font-size:18px;color:var(--text)">${esc(f.script)}</span></div>
+     <div class="li"><b>${esc(t("steps")[3])}</b> ${esc((CAT.hooks.find((h) => h.id === L.hook.type) || {}).name || "")} · “${esc(L.hook.text)}”</div>
+     <div class="li"><b>${esc(t("steps")[4])}</b> ${esc((CAT.captions.find((c) => c.id === L.caption.style) || {}).name || "")} · ${esc((CAT.positions.find((p) => p.id === L.caption.pos) || {}).name || "")}</div>
+     <div class="li"><b>${esc(t("steps")[6])}</b> ${esc([...L.extras.elements, ...L.extras.motion].join(" · "))}</div>
+     <div class="li warn">${esc(t("rebuild"))}</div></div></div>`;
+  const job = P.job || {}, running = job.state === "running";
+  const versions = pv.length || finals.length ? `<div class="seg" id="vers" style="flex-wrap:wrap">${[...finals, ...pv].map((o) => `<button data-out="${esc(o)}" class="${o === latest ? "on" : ""}">${esc(o.replace(P.name + "_", "").replace(".mp4", ""))}</button>`).join("")}</div>` : "";
+  return header("w_k", "w_h", "w_l") + `<div class="two">
+    <div><div class="player">${latest ? `<video id="outv" src="/out/${esc(latest)}" controls playsinline></video>` : `<div class="empty" style="height:100%;display:grid;place-items:center">${esc(t("none_yet"))}</div>`}</div>
+      <div style="margin-top:12px">${versions}</div></div>
+    <div><div class="row" style="margin-top:0">
+        <button class="bigbtn" id="rPrev" ${running ? "disabled" : ""}>${esc(t("r_prev"))}<div style="font:600 12px var(--ui);opacity:.75">${esc(t("r_prev_s"))}</div></button>
+        <button class="bigbtn sec" id="rFinal" ${running ? "disabled" : ""}>${esc(t("r_final"))}<div style="font:600 12px var(--ui);opacity:.75">${esc(t("r_final_s"))}</div></button></div>
+      <div class="box" id="logBox" style="${running || job.log ? "" : "display:none"}"><h4>${esc(running ? t("rendering") : "Log")}</h4><div class="log" id="log">${esc(job.log || "")}</div></div>
+      ${latest ? `<div class="row"><a class="tlink" href="/out/${esc(latest)}" download>${esc(t("dl_mp4"))}</a>${finals[0] ? `<a class="tlink" href="/out/${esc(P.name)}.srt" download>${esc(t("dl_srt"))}</a>` : ""}</div>` : ""}
+      ${look}
+      <div class="box"><h4>${esc(t("fixcuts"))}</h4><p class="lead" style="font-size:13px;margin:0 0 10px">${esc(t("fixcuts_s"))}</p><a class="tlink" href="/editor" target="_blank">${esc(t("fine"))}</a></div>
+    </div></div>`;
+}
+async function doRender(final) {
+  if (!P) return; stopDemo(); go(STEPS.indexOf("watch"));
+  await api(`/api/project/${P.name}/render`, { final }); P.job = { state: "running", log: "", final }; render(); watch();
+}
+function watch() {
+  clearInterval(poll); busy(true, t("rendering"));
+  poll = setInterval(async () => {
+    const q = await api(`/api/project/${P.name}`); const j = q.job || {};
+    const lg = $("log"); if (lg) { lg.textContent = (j.log || "…").trim(); lg.scrollTop = 1e9; $("logBox").style.display = ""; }
+    if (j.state !== "running") { clearInterval(poll); busy(false); P = q; L = await api(`/api/project/${P.name}/look`); setupPlayer(); if (STEPS[step] === "watch") render(); toast(j.state === "done" ? `✓ ${j.output || ""}` : "Render failed — see log", 5000); }
+  }, 2500);
+}
+
+/* ============================================================ play a card (with sound) */
+async function playCard(spec, cardEl) {
+  if (!P) return; ac(); const [kind, id] = spec.split(/:(.*)/s);
+  document.querySelectorAll(".card.playing").forEach((c) => c.classList.remove("playing"));
+  if (kind === "hook") await demoHook(id);
+  else if (kind === "cap") { startDemo({ label: `${t("d_cap")} · ${(CAT.captions.find((c) => c.id === id) || {}).name || id}`, main: true, from: talkTime(), dur: 6, capStyle: id, cleanup: () => buildCaps() }); }
+  else if (kind === "ex") demoExtra(id);
+  else if (kind === "scene") {
+    const s = (P.scenes || []).find((x) => x.id === id); if (!s || s.at === null) return;
+    const r = await api(`/api/project/${P.name}/clip?at=${s.at}&dur=${s.dur || 4}`);
+    if (r.url) demoClip(r.url, `${t("d_render")} · ${s.label || s.id}`, (s.dur || 4)); else { toast(t("no_render")); startDemo({ label: s.label, main: true, from: Math.max(0, s.at - .3), dur: (s.dur || 4) + .6 }); }
+  } else if (kind === "sample") {
+    const r = await api(`/gfx/sampleclip/${id}`); if (r.url) demoClip(r.url, t("d_sample"), 8); else toast(t("no_render"));
+  }
+  if (cardEl && demo) cardEl.classList.add("playing");
+}
+
+/* ============================================================ events */
+$("main").addEventListener("click", async (e) => {
+  const pb = e.target.closest("[data-play]");
+  if (pb) { e.stopPropagation(); return playCard(pb.dataset.play, pb.closest(".card")); }
+  const tg = e.target.closest("[data-scenetoggle]");
+  if (tg) {
+    const s = P.scenes.find((x) => x.id === tg.dataset.scenetoggle); busy(true); stopDemo();
+    const r = await api(`/api/project/${P.name}/review`, { kind: "scene", key: s.id, state: s.disabled ? "open" : "rejected" });
+    P = r; L = await api(`/api/project/${P.name}/look`); busy(false); render(); return;
+  }
+  const el = e.target.closest("[data-proj],[data-pal],[data-font],[data-hook],[data-cap],[data-pos],[data-kw],[data-sub],[data-dens],[data-vis],[data-ex],[data-scene],[data-out],#rPrev,#rFinal,#drop");
+  if (!el) return;
+  const d = el.dataset;
+  if (el.id === "drop") return $("file").click();
+  if (el.id === "rPrev") return doRender(false);
+  if (el.id === "rFinal") return doRender(true);
+  if (d.proj) return openProject(d.proj, true);
+  if (d.pal) { ac(); const p = CAT.palettes.find((x) => x.id === d.pal); await save({ palette: p.id, accent: p.accent }); return demoHook(); }
+  if (d.font) { ac(); await save({ fonts: d.font }); return demoHook(); }
+  if (d.hook) { ac(); await save({ hook: { type: d.hook, text: $("hookText").value, kicker: $("hookKick").value } }); if (d.hook !== "none") { const c = document.querySelector(`[data-hook="${d.hook}"]`); await demoHook(d.hook); if (c && demo) c.classList.add("playing"); } else stopDemo(); return; }
+  if (d.cap) { ac(); await save({ caption: { style: d.cap, size: (CAT.captions.find((c) => c.id === d.cap) || {}).size || L.caption.size } }); buildCaps(); if (d.cap !== "none") playCard(`cap:${d.cap}`, document.querySelector(`[data-cap="${d.cap}"]`)); return; }
+  if (d.pos) { await save({ caption: { pos: d.pos } }); return playCard(`cap:${L.caption.style}`); }
+  if (d.kw) { const on = L.keywords.some((k) => norm(k) === norm(d.kw)); return save({ keywords: on ? L.keywords.filter((k) => norm(k) !== norm(d.kw)) : [...L.keywords, d.kw] }); }
+  if (d.sub) { stopDemo(); sub[STEPS[step]] = d.sub; return render(); }
+  if (d.dens) return save({ visuals: { density: d.dens, types: L.visuals.types } });
+  if (d.vis) { ac(); const ty = new Set(L.visuals.types || []), adding = !ty.has(d.vis); adding ? ty.add(d.vis) : ty.delete(d.vis); await save({ visuals: { density: L.visuals.density, types: [...ty] } });
+    const v = CAT.visuals.find((x) => x.id === d.vis); if (adding && v && v.sample) playCard(`sample:${v.sample}`, document.querySelector(`[data-vis="${d.vis}"]`)); return; }
+  if (d.ex) { ac(); const kind = sub.extras, cur = new Set(L.extras[kind]), adding = !cur.has(d.ex); adding ? cur.add(d.ex) : cur.delete(d.ex); await save({ extras: { ...L.extras, [kind]: [...cur] } });
+    if (adding) playCard(`ex:${d.ex}`, document.querySelector(`[data-ex="${d.ex}"]`)); else stopDemo(); return; }
+  if (d.scene) return playCard(`scene:${d.scene}`, el);
+  if (d.out) { const v = $("outv"); if (v) v.src = `/out/${d.out}`; document.querySelectorAll("#vers button").forEach((b) => b.classList.toggle("on", b === el)); }
+});
+$("main").addEventListener("keydown", (e) => { if ((e.key === "Enter" || e.key === " ") && e.target.classList && e.target.classList.contains("card")) { e.preventDefault(); e.target.click(); } });
+$("main").addEventListener("input", (e) => {
+  if (e.target.id === "custom") { clearTimeout(e.target._t); const v = e.target.value; e.target._t = setTimeout(() => save({ palette: "custom", accent: v.toUpperCase() }), 250); }
+  if (e.target.id === "capSize") { $("sizeV").textContent = e.target.value; L.caption.size = +e.target.value; clearTimeout(e.target._t); e.target._t = setTimeout(() => save({ caption: { size: +e.target.value } }, true), 300); }
+  if (e.target.id === "hookText" || e.target.id === "hookKick") {
+    L.hook.text = $("hookText").value; L.hook.kicker = $("hookKick").value;
+    document.querySelectorAll("[data-hook]").forEach((c) => { const ov = c.querySelector(".ov"); if (ov) { ov.innerHTML = hookStill(c.dataset.hook, L.hook.text || "WATCH THIS", L.hook.kicker); fitStages(ov); } });
+    clearTimeout(e.target._t); e.target._t = setTimeout(() => save({ hook: { type: L.hook.type, text: L.hook.text, kicker: L.hook.kicker } }, true), 500);
+  }
+});
+/* hover: the card's graphic plays silently (fix: the overlay used to sit on top of the video and swallow the hover) */
+let hoverCard = null;
+function cardHover(c, on) {
+  const v = c.querySelector(".thumb video"); if (v) { if (on && v.src) v.play().catch(() => {}); else v.pause(); }
+  const ov = c.querySelector(".ov"); if (!ov) return;
+  cancelAnims(ov._anims); ov._anims = on ? runAnims(ov) : null;
+}
+$("main").addEventListener("mouseover", (e) => { const c = e.target.closest(".card"); if (c === hoverCard) return; if (hoverCard) cardHover(hoverCard, false); hoverCard = c; if (c) cardHover(c, true); });
+$("main").addEventListener("mouseleave", () => { if (hoverCard) cardHover(hoverCard, false); hoverCard = null; });
+/* uploads */
+function sendFile(file) {
+  const st = $("upst"); const xhr = new XMLHttpRequest();
+  xhr.open("POST", `/api/upload?name=${encodeURIComponent(file.name)}`);
+  xhr.upload.onprogress = (ev) => { if (st) st.textContent = `${t("uploading")} ${Math.round(ev.loaded / ev.total * 100)}%`; };
+  xhr.onload = () => { const r = JSON.parse(xhr.responseText); if ($("upst")) $("upst").textContent = t("transcribing"); waitImport(r.name); };
+  xhr.send(file);
+}
+function waitImport(name) {
+  const tick = setInterval(async () => { const im = await api("/api/imports"); const j = im[name]; if (!j || j.state === "running") return; clearInterval(tick);
+    if (j.state === "done") { PROJ = (await api("/api/projects")).sort((a, b) => (b.mtime || 0) - (a.mtime || 0)); toast(`✓ ${name} — ${t("ready")}`); render(); } else toast("Import failed:\n" + j.log, 0); }, 4000);
+}
+$("file").onchange = (e) => { const f = e.target.files[0]; if (f) sendFile(f); e.target.value = ""; };
+document.addEventListener("dragover", (e) => { const d = e.target.closest && e.target.closest("#drop"); if (d) { e.preventDefault(); d.classList.add("hover"); } });
+document.addEventListener("dragleave", (e) => { const d = e.target.closest && e.target.closest("#drop"); if (d) d.classList.remove("hover"); });
+document.addEventListener("drop", (e) => { const d = e.target.closest && e.target.closest("#drop"); if (!d) return; e.preventDefault(); d.classList.remove("hover"); const f = e.dataTransfer.files[0]; if (f) sendFile(f); });
+document.addEventListener("keydown", (e) => { if (e.target.tagName === "INPUT" || e.target.isContentEditable) return; if (e.key === " " && !(e.target.classList && e.target.classList.contains("card"))) { e.preventDefault(); $("play").click(); } if (e.key === "Escape") stopDemo(); if (e.key === "ArrowRight" && e.metaKey) $("next").click(); if (e.key === "ArrowLeft" && e.metaKey) $("back").click(); });
+window.addEventListener("DOMContentLoaded", boot);
+</script>
+<script src="/studio_pro.js"></script>
+</body>
+</html>

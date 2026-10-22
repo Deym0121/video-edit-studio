@@ -1,0 +1,167 @@
+1
+00:00:00,000 --> 00:00:05,400
+Meet Video Edit Studio: your own AI video editor, on your Mac.
+
+2
+00:00:05,500 --> 00:00:11,950
+Claude cuts the retakes, writes the captions and adds motion graphics. You pick the look.
+
+3
+00:00:12,050 --> 00:00:17,400
+And this is the Studio, where every choice plays on your own video.
+
+4
+00:00:17,500 --> 00:00:23,380
+You need a Mac with Apple Silicon, and the Claude app.
+
+5
+00:00:23,480 --> 00:00:27,160
+Open your browser, and go to github.com.
+
+6
+00:00:27,260 --> 00:00:33,590
+Search for video edit studio, and open the repository.
+
+7
+00:00:33,690 --> 00:00:39,540
+Click the green Code button, then Download ZIP.
+
+8
+00:00:39,640 --> 00:00:44,160
+Open the download. It unzips into a folder.
+
+9
+00:00:44,260 --> 00:00:47,850
+Drag the folder onto your Desktop.
+
+10
+00:00:47,950 --> 00:00:53,080
+Using git? Clone it into your Desktop folder instead.
+
+11
+00:00:53,180 --> 00:00:58,500
+Open the Claude app, and go to the Code tab.
+
+12
+00:00:58,600 --> 00:01:03,060
+Choose the folder on your Desktop.
+
+13
+00:01:03,160 --> 00:01:07,730
+Then type: install this, and send it.
+
+14
+00:01:07,830 --> 00:01:11,900
+Claude asks before it runs anything. Click Allow.
+
+15
+00:01:12,000 --> 00:01:19,420
+The first install takes ten to twenty minutes. Then Claude checks everything, and starts the Studio.
+
+16
+00:01:19,520 --> 00:01:24,560
+Prefer Terminal? These three commands do the same.
+
+17
+00:01:24,660 --> 00:01:28,860
+Click the link, and your Studio opens in the browser.
+
+18
+00:01:28,960 --> 00:01:35,230
+Click the name at the top to make it your own brand.
+
+19
+00:01:35,330 --> 00:01:38,500
+Drag your video onto Upload a video.
+
+20
+00:01:38,600 --> 00:01:44,760
+It transcribes it, and removes the retakes, repeats and dead air by itself.
+
+21
+00:01:44,860 --> 00:01:50,030
+iPhone HDR is turned into natural colour, too.
+
+22
+00:01:50,130 --> 00:01:57,400
+Now tell Claude what you want. Tap where you'll post it, the vibe, the captions and the graphics.
+
+23
+00:01:57,500 --> 00:02:05,480
+Then say it in your own words, like: yellow keywords, big captions at the bottom, fast cuts.
+
+24
+00:02:05,580 --> 00:02:10,550
+Click Build my look. Every change shows up, with the reason why.
+
+25
+00:02:10,650 --> 00:02:19,460
+Or learn a style from videos you like. Drag in a creator's video, and the Studio studies its captions, colours and pacing.
+
+26
+00:02:19,560 --> 00:02:26,830
+Mix and match: take each part from the video you like best, then click Make it my style.
+
+27
+00:02:26,930 --> 00:02:34,970
+Only the style is kept. The video is deleted once it's studied, and none of it goes in your edit.
+
+28
+00:02:35,070 --> 00:02:42,490
+Have Claude Code? Click Auto-edit, and Claude edits the whole video the way you asked.
+
+29
+00:02:42,590 --> 00:02:49,470
+Fine-tune anything in the steps: your colours, and your fonts.
+
+30
+00:02:49,570 --> 00:02:55,720
+In Hook, Hook Lab finds your strongest line. Click Use as cold open.
+
+31
+00:02:55,820 --> 00:03:02,390
+Pick a caption style. Safe zones shows what TikTok and Reels will cover.
+
+32
+00:03:02,490 --> 00:03:12,080
+Then in Visuals, open 2026 trends: 44 motion graphics, like this new before and after wipe.
+
+33
+00:03:12,180 --> 00:03:18,830
+Tick the ones you like, and Claude places them on the right lines.
+
+34
+00:03:18,930 --> 00:03:22,500
+Next, Watch. Click Render preview.
+
+35
+00:03:22,600 --> 00:03:29,280
+Run Edit Health. It finds repeated words, dead air and colour problems.
+
+36
+00:03:29,380 --> 00:03:33,580
+Each item has a fix. One click, and it's done.
+
+37
+00:03:33,680 --> 00:03:39,460
+To change anything, pause there and leave a note, like: cut the dead air.
+
+38
+00:03:39,560 --> 00:03:45,440
+Then click Apply notes with Claude, and Claude fixes them all.
+
+39
+00:03:45,540 --> 00:03:49,410
+When it looks right, export the final 1080p.
+
+40
+00:03:49,510 --> 00:03:57,160
+Build the Post Kit: vertical, square and wide videos, captions and a cover, ready to post.
+
+41
+00:03:57,260 --> 00:04:02,610
+And save your look as a Brand Kit, to use on every video.
+
+42
+00:04:02,710 --> 00:04:07,522
+That's it! Grab it on GitHub, and happy editing.

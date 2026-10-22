@@ -1,0 +1,167 @@
+1
+00:00:00,000 --> 00:00:05,400
+Ito ang Video Edit Studio: sarili mong AI video editor, sa Mac mo.
+
+2
+00:00:05,500 --> 00:00:11,950
+Si Claude ang nagtatanggal ng retakes, gumagawa ng captions at naglalagay ng motion graphics. Ikaw ang pipili ng look.
+
+3
+00:00:12,050 --> 00:00:17,400
+At ito ang Studio, kung saan makikita mo agad ang bawat pili sa sarili mong video.
+
+4
+00:00:17,500 --> 00:00:23,380
+Kailangan mo ng Mac na Apple Silicon, at ng Claude app.
+
+5
+00:00:23,480 --> 00:00:27,160
+Buksan ang browser, at pumunta sa github.com.
+
+6
+00:00:27,260 --> 00:00:33,590
+I-search ang video edit studio, at buksan ang repository.
+
+7
+00:00:33,690 --> 00:00:39,540
+I-click ang berdeng Code button, tapos Download ZIP.
+
+8
+00:00:39,640 --> 00:00:44,160
+Buksan ang download. Magiging folder ito.
+
+9
+00:00:44,260 --> 00:00:47,850
+I-drag ang folder papunta sa Desktop.
+
+10
+00:00:47,950 --> 00:00:53,080
+Gumagamit ng git? I-clone na lang ito sa Desktop folder.
+
+11
+00:00:53,180 --> 00:00:58,500
+Buksan ang Claude app, at pumunta sa Code tab.
+
+12
+00:00:58,600 --> 00:01:03,060
+Piliin ang folder sa Desktop.
+
+13
+00:01:03,160 --> 00:01:07,730
+Tapos i-type: install this, at i-send.
+
+14
+00:01:07,830 --> 00:01:11,900
+Nagtatanong muna si Claude bago mag-run ng kahit ano. I-click ang Allow.
+
+15
+00:01:12,000 --> 00:01:19,420
+Mga sampu hanggang dalawampung minuto ang unang install. Tapos iche-check ni Claude ang lahat, at bubuksan ang Studio.
+
+16
+00:01:19,520 --> 00:01:24,560
+Mas gusto mo ang Terminal? Pareho lang ang ginagawa ng tatlong command na ito.
+
+17
+00:01:24,660 --> 00:01:28,860
+I-click ang link, at bubukas ang Studio sa browser.
+
+18
+00:01:28,960 --> 00:01:35,230
+I-click ang pangalan sa itaas para gawing sarili mong brand.
+
+19
+00:01:35,330 --> 00:01:38,500
+I-drag ang video mo sa Upload a video.
+
+20
+00:01:38,600 --> 00:01:44,760
+Kusa nitong ita-transcribe, at tatanggalin ang retakes, ulit at dead air.
+
+21
+00:01:44,860 --> 00:01:50,030
+Ginagawa ring natural na kulay ang iPhone HDR.
+
+22
+00:01:50,130 --> 00:01:57,400
+Ngayon, sabihin kay Claude ang gusto mo. I-tap kung saan mo ipo-post, ang vibe, ang captions at ang graphics.
+
+23
+00:01:57,500 --> 00:02:05,480
+Tapos sabihin sa sarili mong salita, gaya ng: dilaw ang keywords, malaking captions sa baba, mabilis ang cuts.
+
+24
+00:02:05,580 --> 00:02:10,550
+I-click ang Build my look. Lalabas ang bawat pagbabago, kasama ang dahilan.
+
+25
+00:02:10,650 --> 00:02:19,460
+O gayahin ang style ng videos na gusto mo. I-drag ang video ng isang creator, at pag-aaralan ng Studio ang captions, kulay at bilis nito.
+
+26
+00:02:19,560 --> 00:02:26,830
+Mix and match: kunin ang bawat bahagi sa video na pinakagusto mo, tapos i-click ang Make it my style.
+
+27
+00:02:26,930 --> 00:02:34,970
+Style lang ang itinatabi. Dine-delete ang video pagkatapos pag-aralan, at walang bahagi nito na mapupunta sa edit mo.
+
+28
+00:02:35,070 --> 00:02:42,490
+May Claude Code ka? I-click ang Auto-edit, at ie-edit ni Claude ang buong video ayon sa gusto mo.
+
+29
+00:02:42,590 --> 00:02:49,470
+Puwede mo pang ayusin ang bawat step: ang kulay, at ang fonts.
+
+30
+00:02:49,570 --> 00:02:55,720
+Sa Hook, hinahanap ng Hook Lab ang pinakamalakas mong linya. I-click ang Use as cold open.
+
+31
+00:02:55,820 --> 00:03:02,390
+Pumili ng caption style. Ipinapakita ng Safe zones kung ano ang matatakpan ng TikTok at Reels.
+
+32
+00:03:02,490 --> 00:03:12,080
+Tapos sa Visuals, buksan ang 2026 trends: 44 na motion graphics, gaya nitong bagong before and after wipe.
+
+33
+00:03:12,180 --> 00:03:18,830
+I-tick ang gusto mo, at si Claude ang maglalagay sa tamang linya.
+
+34
+00:03:18,930 --> 00:03:22,500
+Sunod, Watch. I-click ang Render preview.
+
+35
+00:03:22,600 --> 00:03:29,280
+I-run ang Edit Health. Hinahanap nito ang dobleng salita, dead air at problema sa kulay.
+
+36
+00:03:29,380 --> 00:03:33,580
+May fix ang bawat isa. Isang click lang, ayos na.
+
+37
+00:03:33,680 --> 00:03:39,460
+Para may baguhin, i-pause doon at mag-iwan ng note, gaya ng: cut the dead air.
+
+38
+00:03:39,560 --> 00:03:45,440
+Tapos i-click ang Apply notes with Claude, at aayusin ni Claude lahat.
+
+39
+00:03:45,540 --> 00:03:49,410
+Kapag ayos na, i-export ang final 1080p.
+
+40
+00:03:49,510 --> 00:03:57,160
+Gawin ang Post Kit: vertical, square at wide na video, captions at cover, handa nang i-post.
+
+41
+00:03:57,260 --> 00:04:02,610
+At i-save ang look mo bilang Brand Kit, para magamit sa bawat video.
+
+42
+00:04:02,710 --> 00:04:07,522
+Ayan na! Kunin ito sa GitHub, at happy editing.

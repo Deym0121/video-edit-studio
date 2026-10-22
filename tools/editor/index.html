@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fine-tune</title>
+<style>
+  @font-face{font-family:"Inter Tight";font-weight:600;src:url("/fonts/InterTight-wght-600.ttf")}
+  @font-face{font-family:"Inter Tight";font-weight:800;src:url("/fonts/InterTight-wght-800.ttf")}
+  @font-face{font-family:"Inter Tight";font-weight:900;src:url("/fonts/InterTight-wght-900.ttf")}
+  :root{
+    --bg:#121110;--panel:#191716;--panel2:#211E1C;--panel3:#2A2623;--line:#2F2A27;--line2:#3B3531;
+    --text:#F2EDE8;--mut:#9A918A;--dim:#6E6660;--o:#FF6A00;--o2:#FF9A4D;--osoft:rgba(255,106,0,.12);
+    --ok:#3FBF7F;--oksoft:rgba(63,191,127,.13);--bad:#FF5A4E;--badsoft:rgba(255,90,78,.13);--warn:#F2B544;
+    --r:12px;--ui:-apple-system,BlinkMacSystemFont,"Inter",system-ui,sans-serif;--disp:"Inter Tight",var(--ui)}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:13px/1.45 var(--ui);overflow:hidden;-webkit-font-smoothing:antialiased}
+  button,select{font:inherit;color:var(--text);background:var(--panel2);border:1px solid var(--line2);border-radius:9px;padding:7px 12px;cursor:pointer;white-space:nowrap;transition:border-color .15s,background .15s}
+  button:hover:not(:disabled){border-color:var(--o)}
+  button:disabled{opacity:.38;cursor:default}
+  button.primary{background:var(--o);border-color:var(--o);color:#1A0B04;font-weight:800}
+  button.primary:hover:not(:disabled){background:var(--o2);border-color:var(--o2)}
+  button.ghost{background:transparent;border-color:transparent;color:var(--mut)}
+  button.ghost:hover:not(:disabled){color:var(--text);border-color:var(--line2)}
+  button.sm{padding:4px 9px;font-size:12px;border-radius:8px}
+  button.ok{border-color:rgba(63,191,127,.45);color:#8FE3B8}
+  button.ok.on{background:var(--ok);border-color:var(--ok);color:#06140D;font-weight:800}
+  button.no{border-color:rgba(255,90,78,.4);color:#FF9C94}
+  .app{display:grid;grid-template-rows:56px 1fr auto;height:100vh}
+  /* top */
+  .top{display:flex;align-items:center;gap:10px;padding:0 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+  .logo{display:flex;align-items:center;gap:9px;font:900 15px var(--disp);letter-spacing:-.01em;margin-right:4px}
+  .logo i{width:26px;height:26px;border-radius:8px;background:var(--o);display:grid;place-items:center;color:#1A0B04;font-style:normal;font-size:13px}
+  .logo span{color:var(--mut);font-weight:600}
+  #proj{max-width:300px;background:var(--panel2);font-weight:600}
+  .prog{display:flex;align-items:center;gap:10px;margin-left:6px;min-width:210px}
+  .prog .bar{flex:1;height:6px;border-radius:3px;background:var(--panel3);overflow:hidden}
+  .prog .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--o2),var(--o));transition:width .3s}
+  .prog .lbl{font:600 12px var(--ui);color:var(--mut);white-space:nowrap}
+  .prog .lbl b{color:var(--text)}
+  .grow{flex:1}
+  .status{color:var(--mut);font-size:12px;display:flex;align-items:center;gap:6px}
+  .status:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ok)}
+  .status.busy:before{background:var(--warn);animation:pulse 1s infinite}
+  @keyframes pulse{50%{opacity:.3}}
+  /* main grid */
+  .mid{display:grid;grid-template-columns:370px 1fr 360px;min-height:0}
+  .panel{display:flex;flex-direction:column;min-height:0;background:var(--panel);border-right:1px solid var(--line)}
+  .panel.r{border-right:0;border-left:1px solid var(--line)}
+  .phd{padding:14px 16px 10px;display:flex;align-items:center;gap:8px}
+  .phd h2{margin:0;font:800 15px var(--disp);letter-spacing:-.01em}
+  .phd .sub{color:var(--mut);font-size:12px}
+  .seg{display:flex;gap:4px;margin:0 12px 10px;padding:4px;background:var(--panel2);border-radius:11px}
+  .seg button{flex:1;border:0;background:transparent;color:var(--mut);padding:7px 4px;border-radius:8px;font-weight:600;font-size:12.5px}
+  .seg button.on{background:var(--panel3);color:var(--text);box-shadow:0 1px 0 rgba(255,255,255,.05)}
+  .seg .n{display:inline-block;min-width:17px;margin-left:5px;padding:0 5px;border-radius:9px;background:var(--line);font-size:10.5px;color:var(--mut)}
+  .seg .n.hot{background:var(--o);color:#1A0B04}
+  .list{flex:1;overflow:auto;padding:4px 12px 16px}
+  .toolrow{display:flex;gap:6px;align-items:center;margin:0 0 10px}
+  .card{position:relative;border:1px solid var(--line);background:var(--panel2);border-radius:var(--r);padding:11px 12px 11px 14px;margin-bottom:9px}
+  .card:before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:2px;background:var(--line2)}
+  .card.approved:before{background:var(--ok)}
+  .card.rejected:before,.card.restored:before{background:var(--bad)}
+  .card.approved{opacity:.62}
+  .card.focus{border-color:var(--o)}
+  .card .meta{display:flex;align-items:center;gap:7px;color:var(--mut);font-size:11.5px;margin-bottom:6px}
+  .chip{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:7px;font:700 10.5px var(--ui);letter-spacing:.04em;text-transform:uppercase;background:var(--panel3);color:var(--mut)}
+  .chip.o{background:var(--osoft);color:var(--o2)}
+  .chip.ok{background:var(--oksoft);color:#8FE3B8}
+  .chip.bad{background:var(--badsoft);color:#FF9C94}
+  .chip.warn{background:rgba(242,181,68,.13);color:#F5CB78}
+  .tc{font:600 11.5px ui-monospace,Menlo,monospace;color:var(--text);cursor:pointer}
+  .tc:hover{color:var(--o2)}
+  .card .why{font-size:12.5px;color:var(--text);margin-bottom:6px}
+  .card .rm{font-size:13px;line-height:1.5;color:#C9A9A2;text-decoration:line-through;text-decoration-color:rgba(255,90,78,.7);margin-bottom:9px;max-height:4.5em;overflow:hidden}
+  .card .det{font-size:12px;color:var(--mut);margin-bottom:9px}
+  .card .acts{display:flex;gap:6px;flex-wrap:wrap}
+  .scard{display:grid;grid-template-columns:62px 1fr;gap:11px}
+  .sthumb{width:62px;height:110px;border-radius:9px;background:#0B0A09;overflow:hidden;border:1px solid var(--line2);position:relative}
+  .sthumb video{width:100%;height:100%;object-fit:cover;display:block}
+  .sthumb .ph{position:absolute;inset:0;display:grid;place-items:center;color:var(--dim);font-size:10px;text-align:center;padding:4px}
+  .scard .lbl{font:800 13.5px var(--disp);letter-spacing:-.01em;margin-bottom:4px;line-height:1.25}
+  .scard .src{font-size:11.5px;color:var(--mut);margin-bottom:8px}
+  .sev{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .sev.s3{background:var(--bad)}.sev.s2{background:var(--warn)}.sev.s1{background:var(--mut)}
+  .empty{color:var(--mut);padding:26px 14px;text-align:center;line-height:1.65;font-size:12.5px}
+  .empty b{color:var(--text)}
+  /* stage */
+  .stage{display:flex;flex-direction:column;align-items:center;min-height:0;padding:12px 16px;gap:10px}
+  .vtabs{display:flex;gap:4px;padding:4px;background:var(--panel);border:1px solid var(--line);border-radius:11px}
+  .vtabs button{border:0;background:transparent;color:var(--mut);padding:6px 12px;border-radius:8px;font-weight:600;font-size:12.5px}
+  .vtabs button.on{background:var(--panel3);color:var(--text)}
+  .vtabs select{border:0;background:transparent;padding:6px 8px;color:var(--mut)}
+  .vwrap{position:relative;flex:1;min-height:0;aspect-ratio:9/16;background:#000;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.45),0 0 0 1px var(--line)}
+  .vwrap video{width:100%;height:100%;object-fit:contain;display:block}
+  .vwrap .cap{position:absolute;left:5%;right:5%;top:62%;transform:translateY(-50%);text-align:center;font:800 clamp(14px,2.6vh,32px) var(--disp);letter-spacing:-.01em;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.8);pointer-events:none;z-index:3}
+  .vwrap .cap .kw{color:var(--o)}
+  #gv{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;display:none;z-index:2}
+  #vid{position:relative;z-index:1}
+  #skb{position:absolute;inset:0;width:100%;height:100%;display:none;pointer-events:none;z-index:0}
+  #rv{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:none;z-index:5;background:#000}
+  .vwrap .gfx{position:absolute;z-index:4;left:10px;top:10px;background:rgba(255,106,0,.92);color:#1A0B04;font-weight:800;font-size:11px;padding:4px 9px;border-radius:7px;display:none}
+  .vwrap .badge{position:absolute;z-index:6;right:10px;top:10px;padding:4px 9px;border-radius:7px;font:800 10.5px var(--ui);letter-spacing:.06em;background:rgba(18,17,16,.82);border:1px solid var(--line2);color:var(--mut)}
+  .transport{display:flex;gap:10px;align-items:center}
+  .transport .time{font:600 13px ui-monospace,Menlo,monospace;color:var(--mut);min-width:150px;text-align:center}
+  .transport .time b{color:var(--text)}
+  .play{width:46px;height:46px;border-radius:50%;background:var(--o);border:0;color:#1A0B04;font-size:16px;font-weight:900}
+  .play:hover:not(:disabled){background:var(--o2)}
+  /* transcript */
+  .tx{padding:6px 18px 30px;font-size:15px;line-height:1.85;overflow:auto;flex:1;user-select:none}
+  .tx span.w{cursor:pointer;border-radius:4px;padding:1px 1px}
+  .tx span.w:hover{background:var(--panel3)}
+  .tx span.w.now{background:var(--o);color:#1A0B04}
+  .tx span.w.sel{background:rgba(255,154,77,.35)}
+  .tx span.w.cut{color:#9C7A73;text-decoration:line-through;text-decoration-color:rgba(255,90,78,.75)}
+  .tx span.w.fix{border-bottom:1px dashed var(--o2)}
+  .tx .cutnote{display:inline-flex;align-items:center;gap:4px;margin:0 4px;padding:0 7px;border-radius:6px;background:var(--badsoft);color:#FF9C94;font:700 10.5px var(--ui);vertical-align:2px;cursor:pointer;white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis}
+  .tx .para{margin-bottom:12px}
+  .legend{display:flex;gap:12px;padding:0 18px 8px;color:var(--mut);font-size:11.5px}
+  .legend s{color:#9C7A73;text-decoration-color:rgba(255,90,78,.75)}
+  .selbar{position:fixed;z-index:20;display:none;gap:6px;padding:6px;background:var(--panel3);border:1px solid var(--line2);border-radius:11px;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+  /* timeline */
+  .tl{border-top:1px solid var(--line);background:var(--panel)}
+  .tlbar{display:flex;gap:7px;align-items:center;padding:8px 14px;border-bottom:1px solid var(--line)}
+  .tlbar .hint{color:var(--mut);font-size:12px}
+  .tlbar input[type=range]{width:140px;accent-color:var(--o)}
+  .tlwrap{position:relative;display:flex}
+  .labels{width:84px;flex:none;border-right:1px solid var(--line)}
+  .labels div{display:flex;align-items:center;padding-left:12px;color:var(--mut);font-size:11.5px;font-weight:600}
+  canvas{display:block;cursor:pointer}
+  .hscroll{height:12px;margin-left:84px;position:relative;background:var(--panel2)}
+  .hscroll i{position:absolute;top:3px;height:6px;border-radius:3px;background:var(--line2);cursor:grab}
+  .toast{position:fixed;right:16px;top:66px;max-width:440px;background:var(--panel3);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;white-space:pre-wrap;font-size:12.5px;display:none;box-shadow:0 14px 44px rgba(0,0,0,.55);z-index:30}
+  .toast.show{display:block}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:40}
+  .modal.show{display:flex}
+  .modal .box{background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:20px;width:min(520px,92vw)}
+  .modal input{width:100%;font:15px/1.4 var(--ui);padding:10px 12px;border-radius:9px;border:1px solid var(--line2);background:var(--bg);color:var(--text);margin:10px 0}
+  .welcome h3{margin:0 0 10px;font:900 18px var(--disp)}
+  .welcome li{margin:6px 0;line-height:1.55}
+  kbd{background:var(--panel2);border:1px solid var(--line2);border-radius:5px;padding:0 5px;font-size:11px}
+  ::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:var(--line2);border-radius:6px}::-webkit-scrollbar-track{background:transparent}
+  @media (max-width:1250px){.mid{grid-template-columns:320px 1fr 300px}}
+  @media (max-width:980px){.mid{grid-template-columns:1fr}.panel{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <a href="/" style="text-decoration:none;color:inherit" title="Back to Studio"><div class="logo"><i id="lgI">S</i><b id="lgN" style="font-weight:inherit">Studio</b> <span>Fine-tune</span></div></a>
+    <select id="proj" title="Piliin ang video"></select>
+    <div class="prog" title="Ilan na ang na-approve mong parts at scenes"><div class="bar"><i id="progBar"></i></div><span class="lbl" id="progLbl">0/0 approved</span></div>
+    <span class="grow"></span>
+    <span class="status" id="status">Naka-save</span>
+    <button class="ghost" id="undo" title="Undo (⌘Z)">↶</button>
+    <button class="ghost" id="redo" title="Redo (⌘⇧Z)">↷</button>
+    <button class="ghost" id="help" title="Paano gamitin">?</button>
+    <button id="rPrev">Render preview</button>
+    <button class="primary" id="rFinal">Export final</button>
+  </div>
+
+  <div class="mid">
+    <aside class="panel">
+      <div class="phd"><h2>Review</h2><span class="sub" id="revSub">i-approve isa-isa</span></div>
+      <div class="seg" id="seg">
+        <button data-tab="parts" class="on">Parts<span class="n" id="nParts">0</span></button>
+        <button data-tab="scenes">Scenes<span class="n" id="nScenes">0</span></button>
+        <button data-tab="issues">Issues<span class="n" id="nIssues">0</span></button>
+        <button data-tab="flags">Flags<span class="n" id="nFlags">0</span></button>
+      </div>
+      <div class="list" id="listL"></div>
+    </aside>
+
+    <section class="stage">
+      <div class="vtabs" id="vtabs"><button data-v="live" class="on">Live edit</button><button data-v="render">Rendered</button><select id="pvsel" title="Piliin ang preview"></select></div>
+      <div class="vwrap"><canvas id="skb"></canvas><video id="vid" playsinline preload="auto"></video><video id="gv" muted playsinline preload="auto"></video>
+        <video id="rv" playsinline controls preload="metadata"></video>
+        <div class="cap" id="cap"></div><div class="gfx" id="gfx"></div><div class="badge" id="vbadge">LIVE EDIT</div></div>
+      <div class="transport">
+        <button class="ghost" id="back" title="-2s (←)">⏪</button>
+        <button class="play" id="play" title="Space">▶</button>
+        <button class="ghost" id="fwd" title="+2s (→)">⏩</button>
+        <span class="time" id="time"><b>0:00.0</b> / 0:00.0</span>
+        <button class="sm" id="mark" title="M — markahan ang mali dito">⚑ Flag (M)</button>
+      </div>
+    </section>
+
+    <aside class="panel r">
+      <div class="phd"><h2>Transcript</h2><span class="sub">lahat ng sinabi mo</span></div>
+      <div class="legend"><span><s>naka-strike</s> = inalis</span><span>i-click = pakinggan</span><span>i-drag = pumili</span></div>
+      <div class="tx" id="tx"></div>
+    </aside>
+  </div>
+
+  <div class="tl">
+    <div class="tlbar">
+      <button class="sm" id="split" title="S">✂ Split</button>
+      <button class="sm" id="del" title="Delete">Delete clip</button>
+      <span class="hint" style="margin-left:6px">Pause</span>
+      <select id="pause" class="sm" title="Haba ng pause sa pagitan ng mga linya (buong video)">
+        <option value="0.15">Mabilis · 0.15s</option><option value="0.30">Normal · 0.30s</option>
+        <option value="0.45">Natural · 0.45s</option><option value="0.60">Mabagal · 0.60s</option></select>
+      <span class="hint">I-drag ang gilid ng clip para mag-trim · <kbd>Alt</kbd> = walang snap</span>
+      <span class="grow"></span>
+      <span class="hint">Zoom</span><input type="range" id="zoom" min="0" max="100" value="0">
+    </div>
+    <div class="tlwrap"><div class="labels" id="labels"></div><canvas id="cv"></canvas></div>
+    <div class="hscroll" id="hs"><i id="hsk"></i></div>
+  </div>
+</div>
+<div class="selbar" id="selbar"><button class="sm no" id="sbRm">✂ Tanggalin</button><button class="sm ok" id="sbRs">↺ Ibalik</button><button class="sm" id="sbCap">✎ Caption</button><button class="sm ghost" id="sbX">✕</button></div>
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal"><div class="box" id="mbox"></div></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const vid = $("vid"), cv = $("cv"), ctx = cv.getContext("2d");
+const TR = { ruler: 22, video: 70, caps: 28, gfx: 26 };
+const TRH = TR.ruler + TR.video + TR.caps + TR.gfx;
+const C = { bg: "#151311", clip: "#24201D", wave: "rgba(255,106,0,.8)", line: "rgba(255,255,255,.14)", o: "#FF6A00", mut: "#9A918A", cap: "#2A2623", capTx: "#E6DFD8", ok: "#3FBF7F", bad: "#FF5A4E" };
+let P = null, segs = [], segOff = [], dur = 0, pieces = [], splits = [], selPiece = -1;
+let pps = 10, view0 = 0, thumbs = null, caps = [], autoIssues = [], tab = "parts", vmode = "live";
+let busy = false, poll = null, stopAt = null, srcMode = false, needFit = true, sel = null;
+
+const tc = (t) => { t = Math.max(0, t || 0); const m = Math.floor(t / 60), s = (t % 60).toFixed(1).padStart(4, "0"); return `${m}:${s}`; };
+const norm = (w) => (w || "").toLowerCase().replace(/[^\p{L}\p{N}']+/gu, "");
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const toast = (m, ms = 3500) => { const el = $("toast"); el.textContent = m; el.classList.add("show"); clearTimeout(el._t); if (ms) el._t = setTimeout(() => el.classList.remove("show"), ms); };
+const wtext = (i) => (P.fixes[i] !== undefined ? P.fixes[i] : P.words[i].w);
+async function api(path, body) { const r = await fetch(path, body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {}); return r.json(); }
+function setBusy(b, msg) { busy = b; $("status").textContent = b ? (msg || "Ina-apply…") : "Naka-save"; $("status").className = "status" + (b ? " busy" : ""); }
+const rstate = (kind, key) => ((P.review || {})[kind] || {})[key]?.state || "open";
+
+/* ---------------- projects ---------------- */
+async function loadProjects() {
+  const items = (await api("/api/projects")).sort((a, b) => (b.mtime || 0) - (a.mtime || 0));
+  $("proj").innerHTML = items.map((p) => `<option value="${p.name}">${esc(p.name.length > 14 ? p.name.slice(0, 8) + "…" : p.name)} · ${tc(p.dur)} → ${p.new_dur ? tc(p.new_dur) : "?"}${p.approved ? ` · ✓${p.approved}` : ""}</option>`).join("");
+  let want = null; try { want = localStorage.getItem("proj"); } catch (e) {}
+  if (want && items.some((p) => p.name === want)) $("proj").value = want;
+  await open($("proj").value);
+  let seen = null; try { seen = localStorage.getItem("seenHelp2"); } catch (e) {}
+  if (!seen) showHelp();
+}
+$("proj").onchange = () => open($("proj").value);
+
+async function open(name) {
+  needFit = true; sel = null; hideSel();
+  try { localStorage.setItem("proj", name); } catch (e) {}
+  apply(await api(`/api/project/${name}`));
+  waitProxy();
+  if (P.job && P.job.state === "running") watch();
+  if (P.qc && P.qc.state === "running") watchQC();
+}
+
+function apply(data) {
+  P = data;
+  segs = P.segments; segOff = []; let o = 0; segs.forEach((s) => { segOff.push(o); o += s[1] - s[0]; }); dur = o || P.new_dur || 0;
+  splits = splits.filter((x) => segs.some((s) => x > s[0] + 0.05 && x < s[1] - 0.05));
+  buildPieces(); buildCaps(); findAutoIssues();
+  if (!thumbs || thumbs.src.indexOf(P.thumbs.url) < 0) loadThumbs();
+  $("undo").disabled = !P.can_undo; $("redo").disabled = !P.can_redo;
+  const kp = (P.tuning && P.tuning.keep_pause) || 0.3, opts = [...$("pause").options].map((o) => +o.value);
+  $("pause").value = opts.reduce((a, b) => (Math.abs(b - kp) < Math.abs(a - kp) ? b : a)).toFixed(2);
+  $("pvsel").innerHTML = (P.previews || []).map((f) => `<option value="${f}">${esc(f.replace(P.name + "_", "").replace(".mp4", ""))}</option>`).reverse().join("") || `<option value="">walang preview</option>`;
+  if (needFit && W() > 50 && dur > 0) { fit(); needFit = false; }
+  renderAll(); draw(); updateTime();
+  clearTimeout(apply._g);
+  const refreshGfx = async () => {
+    const q = await api(`/api/project/${P.name}`);
+    if (q.name === P.name) { P.overlays = q.overlays; P.scenes = q.scenes; updateTime(); if (tab === "scenes") renderLeft(); if (P.overlays.some((o) => !o.url)) apply._g = setTimeout(refreshGfx, 4000); }
+  };
+  if (P.overlays.some((o) => !o.url)) apply._g = setTimeout(refreshGfx, 4000);
+}
+
+function waitProxy() {
+  if (P.proxy === "ready") { if (!vid.src.includes("/" + P.name + "/")) { vid.src = `/media/${P.name}/proxy.mp4`; vid.currentTime = segs[0] ? segs[0][0] : 0; } return; }
+  toast("Inihahanda ang video (isang beses lang, mga 1 minuto)…", 0);
+  setTimeout(async () => { const q = await api(`/api/project/${P.name}`); P.proxy = q.proxy; P.thumbs = q.thumbs; if (q.proxy === "ready") { $("toast").classList.remove("show"); loadThumbs(); } waitProxy(); }, 4000);
+}
+function loadThumbs() {
+  if (!P.thumbs.ready) { setTimeout(async () => { const q = await api(`/api/project/${P.name}`); P.thumbs = q.thumbs; loadThumbs(); }, 5000); return; }
+  const img = new Image(); img.onload = () => { thumbs = img; draw(); }; img.src = P.thumbs.url + "?v=" + P.name; thumbs = null;
+}
+
+/* ---------------- time mapping ---------------- */
+function e2s(t) { for (let k = 0; k < segs.length; k++) if (t < segOff[k] + (segs[k][1] - segs[k][0]) || k === segs.length - 1) return segs[k][0] + Math.max(0, t - segOff[k]); return 0; }
+function s2e(t) { for (let k = 0; k < segs.length; k++) if (t >= segs[k][0] - 0.01 && t <= segs[k][1] + 0.01) return segOff[k] + (t - segs[k][0]); return null; }
+let lastE = 0;
+const editedNow = () => { const e = s2e(vid.currentTime); return e === null ? lastE : e; };
+function buildPieces() {
+  pieces = [];
+  segs.forEach((s, k) => { const cuts = splits.filter((x) => x > s[0] && x < s[1]).sort((a, b) => a - b); let a = s[0]; for (const x of [...cuts, s[1]]) { pieces.push({ s: a, e: x, eo: segOff[k] + (a - s[0]) }); a = x; } });
+  if (selPiece >= pieces.length) selPiece = -1;
+}
+function buildCaps() {
+  caps = []; let cur = null;
+  for (const [k, s, e] of P.words_out) {
+    const t = wtext(k); if (!t) continue;
+    const brk = cur && (cur.ids.length >= 2 || s - cur.e > 0.25 || (cur.text + " " + t).length > 14 || /[.?!,]$/.test(cur.text));
+    if (!cur || brk) { cur = { s, e, ids: [k], text: t }; caps.push(cur); } else { cur.ids.push(k); cur.e = e; cur.text += (t.startsWith("-") ? "" : " ") + t; }
+  }
+}
+
+/* ---------------- issues ---------------- */
+function findAutoIssues() {  // doubles visible in the planned script (complements the backend QC list)
+  const wo = P.words_out, n = wo.map(([k]) => norm(wtext(k))); const found = [], used = new Set();
+  for (let j = 1; j < wo.length; j++) for (const g of [4, 3, 2, 1]) {
+    if (j < 2 * g - 1) continue; let same = true;
+    for (let q = 0; q < g; q++) if (!n[j - q] || n[j - q] !== n[j - g - q]) { same = false; break; }
+    if (!same) continue;
+    const first = wo.slice(j - 2 * g + 1, j - g + 1).map((x) => x[0]); if (first.some((i) => used.has(i))) break;
+    if (g === 1 && /^(na|ng|ang|sa|ay|po|ka|mo|ko)$/.test(n[j])) break;
+    first.forEach((i) => used.add(i));
+    found.push({ kind: "double", sev: 3, at: wo[j - 2 * g + 1][1], ids: first, title: `Doble sa script: “${first.map(wtext).join(" ")}”`, detail: "Pareho ang magkasunod na salita.", key: "auto:" + first.join(",") });
+    break;
+  }
+  autoIssues = found;
+}
+const allIssues = () => [...autoIssues, ...(P.issues || [])].sort((a, b) => (a.at ?? 9e9) - (b.at ?? 9e9));
+
+/* ---------------- review panel ---------------- */
+function counts() {
+  const parts = P.cuts.length, scenes = (P.scenes || []).length;
+  const ap = P.cuts.filter((c) => rstate("part", c.key) === "approved").length + (P.scenes || []).filter((s) => rstate("scene", s.id) === "approved").length;
+  const iss = allIssues().filter((x) => x.sev >= 2 && !["resolved", "approved"].includes(rstate("issue", x.key))).length;  // joins (sev 1) are listen-checks, not counted
+  return { parts, scenes, ap, total: parts + scenes, iss };
+}
+function renderAll() { renderLeft(); renderTranscript(); }
+function renderLeft() {
+  const k = counts();
+  $("nParts").textContent = P.cuts.length; $("nScenes").textContent = (P.scenes || []).length;
+  $("nIssues").textContent = k.iss; $("nIssues").className = "n" + (k.iss ? " hot" : "");
+  $("nFlags").textContent = (P.marks || []).length; $("nFlags").className = "n" + ((P.marks || []).length ? " hot" : "");
+  $("progBar").style.width = (k.total ? (100 * k.ap / k.total) : 0) + "%";
+  $("progLbl").innerHTML = `<b>${k.ap}/${k.total}</b> approved${k.iss ? ` · <span style="color:var(--o2)">${k.iss} issues</span>` : ""}`;
+  document.querySelectorAll("#seg button").forEach((b) => b.classList.toggle("on", b.dataset.tab === tab));
+  const L = $("listL");
+  if (tab === "parts") {
+    $("revSub").textContent = "mga inalis — tama ba?";
+    if (!P.cuts.length) { L.innerHTML = `<div class="empty">Walang inalis na content.</div>`; return; }
+    L.innerHTML = `<div class="toolrow"><button class="sm ok" data-a="approveAllParts">✓ Approve lahat</button><span class="sub" style="color:var(--mut);font-size:11.5px">o isa-isa sa ibaba</span></div>` +
+      P.cuts.map((c, n) => { const st = rstate("part", c.key); return `<div class="card ${st}">
+      <div class="meta"><span class="tc" data-a="seek" data-t="${c.at}">${tc(c.at)}</span><span class="chip bad">−${c.dur.toFixed(1)}s</span>${st === "approved" ? `<span class="chip ok">approved</span>` : ""}</div>
+      <div class="why">${esc(c.reason || "inalis")}</div>
+      ${c.text ? `<div class="rm">${esc(c.text.slice(0, 260))}</div>` : ""}
+      <div class="acts"><button class="sm" data-a="hearcut" data-n="${n}">▶ Pakinggan</button>
+      <button class="sm ok ${st === "approved" ? "on" : ""}" data-a="part" data-n="${n}">✓ ${st === "approved" ? "Approved" : "Approve"}</button>
+      <button class="sm no" data-a="restore" data-n="${n}">↺ Ibalik</button></div></div>`; }).join("");
+  } else if (tab === "scenes") {
+    $("revSub").textContent = "motion graphics — gusto mo ba?";
+    const S = P.scenes || [];
+    if (!S.length) { L.innerHTML = `<div class="empty">Walang motion graphics sa video na ito.</div>`; return; }
+    L.innerHTML = `<div class="toolrow"><button class="sm ok" data-a="approveAllScenes">✓ Approve lahat</button></div>` + S.map((s, n) => {
+      const st = s.disabled ? "rejected" : rstate("scene", s.id);
+      return `<div class="card ${st}"><div class="scard"><div class="sthumb">${s.url && !s.disabled ? `<video src="${s.url}" muted preload="metadata" data-hov="1"></video>` : `<div class="ph">${s.disabled ? "tinanggal" : "inihahanda…"}</div>`}</div>
+      <div><div class="meta">${s.at !== null ? `<span class="tc" data-a="seek" data-t="${s.at + 0.05}">${tc(s.at)}</span>` : ""}<span class="chip o">${esc(s.type)}</span>${st === "approved" ? `<span class="chip ok">approved</span>` : st === "rejected" ? `<span class="chip bad">off</span>` : ""}</div>
+      <div class="lbl">${esc(s.label)}</div>${s.source ? `<div class="src">Source: ${esc(s.source)}</div>` : `<div class="src">sa “${esc(s.start)}”</div>`}
+      <div class="acts">${s.at !== null ? `<button class="sm" data-a="scenego" data-n="${n}">▶ Panoorin</button>` : ""}
+      ${s.disabled ? `<button class="sm ok" data-a="scene" data-n="${n}" data-st="open">↺ Ibalik</button>` :
+        `<button class="sm ok ${st === "approved" ? "on" : ""}" data-a="scene" data-n="${n}" data-st="approved">✓ ${st === "approved" ? "Approved" : "Approve"}</button><button class="sm no" data-a="scene" data-n="${n}" data-st="rejected">✕ Tanggalin</button>`}</div></div></div></div>`; }).join("");
+  } else if (tab === "issues") {
+    $("revSub").textContent = "posibleng mali — pakinggan";
+    const I = allIssues();
+    const run = `<div class="toolrow"><button class="sm" data-a="qc" ${P.qc && P.qc.state === "running" ? "disabled" : ""}>${P.qc && P.qc.state === "running" ? "⏳ Sinusuri…" : "↻ Run QC check"}</button><span style="color:var(--mut);font-size:11.5px">doble · putol · dugtungan</span></div>`;
+    if (!I.length) { L.innerHTML = run + `<div class="empty">Walang nakitang issue. <b>I-run ang QC check</b> pagkatapos mag-edit, tapos panoorin pa rin ang buong video.</div>`; return; }
+    L.innerHTML = run + I.map((x, n) => { const st = rstate("issue", x.key); return `<div class="card ${st === "resolved" ? "approved" : ""}">
+      <div class="meta"><span class="sev s${x.sev}"></span>${x.at !== null && x.at !== undefined ? `<span class="tc" data-a="seek" data-t="${Math.max(0, x.at - 1)}">${tc(x.at)}</span>` : `<span>orig ${tc(x.src)}</span>`}<span class="chip ${x.sev >= 3 ? "bad" : x.sev === 2 ? "warn" : ""}">${esc(x.kind)}</span></div>
+      <div class="why">${esc(x.title)}</div><div class="det">${esc(x.detail)}</div>
+      <div class="acts"><button class="sm" data-a="hearissue" data-n="${n}">▶ Pakinggan</button>
+      ${x.ids ? `<button class="sm no" data-a="rmissue" data-n="${n}">✂ Tanggalin ang una</button>` : ""}
+      <button class="sm ok ${st === "resolved" ? "on" : ""}" data-a="issue" data-n="${n}">✓ ${st === "resolved" ? "Okay na" : "Okay lang"}</button></div></div>`; }).join("");
+  } else {
+    $("revSub").textContent = "mga minarkahan mo";
+    const M = P.marks || [];
+    L.innerHTML = M.length ? M.map((m) => `<div class="card"><div class="meta"><span class="tc" data-a="seek" data-t="${m.out - 1}">${tc(m.out)}</span><span class="chip bad">flag</span></div>
+      <div class="why">${m.note ? esc(m.note) : "<span style='color:var(--mut)'>(walang note)</span>"}</div>
+      <div class="acts"><button class="sm" data-a="hearmark" data-id="${m.id}">▶ Pakinggan</button><button class="sm no" data-a="unmark" data-id="${m.id}">✕ Alisin</button></div></div>`).join("")
+      : `<div class="empty">Habang nanonood, pindutin ang <b>M</b> sa bawat parteng may mali (doble, putol, ingay). Lalabas sila dito, at si Claude na ang mag-aayos.</div>`;
+  }
+}
+$("seg").addEventListener("click", (e) => { const b = e.target.closest("button[data-tab]"); if (b) { tab = b.dataset.tab; renderLeft(); } });
+$("listL").addEventListener("mouseover", (e) => { const v = e.target.closest("video[data-hov]"); if (v) { v.currentTime = 0; v.play().catch(() => {}); } });
+$("listL").addEventListener("mouseout", (e) => { const v = e.target.closest("video[data-hov]"); if (v) v.pause(); });
+$("listL").addEventListener("click", async (ev) => {
+  const b = ev.target.closest("[data-a]"); if (!b) return;
+  const a = b.dataset.a, n = +b.dataset.n;
+  if (a === "seek") return seekE(+b.dataset.t, true);
+  if (a === "hearcut") { const c = P.cuts[n]; return playRangeS(c.src_start - 1.0, c.src_end + 0.8); }
+  if (a === "restore") { const c = P.cuts[n]; await review("part", c.key, "restored"); return doOp({ type: "restore", after: c.after, before: c.before, src_start: c.src_start, src_end: c.src_end }, "↺ Ibinalik."); }
+  if (a === "part") { const c = P.cuts[n]; return review("part", c.key, rstate("part", c.key) === "approved" ? "open" : "approved"); }
+  if (a === "approveAllParts") { for (const c of P.cuts) if (rstate("part", c.key) !== "approved") await review("part", c.key, "approved", true); renderLeft(); return toast("✓ Na-approve lahat ng parts."); }
+  if (a === "scenego") { const s = P.scenes[n]; return seekE(s.at + 0.05, true); }
+  if (a === "scene") { const s = P.scenes[n]; const want = b.dataset.st === "approved" && rstate("scene", s.id) === "approved" ? "open" : b.dataset.st;
+    if (want === "rejected" && !confirm(`Tanggalin ang scene na “${s.label}”?\n(Puwede mo itong ibalik anumang oras.)`)) return;
+    return review("scene", s.id, want, false, want !== "approved" && want !== "open" || s.disabled); }
+  if (a === "approveAllScenes") { for (const s of P.scenes || []) if (!s.disabled && rstate("scene", s.id) !== "approved") await review("scene", s.id, "approved", true); renderLeft(); return toast("✓ Na-approve lahat ng scenes."); }
+  if (a === "qc") { await api(`/api/project/${P.name}/qc`, {}); P.qc = { state: "running" }; renderLeft(); return watchQC(); }
+  const I = allIssues();
+  if (a === "hearissue") { const x = I[n]; return x.at !== null && x.at !== undefined ? playRangeE(x.at - 1.5, x.at + 3) : playRangeS(x.src - 1.5, x.src + 3); }
+  if (a === "rmissue") return doOp({ type: "remove_words", ids: I[n].ids }, "✂ Tinanggal. (Undo kung mali)");
+  if (a === "issue") { const x = I[n]; return review("issue", x.key, rstate("issue", x.key) === "resolved" ? "open" : "resolved"); }
+  if (a === "hearmark") { const m = P.marks.find((x) => x.id === +b.dataset.id); return playRangeE(m.out - 2, m.out + 2); }
+  if (a === "unmark") { const r = await api(`/api/project/${P.name}/unmark`, { id: +b.dataset.id }); P.marks = r.marks; renderLeft(); draw(); }
+});
+async function review(kind, key, state, quiet, heavy) {
+  if (heavy) setBusy(true, "Ina-update ang scenes…");
+  const d = await api(`/api/project/${P.name}/review`, { kind, key, state });
+  if (heavy) { setBusy(false); apply(d); if (d.msg) toast(d.msg, 6000); }
+  else { P.review = d.review; P.scenes = d.scenes; if (!quiet) renderLeft(); }
+}
+function watchQC() {
+  clearInterval(watchQC._t);
+  watchQC._t = setInterval(async () => { const q = await api(`/api/project/${P.name}`); if (!q.qc || q.qc.state !== "running") { clearInterval(watchQC._t); P.issues = q.issues; P.qc = q.qc; renderLeft(); draw(); toast(`✓ Tapos ang QC check — ${counts().iss} issue(s).`); } }, 4000);
+}
+
+/* ---------------- transcript (everything, removed parts visible) ---------------- */
+function keptSet() { const k = new Set(P.words_out.map((x) => x[0])); return k; }
+function renderTranscript() {
+  const kept = keptSet(), why = {};
+  for (const r of P.remove_reasons || []) for (let i = r.f; i <= r.t; i++) why[i] = r.reason;
+  let h = "", inCut = false, prevEnd = 0;
+  P.words.forEach((w, i) => {
+    const cut = !kept.has(i), t = wtext(i);
+    if (w.s - prevEnd > 1.6 && !cut) h += `</div><div class="para">`;
+    if (cut && !inCut) h += `<span class="cutnote" data-i="${i}" title="${esc(why[i] || "inalis ng planner (retake / dead air / hidden take)")}">✂ ${esc((why[i] || "inalis").slice(0, 46))}</span>`;
+    inCut = cut;
+    h += `<span class="w${cut ? " cut" : ""}${P.fixes[i] !== undefined ? " fix" : ""}" data-i="${i}">${esc(t || w.w)}</span> `;
+    prevEnd = w.e;
+  });
+  $("tx").innerHTML = `<div class="para">${h}</div>`;
+}
+let txDown = null;
+$("tx").addEventListener("mousedown", (e) => { const s = e.target.closest("span.w"); if (!s) return; txDown = +s.dataset.i; sel = { a: txDown, b: txDown }; paintSel(); });
+$("tx").addEventListener("mousemove", (e) => { if (txDown === null) return; const s = e.target.closest("span.w"); if (!s) return; sel = { a: Math.min(txDown, +s.dataset.i), b: Math.max(txDown, +s.dataset.i) }; paintSel(); });
+window.addEventListener("mouseup", (e) => {
+  if (txDown === null) return;
+  const single = sel && sel.a === sel.b; txDown = null;
+  if (single) { const w = P.words[sel.a]; const e2 = s2e((w.s + w.e) / 2); if (e2 !== null) seekE(e2 - 0.15, true); else playRangeS(w.s - 0.3, w.e + 1.2); sel = null; paintSel(); hideSel(); return; }
+  const last = document.querySelector(`#tx span.w[data-i="${sel.b}"]`).getBoundingClientRect();
+  const sb = $("selbar"); sb.style.display = "flex"; sb.style.left = Math.min(innerWidth - 330, last.left) + "px"; sb.style.top = (last.bottom + 8) + "px";
+});
+$("tx").addEventListener("click", (e) => { const n = e.target.closest(".cutnote"); if (n) { const w = P.words[+n.dataset.i]; playRangeS(w.s - 0.5, w.e + 2.5); } });
+function paintSel() { document.querySelectorAll("#tx span.w.sel").forEach((x) => x.classList.remove("sel")); if (!sel) return; for (let i = sel.a; i <= sel.b; i++) { const el = document.querySelector(`#tx span.w[data-i="${i}"]`); if (el) el.classList.add("sel"); } }
+function hideSel() { $("selbar").style.display = "none"; }
+$("sbX").onclick = () => { sel = null; paintSel(); hideSel(); };
+$("sbRm").onclick = async () => { const ids = []; for (let i = sel.a; i <= sel.b; i++) ids.push(i); hideSel(); sel = null; await doOp({ type: "remove_words", ids }, "✂ Tinanggal. (Undo kung mali)"); };
+$("sbRs").onclick = async () => { const a = P.words[sel.a], b = P.words[sel.b]; hideSel(); const s = sel; sel = null; await doOp({ type: "restore", after: s.a - 1, before: s.b + 1, src_start: a.s, src_end: b.e }, "↺ Ibinalik."); };
+$("sbCap").onclick = () => { const ids = []; for (let i = sel.a; i <= sel.b; i++) ids.push(i); hideSel(); editCaption({ ids, text: ids.map(wtext).join(" ") }); sel = null; paintSel(); };
+
+/* ---------------- operations ---------------- */
+async function doOp(body, okMsg) {
+  if (busy) return; setBusy(true);
+  const keepE = editedNow();
+  try { const d = await api(`/api/project/${P.name}/op`, body); apply(d); const warn = (d.msg || "").split("\n").filter((l) => l.startsWith("⚠")).join("\n"); if (okMsg || warn) toast((okMsg || "") + `\nBagong haba: ${tc(dur)}` + (warn ? "\n\n" + warn : ""), warn ? 8000 : 3500); }
+  catch (e) { toast("May error: " + e, 0); }
+  setBusy(false); seekE(Math.min(keepE, dur - 0.1), false);
+}
+$("undo").onclick = () => doOp({ type: "undo" }, "↶ Na-undo.");
+$("redo").onclick = () => doOp({ type: "redo" }, "↷ Na-redo.");
+function snapSplit(src) { let best = null; const wo = P.words_out; for (let j = 0; j + 1 < wo.length; j++) { const a = P.words[wo[j][0]], b = P.words[wo[j + 1][0]]; const gap = (Math.min(a.e, b.s) + Math.max(a.e, b.s)) / 2; if (Math.abs(gap - src) < 0.45 && (!best || Math.abs(gap - src) < Math.abs(best - src))) best = gap; } return best; }
+function doSplit() { const src = e2s(editedNow()), snapped = snapSplit(src), x = snapped ?? src; if (!segs.some((s) => x > s[0] + 0.05 && x < s[1] - 0.05)) return toast("Hindi ma-split dito (dulo ng clip)."); splits.push(x); buildPieces(); selPiece = pieces.findIndex((p) => Math.abs(p.s - x) < 0.001); draw(); toast(snapped !== null ? "✂ Na-split sa pagitan ng salita." : "✂ Na-split."); }
+async function doDelete() { if (selPiece < 0) return toast("Pumili muna ng clip sa timeline."); const p = pieces[selPiece]; if (p.e - p.s > 20 && !confirm(`Buburahin ang ${(p.e - p.s).toFixed(1)}s na clip. Sigurado?`)) return; selPiece = -1; await doOp({ type: "cut", start: p.s, end: p.e }, `Na-delete ang ${(p.e - p.s).toFixed(1)}s.`); }
+$("split").onclick = doSplit; $("del").onclick = doDelete;
+
+/* ---------------- playback ---------------- */
+function setV(m) {
+  vmode = m; document.querySelectorAll("#vtabs button").forEach((b) => b.classList.toggle("on", b.dataset.v === m));
+  const rv = $("rv");
+  if (m === "render") { const f = $("pvsel").value; if (!f) { toast("Wala pang rendered preview. Pindutin ang Render preview."); return setV("live"); } vid.pause(); if (!rv.src.endsWith(f)) rv.src = `/out/${f}`; rv.style.display = "block"; $("vbadge").textContent = f.replace(P.name + "_", "").replace(".mp4", "").toUpperCase(); }
+  else { rv.pause(); rv.style.display = "none"; $("vbadge").textContent = "LIVE EDIT"; }
+}
+$("vtabs").addEventListener("click", (e) => { const b = e.target.closest("button[data-v]"); if (b) setV(b.dataset.v); });
+$("pvsel").onchange = () => setV("render");
+function seekE(t, play) { if (vmode !== "live") setV("live"); t = Math.max(0, Math.min(t, dur - 0.05)); srcMode = false; stopAt = null; lastE = t; vid.currentTime = e2s(t); if (play) vid.play().catch(() => {}); follow(t); updateTime(); draw(); }
+function playRangeE(a, b) { seekE(a, true); stopAt = { e: b }; }
+function playRangeS(a, b) { if (vmode !== "live") setV("live"); srcMode = true; vid.currentTime = Math.max(0, a); stopAt = { s: b }; vid.play().catch(() => {}); toast("▶ Original audio (kasama ang inalis)…", 2200); }
+$("play").onclick = () => { if (vmode === "render") { const rv = $("rv"); rv.paused ? rv.play() : rv.pause(); return; } if (vid.paused) { srcMode = false; stopAt = null; if (s2e(vid.currentTime) === null) vid.currentTime = e2s(lastE); vid.play().catch(() => {}); } else vid.pause(); };
+$("back").onclick = () => seekE(editedNow() - 2, !vid.paused);
+$("fwd").onclick = () => seekE(editedNow() + 2, !vid.paused);
+vid.onplay = () => ($("play").textContent = "❚❚"); vid.onpause = () => ($("play").textContent = "▶");
+function frame() {
+  if (P && segs.length) {
+    const t = vid.currentTime;
+    if (!vid.paused && !srcMode) { let k = segs.findIndex((s) => t < s[1] - 0.015); if (k < 0) vid.pause(); else if (t < segs[k][0] - 0.015) vid.currentTime = segs[k][0]; }
+    if (stopAt && ((stopAt.e !== undefined && editedNow() >= stopAt.e) || (stopAt.s !== undefined && t >= stopAt.s))) { vid.pause(); stopAt = null; srcMode = false; }
+    const e = s2e(t); if (e !== null) lastE = e;
+    if (!vid.paused) { follow(lastE); draw(); }
+    updateTime();
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+function syncGfx(g) {
+  const gv = $("gv");
+  if (!g || !g.url || srcMode) { if (gv.style.display !== "none") { gv.pause(); gv.style.display = "none"; } return; }
+  if (gv.dataset.id !== g.id) { gv.dataset.id = g.id; gv.src = g.url; }
+  gv.style.display = "block";
+  const want = lastE - g.at;
+  if (gv.readyState >= 1 && Math.abs(gv.currentTime - want) > (vid.paused ? 0.03 : 0.2)) gv.currentTime = Math.max(0, want);
+  if (!vid.paused && gv.paused) gv.play().catch(() => {}); if (vid.paused && !gv.paused) gv.pause();
+}
+// shrink card: the render scales the real footage into a rounded card and back (same curve + window as vedit.shrink_p /
+// shrink_mask); the page (#gv) only has the dim, ring, title and chips. Behind the card: a frosted copy of the frame (#skb).
+function shrinkP(t, c, d) {
+  const u = Math.min(1, Math.max(0, t / c.tin)), w = Math.min(1, Math.max(0, (d - t) / c.tout));
+  return Math.min(1 - (1 - u) ** 3, w < .5 ? 4 * w ** 3 : 1 - (2 - 2 * w) ** 3 / 2);
+}
+function shrinkFx(v, cv, g, t) {
+  const c = g && g.url && g.kind === "shrink" && g.card;
+  if (!c) { if (v.dataset.sk) { delete v.dataset.sk; v.style.transform = v.style.clipPath = v.style.transformOrigin = ""; cv.style.display = "none"; } return; }
+  const p = shrinkP(t, c, g.dur), k = v.clientWidth / 1080, sx = (1080 - c.w / c.s) / 2, f = (x) => (x * p * k).toFixed(2);
+  v.dataset.sk = 1; v.style.transformOrigin = "0 0";
+  v.style.transform = `translate(${f(c.x - c.s * sx)}px,${f(c.y - c.s * c.src_y)}px) scale(${1 - (1 - c.s) * p})`;
+  v.style.clipPath = `inset(${f(c.src_y)}px ${f(sx)}px ${f(1920 - c.src_y - c.h / c.s)}px ${f(sx)}px round ${f(c.r / c.s)}px)`;
+  const a = Math.max(0, Math.min(1, t / .25, (g.dur - .05 - t) / (c.tout - .05)));  // vedit: fade in .25 s, out over tout
+  const W = v.clientWidth, H = v.clientHeight;
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  if (v.readyState >= 2 && v.videoWidth) {  // same framing as the <video> (object-fit: contain)
+    const z = Math.min(W / v.videoWidth, H / v.videoHeight), dw = v.videoWidth * z, dh = v.videoHeight * z;
+    cv.getContext("2d").drawImage(v, (W - dw) / 2, (H - dh) / 2, dw, dh);
+  }
+  cv.style.filter = `blur(${(9 * a).toFixed(1)}px) brightness(${(1 - .14 * a).toFixed(3)}) saturate(${(1 - .22 * a).toFixed(3)}) contrast(${(1 - .06 * a).toFixed(3)})`;
+  cv.style.transform = `scale(${(1 + .05 * a).toFixed(3)})`; cv.style.display = "block";
+}
+let lastWordEl = null;
+function updateTime() {
+  $("time").innerHTML = `<b>${tc(lastE)}</b> / ${tc(dur)}`;
+  const c = caps.find((c) => lastE >= c.s && lastE < c.e + 0.2), kw = new Set((P.keywords || []).map(norm));
+  const g = P.overlays.find((o) => lastE >= o.at && lastE < o.at + o.dur);
+  const hide = g && g.caption === "hide";
+  $("cap").innerHTML = c && !hide && !srcMode && P.captions_on !== false ? c.text.split(" ").map((w) => (kw.has(norm(w)) ? `<span class="kw" style="color:${P.accent || "var(--o)"}">${esc(w)}</span>` : esc(w))).join(" ") : "";
+  // same placement as the render: talking head = caption_y (top of the caption, 1920 scale); over graphics = low / top
+  const capY = ((P.caption_y || 1150) / 1920 * 100).toFixed(1) + "%";
+  const capMode = !g || g.caption === "normal" ? "y" : g.caption === "top" ? "top" : "low";
+  $("cap").style.top = capMode === "y" ? capY : capMode === "top" ? "18%" : "74%";
+  $("cap").style.transform = capMode === "y" ? "none" : "translateY(-50%)";
+  vid.style.filter = g && g.url && (g.kind === "glass" || g.kind === "panel") ? "blur(9px) brightness(.72) saturate(.8)" : "";
+  shrinkFx(vid, $("skb"), !srcMode && g, g ? lastE - g.at : 0);
+  $("gfx").style.display = g && !g.url ? "block" : "none"; if (g && !g.url) $("gfx").textContent = "inihahanda ang graphic preview…";
+  syncGfx(g);
+  // transcript follow
+  const wo = P.words_out; let cur = null;
+  for (const [k, s] of wo) { if (s <= lastE + 0.02) cur = k; else break; }
+  const el = cur !== null ? document.querySelector(`#tx span.w[data-i="${cur}"]`) : null;
+  if (el !== lastWordEl) { if (lastWordEl) lastWordEl.classList.remove("now"); if (el) { el.classList.add("now"); if (!vid.paused) el.scrollIntoView({ block: "center", behavior: "smooth" }); } lastWordEl = el; }
+}
+
+/* ---------------- timeline ---------------- */
+function resize() {
+  const w = cv.parentElement.clientWidth - 84;
+  cv.width = w * devicePixelRatio; cv.height = TRH * devicePixelRatio; cv.style.width = w + "px"; cv.style.height = TRH + "px";
+  ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  $("labels").innerHTML = `<div style="height:${TR.ruler}px"></div><div style="height:${TR.video}px">Video</div><div style="height:${TR.caps}px">Captions</div><div style="height:${TR.gfx}px">Graphics</div>`;
+  if ((needFit || !P || +$("zoom").value === 0) && W() > 50 && dur > 0) { fit(); needFit = false; } draw();
+}
+window.addEventListener("resize", resize);
+const W = () => cv.width / devicePixelRatio;
+function fit() { pps = (W() - 20) / Math.max(dur, 1); zoomFromPps(); view0 = 0; }
+function zoomFromPps() { const minp = (W() - 20) / Math.max(dur, 1); $("zoom").value = Math.round(100 * Math.log(pps / minp) / Math.log(120 / minp)); }
+$("zoom").oninput = () => { const minp = (W() - 20) / Math.max(dur, 1); const c = editedNow(); pps = minp * Math.pow(120 / minp, $("zoom").value / 100); view0 = Math.max(0, c - (W() / pps) / 2); clampView(); draw(); };
+function clampView() { view0 = Math.max(0, Math.min(view0, Math.max(0, dur - W() / pps + 0.5))); }
+function follow(t) { const span = W() / pps; if (t < view0 || t > view0 + span * 0.92) { view0 = t - span * 0.15; clampView(); } }
+const X = (t) => (t - view0) * pps;
+function draw() {
+  if (!P) return;
+  const w = W(); ctx.clearRect(0, 0, w, TRH); ctx.fillStyle = C.bg; ctx.fillRect(0, 0, w, TRH);
+  const step = [0.5, 1, 2, 5, 10, 15, 30, 60, 120].find((s) => s * pps >= 70) || 300;
+  ctx.fillStyle = C.mut; ctx.font = "11px ui-monospace,Menlo,monospace";
+  for (let t = Math.floor(view0 / step) * step; t < view0 + w / pps; t += step) { const x = X(t); ctx.fillRect(x, TR.ruler - 6, 1, 6); ctx.fillText(tc(t).replace(/\.\d$/, ""), x + 3, 12); }
+  // cut markers (content removed here) + issue markers
+  for (const c of P.cuts) { const x = X(c.at); if (x < -6 || x > w + 6) continue; const st = rstate("part", c.key); ctx.fillStyle = st === "approved" ? C.ok : C.bad; ctx.fillRect(x - 1, TR.ruler, 2, TR.video); }
+  for (const x of allIssues()) { if (x.at === null || x.at === undefined || rstate("issue", x.key) === "resolved") continue; const px = X(x.at); ctx.fillStyle = x.sev >= 3 ? C.bad : x.sev === 2 ? "#F2B544" : C.mut; ctx.beginPath(); ctx.moveTo(px - 5, TR.ruler - 9); ctx.lineTo(px + 5, TR.ruler - 9); ctx.lineTo(px, TR.ruler - 1); ctx.fill(); }
+  const y0 = TR.ruler + 3, h = TR.video - 6;
+  viewPieces().forEach((p, n) => {
+    const x0 = X(p.eo), x1 = X(p.eo + (p.e - p.s)); if (x1 < 0 || x0 > w) return;
+    ctx.save(); ctx.beginPath(); ctx.roundRect(x0 + 1, y0, Math.max(2, x1 - x0 - 2), h, 7); ctx.clip();
+    ctx.fillStyle = C.clip; ctx.fillRect(x0, y0, x1 - x0, h);
+    if (thumbs) { const T = P.thumbs, tw = (h - 18) * T.w / T.h; for (let x = Math.max(x0, x0 + Math.floor((0 - x0) / tw) * tw); x < Math.min(x1, w); x += tw) { const src = p.s + (x - x0) / pps, idx = Math.min(T.n - 1, Math.floor(src / T.every)); ctx.globalAlpha = .7; ctx.drawImage(thumbs, (idx % T.cols) * T.w, Math.floor(idx / T.cols) * T.h, T.w, T.h, x, y0, tw, h - 18); ctx.globalAlpha = 1; } }
+    ctx.fillStyle = C.wave; const wy = y0 + h - 9;
+    for (let x = Math.max(0, Math.floor(x0)); x < Math.min(w, x1); x += 2) { const src = p.s + (x - x0) / pps, v = P.peaks[Math.floor(src * 25)] || 0; ctx.fillRect(x, wy - v * 8, 1.5, Math.max(1, v * 16)); }
+    ctx.restore();
+    ctx.strokeStyle = n === selPiece ? C.o : C.line; ctx.lineWidth = n === selPiece ? 2.5 : 1; ctx.beginPath(); ctx.roundRect(x0 + 1, y0, Math.max(2, x1 - x0 - 2), h, 7); ctx.stroke();
+    if (n === selPiece || (hoverEdge && hoverEdge.i === n)) { ctx.fillStyle = C.o; for (const [ex, side] of [[x0 + 1, "l"], [x1 - 1, "r"]]) { ctx.beginPath(); ctx.roundRect(side === "l" ? ex : ex - 7, y0, 7, h, 3); ctx.fill(); } }
+  });
+  if (!trim) { ctx.fillStyle = "rgba(255,255,255,.7)"; for (const [k, s0, e0] of P.words_out) { const a = X(s0), b = X(e0); if (b < 0 || a > w) continue; ctx.fillRect(a, y0 + h - 3, Math.max(1, b - a - 1), 3); } }
+  if (trim) {
+    const vp = viewPieces()[trim.i], d = trim.newSrc - trim.orig, grow = trim.edge === "r" ? d > 0 : d < 0;
+    const ex = trim.edge === "r" ? X(vp.eo + (vp.e - vp.s)) : X(vp.eo);
+    const lost = grow ? [] : wordsIn(Math.min(trim.orig, trim.newSrc), Math.max(trim.orig, trim.newSrc));
+    const label = lost.length ? `⚠ puputulin: ${lost.slice(0, 3).join(" ")}${lost.length > 3 ? "…" : ""}` : `${grow ? "+" : "−"}${Math.abs(d).toFixed(2)}s ${grow ? "ibabalik" : "dead air ✓"}`;
+    ctx.font = "800 12px -apple-system,Inter,sans-serif"; const tw = ctx.measureText(label).width + 14, lx = Math.min(w - tw - 4, Math.max(4, ex - tw / 2));
+    ctx.fillStyle = grow ? C.ok : lost.length ? C.bad : "#C9832B"; ctx.beginPath(); ctx.roundRect(lx, y0 + 4, tw, 20, 6); ctx.fill(); ctx.fillStyle = "#fff"; ctx.fillText(label, lx + 7, y0 + 18); ctx.fillRect(ex - 1.5, TR.ruler, 3, TR.video);
+  }
+  const cy = TR.ruler + TR.video + 3; ctx.font = "600 11px -apple-system,Inter,sans-serif";
+  for (const c of caps) { const x0 = X(c.s), x1 = Math.max(X(c.e), x0 + 4); if (x1 < 0 || x0 > w) continue; ctx.fillStyle = C.cap; ctx.beginPath(); ctx.roundRect(x0, cy, x1 - x0 - 1, TR.caps - 6, 4); ctx.fill(); if (x1 - x0 > 24) { ctx.save(); ctx.beginPath(); ctx.rect(x0, cy, x1 - x0 - 3, TR.caps); ctx.clip(); ctx.fillStyle = C.capTx; ctx.fillText(c.text, x0 + 4, cy + 14); ctx.restore(); } }
+  const gy = TR.ruler + TR.video + TR.caps + 2;
+  for (const o of P.overlays) {
+    const x0 = X(o.at), x1 = X(o.at + o.dur); if (x1 < 0 || x0 > w) continue;
+    const st = rstate("scene", o.id);
+    ctx.fillStyle = st === "approved" ? "rgba(63,191,127,.32)" : o.stale ? "rgba(255,106,0,.16)" : "rgba(255,106,0,.34)"; ctx.beginPath(); ctx.roundRect(x0, gy, x1 - x0 - 1, TR.gfx - 5, 4); ctx.fill();
+    if (x1 - x0 > 30) { ctx.save(); ctx.beginPath(); ctx.rect(x0, gy, x1 - x0 - 3, TR.gfx); ctx.clip(); ctx.fillStyle = "#fff"; ctx.fillText((st === "approved" ? "✓ " : o.stale ? "↻ " : "") + o.id.replace(/^[a-z]?\d*_?\d*_?/, ""), x0 + 4, gy + 14); ctx.restore(); }
+  }
+  for (const m of P.marks || []) { const mx = X(m.out); if (mx < -10 || mx > w + 10) continue; ctx.fillStyle = C.bad; ctx.fillRect(mx - 1, 0, 2, TR.ruler + TR.video); ctx.beginPath(); ctx.moveTo(mx, 2); ctx.lineTo(mx + 10, 6); ctx.lineTo(mx, 10); ctx.fill(); }
+  const px = X(lastE); ctx.fillStyle = "#fff"; ctx.fillRect(px - 1, 0, 2, TRH); ctx.beginPath(); ctx.moveTo(px - 6, 0); ctx.lineTo(px + 6, 0); ctx.lineTo(px, 8); ctx.fill();
+  const span = w / pps, k = $("hsk"), full = $("hs").clientWidth;
+  k.style.width = Math.max(30, full * Math.min(1, span / Math.max(dur, 0.01))) + "px"; k.style.left = (full * view0 / Math.max(dur, 0.01)) + "px";
+}
+let drag = null, trim = null, hoverEdge = null;
+function viewPieces() { if (!trim) return pieces; const i = trim.i, d = trim.newSrc - trim.orig; return pieces.map((p, n) => { if (trim.edge === "r") { if (n === i) return { ...p, e: trim.newSrc }; if (n > i) return { ...p, eo: p.eo + d }; } else { if (n === i) return { ...p, s: trim.newSrc }; if (n > i) return { ...p, eo: p.eo - d }; } return p; }); }
+function edgeAt(x, y) { if (y < TR.ruler || y > TR.ruler + TR.video) return null; let best = null; pieces.forEach((p, n) => { const x0 = X(p.eo), x1 = X(p.eo + p.e - p.s); for (const [ex, edge] of [[x1, "r"], [x0, "l"]]) { const dist = Math.abs(x - ex); if (dist <= 8 && (edge === "r" ? x <= ex + 2 : x >= ex - 2) && (!best || dist < best.dist)) best = { i: n, edge, dist }; } }); return best; }
+function wordsIn(a, b) { const out = []; for (const [k] of P.words_out) { const w = P.words[k], ov = Math.min(w.e, b) - Math.max(w.s, a); if (ov > 0.12 || (ov > 0 && ov > 0.45 * (w.e - w.s))) out.push(wtext(k)); } return out; }
+function limits(i, edge) { const p = pieces[i], prev = pieces[i - 1], next = pieces[i + 1]; return edge === "r" ? [p.s + 0.1, next ? next.s : P.dur] : [prev ? prev.e : 0, p.e - 0.1]; }
+function snapSrc(t, alt) { if (alt) return [t, false]; const tol = Math.min(8 / pps, 0.08); let best = t, hit = false; for (const w of P.words) for (const v of [w.s, w.e]) if (Math.abs(v - t) < tol && Math.abs(v - t) < Math.abs(best - t) + (hit ? 0 : tol)) { best = v; hit = true; } return [best, hit]; }
+cv.addEventListener("mousedown", (ev) => {
+  const r = cv.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top, t = view0 + x / pps;
+  const e = edgeAt(x, y);
+  if (e) { const p = pieces[e.i]; trim = { i: e.i, edge: e.edge, orig: e.edge === "r" ? p.e : p.s, newSrc: e.edge === "r" ? p.e : p.s, x0: ev.clientX, snapped: false }; selPiece = e.i; vid.pause(); draw(); ev.preventDefault(); return; }
+  if (y >= TR.ruler && y < TR.ruler + TR.video) selPiece = pieces.findIndex((p) => t >= p.eo && t < p.eo + (p.e - p.s));
+  drag = "head"; seekE(t);
+});
+window.addEventListener("mousemove", (ev) => {
+  const r = cv.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top;
+  if (trim) { const [lo, hi] = limits(trim.i, trim.edge); const [sv, hit] = snapSrc(trim.orig + (ev.clientX - trim.x0) / pps, ev.altKey); trim.newSrc = Math.max(lo, Math.min(hi, sv)); trim.snapped = hit; draw(); return; }
+  if (drag === "head") { seekE(view0 + x / pps); return; }
+  if (x < 0 || y < 0 || x > W() || y > TRH) { if (hoverEdge) { hoverEdge = null; draw(); } return; }
+  const e = edgeAt(x, y); const changed = JSON.stringify(e && [e.i, e.edge]) !== JSON.stringify(hoverEdge && [hoverEdge.i, hoverEdge.edge]);
+  hoverEdge = e; cv.style.cursor = e ? "ew-resize" : "pointer"; if (changed) draw();
+});
+window.addEventListener("mouseup", async () => {
+  drag = null; if (!trim) return; const t0 = trim; trim = null; const d = t0.newSrc - t0.orig;
+  if (Math.abs(d) < 0.03) { draw(); return; }
+  const grow = t0.edge === "r" ? d > 0 : d < 0, a = Math.min(t0.orig, t0.newSrc), b = Math.max(t0.orig, t0.newSrc), lost = grow ? [] : wordsIn(a, b);
+  if (lost.length && !confirm(`⚠ Puputulin nito ang salita: “${lost.join(" ")}”.\n\nOK = tanggalin pa rin.`)) { draw(); return; }
+  await doOp({ type: grow ? "trim_keep" : "trim_cut", a, b }, grow ? `✓ Naibalik ang ${(b - a).toFixed(2)}s.` : `✓ Natrim ang ${(b - a).toFixed(2)}s.`);
+});
+$("pause").onchange = () => doOp({ type: "tuning", keep_pause: +$("pause").value }, `✓ Pause: ${$("pause").selectedOptions[0].text}`);
+cv.addEventListener("dblclick", (ev) => { const r = cv.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top, t = view0 + x / pps; if (y >= TR.ruler + TR.video && y < TR.ruler + TR.video + TR.caps) { const c = caps.find((c) => t >= c.s && t <= c.e); if (c) editCaption(c); } });
+cv.addEventListener("wheel", (ev) => { ev.preventDefault(); if (ev.ctrlKey || ev.metaKey) { const r = cv.getBoundingClientRect(), at = view0 + (ev.clientX - r.left) / pps; const minp = (W() - 20) / Math.max(dur, 1); pps = Math.max(minp, Math.min(120, pps * Math.exp(-ev.deltaY / 300))); view0 = at - (ev.clientX - r.left) / pps; zoomFromPps(); } else view0 += (ev.deltaX || ev.deltaY) / pps; clampView(); draw(); }, { passive: false });
+(() => { let d = null; $("hsk").addEventListener("mousedown", (e) => (d = { x: e.clientX, v: view0 })); window.addEventListener("mousemove", (e) => { if (!d) return; view0 = d.v + (e.clientX - d.x) / $("hs").clientWidth * dur; clampView(); draw(); }); window.addEventListener("mouseup", () => (d = null)); })();
+
+function editCaption(c) {
+  $("mbox").innerHTML = `<b>I-edit ang caption</b><div class="status" style="margin-top:4px">Caption lang ang nababago, hindi ang boses. Walang laman = itago.</div>
+    <input id="capin" value="${esc(c.text)}"><div style="display:flex;gap:8px;justify-content:flex-end"><button id="capx">Cancel</button><button class="primary" id="capok">Save</button></div>`;
+  $("modal").classList.add("show"); const inp = $("capin"); inp.focus(); inp.select(); const close = () => $("modal").classList.remove("show");
+  $("capx").onclick = close; $("capok").onclick = async () => { const v = inp.value.trim(); close(); if (v !== c.text) await doOp({ type: "caption", ids: c.ids, text: v }, "✓ Na-update ang caption."); };
+  inp.onkeydown = (e) => { if (e.key === "Enter") $("capok").click(); if (e.key === "Escape") close(); };
+}
+async function addMark() {
+  const out = editedNow(), src = e2s(out); vid.pause();
+  const note = prompt(`⚑ Markahan ang ${tc(out)} — ano ang mali? (hal. "doble", "putol", "may ingay")`, ""); if (note === null) return;
+  const r = await api(`/api/project/${P.name}/mark`, { out, src, note }); P.marks = r.marks; renderLeft(); draw();
+  toast(`⚑ Namarkahan ang ${tc(out)}. Sabihin kay Claude: "ayusin ang mga minarkahan ko".`);
+}
+$("mark").onclick = addMark;
+document.addEventListener("keydown", (e) => {
+  if ($("modal").classList.contains("show") || e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+  if (e.key === " ") { e.preventDefault(); $("play").click(); }
+  else if (e.key === "s" || e.key === "S") { if (!e.metaKey && !e.ctrlKey) doSplit(); }
+  else if (e.key === "m" || e.key === "M") { if (!e.metaKey && !e.ctrlKey) addMark(); }
+  else if (e.key === "Delete" || e.key === "Backspace") { e.preventDefault(); doDelete(); }
+  else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z") { e.preventDefault(); e.shiftKey ? $("redo").click() : $("undo").click(); }
+  else if (e.key === "ArrowLeft") seekE(editedNow() - (e.shiftKey ? 5 : 0.5), !vid.paused);
+  else if (e.key === "ArrowRight") seekE(editedNow() + (e.shiftKey ? 5 : 0.5), !vid.paused);
+  else if (e.key === "Escape") { sel = null; paintSel(); hideSel(); }
+});
+
+/* ---------------- export ---------------- */
+async function doRender(final) {
+  const k = counts();
+  if (final) { const left = k.total - k.ap; if (!confirm(left || k.iss ? `May ${left} pang hindi naa-approve${k.iss ? ` at ${k.iss} issue` : ""}.\nI-export pa rin ang FINAL 1080p?` : "I-export ang FINAL 1080p? (ilang minuto)")) return; }
+  await api(`/api/project/${P.name}/render`, { final }); watch();
+}
+$("rPrev").onclick = () => doRender(false); $("rFinal").onclick = () => doRender(true);
+function watch() {
+  clearInterval(poll); $("rPrev").disabled = $("rFinal").disabled = true; setBusy(true, "Nagre-render…");
+  poll = setInterval(async () => {
+    const q = await api(`/api/project/${P.name}`); const j = q.job || {};
+    toast((j.log || "…").trim() + (j.state === "running" ? "\n\n(tumatakbo…)" : ""), 0);
+    if (j.state !== "running") { clearInterval(poll); $("rPrev").disabled = $("rFinal").disabled = false; setBusy(false); if (j.state === "done" && j.output) { P.previews = q.previews; apply(Object.assign(P, { previews: q.previews })); toast(`✓ Tapos!\n${j.output}`, 5000); if (!j.final) { $("pvsel").value = j.output; setV("render"); } } }
+  }, 2500);
+}
+function showHelp() {
+  $("mbox").innerHTML = `<div class="welcome"><h3>Fine-tune editor</h3><ol>
+    <li><b>Review</b> (kaliwa): <b>Parts</b> = bawat inalis ni Claude kasama ang dahilan. ▶ Pakinggan ang original, tapos <b>✓ Approve</b> o <b>↺ Ibalik</b>.</li>
+    <li><b>Scenes</b> = bawat motion graphic. I-hover para i-preview. <b>✓ Approve</b> o <b>✕ Tanggalin</b> (puwedeng ibalik).</li>
+    <li><b>Issues</b> = posibleng doble / putol / dugtungan mula sa QC check. Pindutin ang <b>↻ Run QC</b> pagkatapos mag-edit.</li>
+    <li><b>Transcript</b> (kanan) = lahat ng sinabi mo. <s style="color:#9C7A73">Naka-strike</s> = inalis. I-click ang salita para pakinggan, i-drag para pumili → ✂ Tanggalin / ↺ Ibalik / ✎ Caption.</li>
+    <li><b>Timeline</b>: drag ang gilid ng clip para i-trim, <kbd>S</kbd> split, <kbd>Del</kbd> delete, double-click ang caption para i-edit.</li>
+    <li><b>⚑ Flag</b> (<kbd>M</kbd>) ang mali habang nanonood — si Claude ang mag-aayos.</li>
+    <li><b>Live edit</b> vs <b>Rendered</b>: panoorin ang huling render na may buong graphics.</li></ol>
+    <div style="text-align:right"><button class="primary" id="hok">Gets!</button></div></div>`;
+  $("modal").classList.add("show");
+  $("hok").onclick = () => { $("modal").classList.remove("show"); try { localStorage.setItem("seenHelp2", "1"); } catch (e) {} };
+}
+$("help").onclick = showHelp;
+resize(); loadProjects();
+</script>
+<script>fetch("/api/settings").then((r) => r.json()).then((st) => { const n = st.name || "Studio";
+  document.getElementById("lgN").textContent = n; document.getElementById("lgI").textContent = n.trim()[0].toUpperCase(); document.title = n + " · Fine-tune"; }).catch(() => {});</script>
+</body>
+</html>

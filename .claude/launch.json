@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "editor",
+      "runtimeExecutable": ".venv/bin/python",
+      "runtimeArgs": ["tools/editor/server.py"],
+      "port": 8765
+    },
+    {
+      "name": "motion",
+      "runtimeExecutable": ".venv/bin/python",
+      "runtimeArgs": ["-m", "http.server", "8777", "--directory", "motion"],
+      "port": 8777
+    }
+  ]
+}

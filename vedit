@@ -1,0 +1,4 @@
+#!/bin/bash
+# BBD video editor — see .claude/skills/bbd-video-edit/SKILL.md
+DIR="$(cd "$(dirname "$0")" && pwd)"
+exec "$DIR/.venv/bin/python" "$DIR/tools/vedit.py" "$@"

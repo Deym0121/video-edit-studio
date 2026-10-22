@@ -1,0 +1,12 @@
+# Main env (.venv, Python 3.12) — installed by tools/setup.sh
+mlx-whisper>=0.4        # transcription (Apple Silicon)
+static-ffmpeg>=2.5      # ffmpeg + ffprobe with libass, no system install
+numpy>=2.0
+pillow>=10.0
+fonttools>=4.50         # exact text fitting for the motion graphics
+scipy>=1.11
+noisereduce>=3.0        # light noise fallback when DeepFilterNet isn't installed
+torch>=2.2              # MMS literal listening (repeats / clipped words)
+transformers>=4.40
+accelerate>=0.30
+huggingface_hub>=0.23

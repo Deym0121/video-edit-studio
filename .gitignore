@@ -1,0 +1,54 @@
+# your videos and everything made from them stay on your computer
+input/
+output/
+work/
+backups/
+scratch/
+scratch_*.log
+work_tx_*.log
+Inspiration video/
+*.mov
+*.mp4
+!docs/tutorial/Studio_Tutorial.mp4
+*.MOV
+*.webm
+*.wav
+
+# environments + downloaded tools (tools/setup.sh rebuilds them)
+.venv/
+.venv-df/
+tools/node/
+tools/bin/
+node_modules/
+__pycache__/
+*.pyc
+
+# generated motion graphics (mograph.py rewrites them)
+motion/renders/
+motion/scenes/
+motion/sfx_preview/
+motion/clips/studio/
+
+# personal settings
+studio.json
+brandkits/
+.DS_Store
+
+# render caches (HyperFrames keeps local history here)
+.hyperframes/
+
+# media that isn't ours to redistribute — bring your own (see assets/music/README.md)
+assets/music/*
+!assets/music/README.md
+motion/clips/*
+!motion/clips/.gitkeep
+
+# generated at render time
+assets/*.cube
+
+# tutorial: the raw 2× captures stay local (capture.mjs remakes them); docs/tutorial/hf/assets holds what renders
+docs/tutorial/shots/*.png
+docs/tutorial/shots/play_*/
+
+# style references the Studio studied (a contact sheet + numbers per video)
+refs/

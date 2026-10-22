@@ -1,0 +1,26 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:"Inter Tight";font-weight:900;src:url("../fonts/InterTight-wght-900.ttf")}
+@font-face{font-family:"Inter Tight";font-weight:700;src:url("../fonts/InterTight-wght-700.ttf")}
+html,body{margin:0;width:1080px;height:1920px;background:#0C0908;overflow:hidden}
+.g1{position:absolute;left:380px;top:-260px;width:1100px;height:1100px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,106,0,.26) 0%,rgba(255,106,0,.08) 38%,rgba(255,106,0,0) 66%)}
+.g2{position:absolute;left:-520px;top:980px;width:1300px;height:1300px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,106,0,.16) 0%,rgba(255,106,0,.05) 40%,rgba(255,106,0,0) 66%)}
+.dots{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.075) 1.6px,transparent 1.8px);background-size:36px 36px;
+  -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.9),rgba(0,0,0,.25) 55%,rgba(0,0,0,.7))}
+.panel{position:absolute;left:38px;top:543px;width:1000px;height:760px;border-radius:30px;border:2px solid rgba(255,138,51,.9);
+  background:#000;box-shadow:0 0 70px rgba(255,106,0,.30),0 34px 90px rgba(0,0,0,.65)}
+.ring{position:absolute;left:58px;top:242px;width:260px;height:260px;border-radius:50%;
+  background:conic-gradient(from 200deg,#FF9A4D,#FF6A00,#C24700,#FF6A00,#FF9A4D);box-shadow:0 0 46px rgba(255,106,0,.45);padding:6px}
+.ring i{display:block;width:100%;height:100%;border-radius:50%;background:#000}
+.live{position:absolute;left:194px;top:488px;transform:translateX(-50%);display:flex;align-items:center;gap:9px;padding:7px 16px 7px 13px;border-radius:999px;
+  background:#FF6A00;color:#1A0B04;font:900 21px "Inter Tight";letter-spacing:.16em;box-shadow:0 6px 18px rgba(0,0,0,.5)}
+.live b{width:11px;height:11px;border-radius:50%;background:#1A0B04}
+</style></head><body>
+<div class="g1"></div><div class="g2"></div><div class="dots"></div>
+<div class="panel"></div>
+<div class="ring"><i></i></div>
+<div class="live"><b></b>LIVE</div>
+</body></html>

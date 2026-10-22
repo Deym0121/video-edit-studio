@@ -1,5 +1,7 @@
 # Video Edit with Claude — Studio
 
+[![Windows](https://github.com/Deym0121/video-edit-studio/actions/workflows/windows.yml/badge.svg)](https://github.com/Deym0121/video-edit-studio/actions/workflows/windows.yml)
+
 **Your own AI video editor, on your Mac or Windows PC.** Drop in a talking-head or screen-demo video. Claude cuts the retakes, repeats and dead air, writes the captions, places motion graphics that never cover your face, and adds sound effects. You pick the look in a step-by-step Studio and **see every choice play on your own video before you render.**
 
 No CapCut, no timeline, no stock footage. Your videos never leave your computer.

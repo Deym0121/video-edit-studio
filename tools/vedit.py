@@ -261,7 +261,7 @@ def cmd_doctor(a):
         flt = sh([binpath("ffmpeg"), "-hide_banner", "-filters"], capture=True)
         print(f"  {ver}")
         print(f"  {'✓' if 'h264_videotoolbox' in enc else '✓' if 'libx264' in enc else '✗'} H.264 encoder ({'videotoolbox' if 'h264_videotoolbox' in enc else 'libx264'})")
-        print(f"  {'✓' if re.search(r'^ \S{3} ass ', flt, re.M) else '✗'} captions (libass)")
+        print(f"  {'✓' if re.search(r'^\s*\S+\s+ass\s', flt, re.M) else '✗'} captions (libass)")
     for mod in ("mlx_whisper", "faster_whisper"):
         try:
             __import__(mod)

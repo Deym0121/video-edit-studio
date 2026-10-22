@@ -1,6 +1,6 @@
 # Video Edit with Claude — Studio
 
-**Your own AI video editor, on your Mac.** Drop in a talking-head or screen-demo video. Claude cuts the retakes, repeats and dead air, writes the captions, places motion graphics that never cover your face, and adds sound effects. You pick the look in a step-by-step Studio and **see every choice play on your own video before you render.**
+**Your own AI video editor, on your Mac or Windows PC.** Drop in a talking-head or screen-demo video. Claude cuts the retakes, repeats and dead air, writes the captions, places motion graphics that never cover your face, and adds sound effects. You pick the look in a step-by-step Studio and **see every choice play on your own video before you render.**
 
 No CapCut, no timeline, no stock footage. Your videos never leave your computer.
 
@@ -23,7 +23,7 @@ No CapCut, no timeline, no stock footage. Your videos never leave your computer.
 | **📦 Post Kit** | 9:16 + 1:1 + 16:9 videos, captions (.srt), a cover image and the post caption, in one zip. |
 | **🎨 Brand Kits** | Save your look and use it on every video, or share it as a file. |
 | **2026 motion library** | 44 trending motion graphics: marker annotations, target rings, a magnifier loupe, before/after wipes, 3D device frames, phone alerts, search bars, feed scrolls, social post cards, tier lists, scorecards, price slashes, countdowns, charts, word clouds, split-flap boards, glitch titles, redacted reveals, myth/fact flips, polaroids and confetti. Also 19 hook styles and 8 caption styles. |
-| **Natural colour** | iPhone HDR is converted with Apple's own tone mapping, so the edit looks exactly like your camera. |
+| **Natural colour** | iPhone HDR is converted to normal colour (Apple's own tone mapping on a Mac), so the edit looks like your camera. |
 
 ## Install
 
@@ -31,7 +31,7 @@ No CapCut, no timeline, no stock footage. Your videos never leave your computer.
 
 **Easiest:**
 
-1. **Code → Download ZIP**, open it, and drag the `video-edit-studio-main` folder onto your Desktop.
+1. **Code → Download ZIP**, open it, and drag the `video-edit-studio-main` folder onto your Desktop (Mac or Windows).
 2. In the **Claude app**, go to the **Code** tab and choose that folder.
 3. Say:
 
@@ -39,19 +39,25 @@ No CapCut, no timeline, no stock footage. Your videos never leave your computer.
 
 Claude runs the installer, checks everything and starts the Studio. Click **Allow** when it asks to run a command.
 
-**By hand:**
+**By hand, on a Mac** (Terminal):
 
 ```bash
 ./tools/setup.sh          # ≈ 8 GB with the models · --lite for a smaller install
 ./vedit doctor            # checks every piece
-.venv/bin/python tools/editor/server.py
+./vedit studio            # opens http://localhost:8765
 ```
 
-Then open **http://localhost:8765**.
+**By hand, on Windows** (PowerShell, in the folder):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\setup.ps1     # -Lite for a smaller install
+.\vedit.cmd doctor
+.\vedit.cmd studio
+```
 
 **Requirements:**
-- macOS on Apple Silicon
-- Xcode Command Line Tools (`xcode-select --install`)
+- **Mac:** macOS on Apple Silicon, plus the Xcode Command Line Tools (`xcode-select --install`)
+- **Windows:** Windows 10 or 11, 64-bit. No Python or admin rights needed. For "install this" in the Claude app, also [Git for Windows](https://git-scm.com/download/win)
 - about 10 GB of free space
 
 Everything installs inside this folder: no system packages and no password.
@@ -88,10 +94,11 @@ MIT: see `LICENSE`. The bundled fonts are SIL OFL 1.1, and the installer downloa
 
 ## Privacy
 
-The Studio runs on `127.0.0.1` only. Your videos, transcripts and renders stay in `input/`, `work/` and `output/`, and `.gitignore` keeps them out of git. Auto-edit sends your transcript to Claude through your own Claude Code account; nothing else leaves your Mac.
+The Studio runs on `127.0.0.1` only. Your videos, transcripts and renders stay in `input/`, `work/` and `output/`, and `.gitignore` keeps them out of git. Auto-edit sends your transcript to Claude through your own Claude Code account; nothing else leaves your computer.
 
 ## Limits (today)
 
-- Mac only. The person cut-out and the colour conversion use Apple frameworks.
+- On Windows, transcription runs on the CPU (faster-whisper), so it's slower than on Apple Silicon, and the person cut-out, face finder and text finder use open-source models (DeepLabV3, OpenCV, RapidOCR) instead of Apple Vision. A clean Windows machine installs and runs the whole path on every change (`.github/workflows/windows.yml`).
+- Linux isn't tested yet.
 - The live preview plays graphics exactly. Two pieces, the text behind you and the shrink card, show the last render, because they need the person cut-out.
 - It is a single-user local app, not a hosted service.

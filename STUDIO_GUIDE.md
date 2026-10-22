@@ -150,7 +150,7 @@ Render ─► vedit plan ─► mograph.py ─► brandkit: recolour + font swap
 - Hook previews mirror the renderer's layout and timing closely, but the exact frame comes from **Render preview**. The sounds are exact: same files, same levels.
 - With "Swooshes" (sound effects) off, the render has no sound effects, so the previews play voice only.
 - **"Claude places it" extras** (comment pop-up, counter, typing line, script line) are wishes for Claude's graphics pass. Ticking them doesn't add them by itself.
-- **macOS only**: the person cut-out (text behind you) uses Apple Vision. Windows would need another segmenter.
+- **Mac and Windows**: on a Mac the person cut-out (text behind you) uses Apple Vision; on Windows, torchvision's DeepLabV3 (`tools/personmask.py`), a little softer at the edges.
 - **Local, single-user app** (127.0.0.1). Selling it as SaaS would need accounts, storage and a render queue.
 
 ## 6. To make it sellable (suggested next)

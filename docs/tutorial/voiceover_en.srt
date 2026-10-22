@@ -1,167 +1,167 @@
 1
-00:00:00,000 --> 00:00:05,400
-Meet Video Edit Studio: your own AI video editor, on your Mac.
+00:00:00,000 --> 00:00:06,180
+Meet Video Edit Studio: your own AI video editor, on your computer.
 
 2
-00:00:05,500 --> 00:00:11,950
+00:00:06,280 --> 00:00:12,490
 Claude cuts the retakes, writes the captions and adds motion graphics. You pick the look.
 
 3
-00:00:12,050 --> 00:00:17,400
+00:00:12,590 --> 00:00:17,940
 And this is the Studio, where every choice plays on your own video.
 
 4
-00:00:17,500 --> 00:00:23,380
-You need a Mac with Apple Silicon, and the Claude app.
+00:00:18,040 --> 00:00:24,460
+You need a Mac or a Windows PC, and the Claude app.
 
 5
-00:00:23,480 --> 00:00:27,160
+00:00:24,560 --> 00:00:27,800
 Open your browser, and go to github.com.
 
 6
-00:00:27,260 --> 00:00:33,590
+00:00:27,900 --> 00:00:34,230
 Search for video edit studio, and open the repository.
 
 7
-00:00:33,690 --> 00:00:39,540
+00:00:34,330 --> 00:00:40,170
 Click the green Code button, then Download ZIP.
 
 8
-00:00:39,640 --> 00:00:44,160
+00:00:40,270 --> 00:00:44,790
 Open the download. It unzips into a folder.
 
 9
-00:00:44,260 --> 00:00:47,850
+00:00:44,890 --> 00:00:48,480
 Drag the folder onto your Desktop.
 
 10
-00:00:47,950 --> 00:00:53,080
+00:00:48,580 --> 00:00:54,130
 Using git? Clone it into your Desktop folder instead.
 
 11
-00:00:53,180 --> 00:00:58,500
+00:00:54,230 --> 00:00:59,550
 Open the Claude app, and go to the Code tab.
 
 12
-00:00:58,600 --> 00:01:03,060
+00:00:59,650 --> 00:01:04,110
 Choose the folder on your Desktop.
 
 13
-00:01:03,160 --> 00:01:07,730
+00:01:04,210 --> 00:01:08,780
 Then type: install this, and send it.
 
 14
-00:01:07,830 --> 00:01:11,900
+00:01:08,880 --> 00:01:12,720
 Claude asks before it runs anything. Click Allow.
 
 15
-00:01:12,000 --> 00:01:19,420
+00:01:12,820 --> 00:01:20,200
 The first install takes ten to twenty minutes. Then Claude checks everything, and starts the Studio.
 
 16
-00:01:19,520 --> 00:01:24,560
+00:01:20,300 --> 00:01:25,710
 Prefer Terminal? These three commands do the same.
 
 17
-00:01:24,660 --> 00:01:28,860
+00:01:25,810 --> 00:01:30,010
 Click the link, and your Studio opens in the browser.
 
 18
-00:01:28,960 --> 00:01:35,230
+00:01:30,110 --> 00:01:36,380
 Click the name at the top to make it your own brand.
 
 19
-00:01:35,330 --> 00:01:38,500
+00:01:36,480 --> 00:01:39,520
 Drag your video onto Upload a video.
 
 20
-00:01:38,600 --> 00:01:44,760
+00:01:39,620 --> 00:01:46,040
 It transcribes it, and removes the retakes, repeats and dead air by itself.
 
 21
-00:01:44,860 --> 00:01:50,030
+00:01:46,140 --> 00:01:51,220
 iPhone HDR is turned into natural colour, too.
 
 22
-00:01:50,130 --> 00:01:57,400
+00:01:51,320 --> 00:01:58,590
 Now tell Claude what you want. Tap where you'll post it, the vibe, the captions and the graphics.
 
 23
-00:01:57,500 --> 00:02:05,480
+00:01:58,690 --> 00:02:05,580
 Then say it in your own words, like: yellow keywords, big captions at the bottom, fast cuts.
 
 24
-00:02:05,580 --> 00:02:10,550
+00:02:05,680 --> 00:02:11,110
 Click Build my look. Every change shows up, with the reason why.
 
 25
-00:02:10,650 --> 00:02:19,460
+00:02:11,210 --> 00:02:20,700
 Or learn a style from videos you like. Drag in a creator's video, and the Studio studies its captions, colours and pacing.
 
 26
-00:02:19,560 --> 00:02:26,830
+00:02:20,800 --> 00:02:28,070
 Mix and match: take each part from the video you like best, then click Make it my style.
 
 27
-00:02:26,930 --> 00:02:34,970
+00:02:28,170 --> 00:02:36,210
 Only the style is kept. The video is deleted once it's studied, and none of it goes in your edit.
 
 28
-00:02:35,070 --> 00:02:42,490
+00:02:36,310 --> 00:02:44,190
 Have Claude Code? Click Auto-edit, and Claude edits the whole video the way you asked.
 
 29
-00:02:42,590 --> 00:02:49,470
+00:02:44,290 --> 00:02:51,170
 Fine-tune anything in the steps: your colours, and your fonts.
 
 30
-00:02:49,570 --> 00:02:55,720
+00:02:51,270 --> 00:02:57,170
 In Hook, Hook Lab finds your strongest line. Click Use as cold open.
 
 31
-00:02:55,820 --> 00:03:02,390
+00:02:57,270 --> 00:03:03,840
 Pick a caption style. Safe zones shows what TikTok and Reels will cover.
 
 32
-00:03:02,490 --> 00:03:12,080
+00:03:03,940 --> 00:03:13,050
 Then in Visuals, open 2026 trends: 44 motion graphics, like this new before and after wipe.
 
 33
-00:03:12,180 --> 00:03:18,830
+00:03:13,150 --> 00:03:19,800
 Tick the ones you like, and Claude places them on the right lines.
 
 34
-00:03:18,930 --> 00:03:22,500
+00:03:19,900 --> 00:03:23,170
 Next, Watch. Click Render preview.
 
 35
-00:03:22,600 --> 00:03:29,280
+00:03:23,270 --> 00:03:28,830
 Run Edit Health. It finds repeated words, dead air and colour problems.
 
 36
-00:03:29,380 --> 00:03:33,580
+00:03:28,930 --> 00:03:33,130
 Each item has a fix. One click, and it's done.
 
 37
-00:03:33,680 --> 00:03:39,460
+00:03:33,230 --> 00:03:39,010
 To change anything, pause there and leave a note, like: cut the dead air.
 
 38
-00:03:39,560 --> 00:03:45,440
+00:03:39,110 --> 00:03:44,990
 Then click Apply notes with Claude, and Claude fixes them all.
 
 39
-00:03:45,540 --> 00:03:49,410
+00:03:45,090 --> 00:03:48,580
 When it looks right, export the final 1080p.
 
 40
-00:03:49,510 --> 00:03:57,160
+00:03:48,680 --> 00:03:55,370
 Build the Post Kit: vertical, square and wide videos, captions and a cover, ready to post.
 
 41
-00:03:57,260 --> 00:04:02,610
+00:03:55,470 --> 00:04:00,820
 And save your look as a Brand Kit, to use on every video.
 
 42
-00:04:02,710 --> 00:04:07,522
+00:04:00,920 --> 00:04:05,732
 That's it! Grab it on GitHub, and happy editing.

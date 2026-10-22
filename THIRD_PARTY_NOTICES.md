@@ -19,24 +19,28 @@ The license text is in `OFL.txt` next to each copy.
 | Playfair Display | Copyright 2017 The Playfair Display Project Authors (https://github.com/clauseggers/Playfair-Display), with Reserved Font Name "Playfair Display" |
 | Poppins | Copyright 2020 The Poppins Project Authors (https://github.com/itfoundry/Poppins) |
 
-## Downloaded by `tools/setup.sh`: not in this repository
+## Downloaded by `tools/setup.sh` / `tools/setup.ps1`: not in this repository
 
 The installer fetches these into this folder. Check each license before you use them in your own work.
 
 | Component | Where it comes from | Note |
 |---|---|---|
-| Python packages | `tools/requirements.txt` (mlx-whisper, static-ffmpeg, numpy, pillow, fonttools, scipy, noisereduce, torch, transformers, accelerate, huggingface_hub) | Each under its own license |
+| Python packages | `tools/requirements.txt` (mlx-whisper or faster-whisper, static-ffmpeg, numpy, pillow, fonttools, scipy, noisereduce, torch, transformers, accelerate, huggingface_hub; on Windows also opencv-python, rapidocr-onnxruntime, torchvision) | Each under its own license |
+| uv + Python 3.12 (Windows) | github.com/astral-sh/uv, python-build-standalone | Installs the Python env inside `tools/` |
 | ffmpeg / ffprobe | the `static-ffmpeg` package | ffmpeg is LGPL/GPL, depending on the build |
-| Whisper large-v3-turbo | `mlx-community/whisper-large-v3-turbo` on Hugging Face | Transcription |
+| Whisper large-v3-turbo | `mlx-community/whisper-large-v3-turbo` (Mac) or the faster-whisper build (Windows) on Hugging Face | Transcription |
+| DeepLabV3 MobileNetV3 weights (Windows) | torchvision (PyTorch) | Person cut-out for "text behind you" |
+| RapidOCR models (Windows) | the `rapidocr-onnxruntime` package | Text finder for style references |
 | MMS (`facebook/mms-1b-all`) | Hugging Face | **CC BY-NC 4.0: non-commercial use only.** It powers the letter-by-letter repeat check; `./tools/setup.sh --lite` skips it |
 | DeepFilterNet 3 | the `deepfilternet` package (+ torch / torchaudio) | Voice cleanup; skipped with `--lite` |
 | Node.js | nodejs.org | The motion-graphics renderer's runtime |
 | HyperFrames | npm, run with `npx hyperframes` | Renders the HTML motion graphics to video |
 | GSAP | loaded from the jsDelivr CDN by the motion-graphics pages | Animation library |
 
-The Swift tools in `tools/*.swift` use Apple's Vision and AVFoundation frameworks, which ship with macOS.
+The Swift tools in `tools/*.swift` use Apple's Vision and AVFoundation frameworks, which ship with macOS. On Windows their Python twins
+(`tools/facebox.py`, `textbox.py`, `personmask.py`) use OpenCV, RapidOCR and torchvision instead.
 
 ## Not included
 
-Music and the screenshots or clips you use in your edits stay on your Mac. `assets/music/` and `motion/clips/` are kept
+Music and the screenshots or clips you use in your edits stay on your computer. `assets/music/` and `motion/clips/` are kept
 out of git because most licenses don't allow sharing those files.

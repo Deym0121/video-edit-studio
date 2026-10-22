@@ -8,7 +8,7 @@ set -e
 cd "$(dirname "$0")/.."
 LITE=0; [ "$1" = "--lite" ] && LITE=1
 say() { printf "\n\033[1;33m• %s\033[0m\n" "$1"; }
-[ "$(uname -s)" = Darwin ] || { echo "✗ macOS only for now (Apple Vision cut-outs + MLX Whisper)."; exit 1; }
+[ "$(uname -s)" = Darwin ] || { echo "✗ This installer is for macOS. On Windows run:  powershell -ExecutionPolicy Bypass -File tools\\setup.ps1"; exit 1; }
 [ "$(uname -m)" = arm64 ] || echo "⚠ Intel Mac: transcription falls back to faster-whisper and runs slower."
 
 say "uv (Python installer)"
@@ -58,4 +58,4 @@ say "Studio graphics library"
 .venv/bin/python tools/mograph.py --gallery >/dev/null && echo "  ✓ $(ls motion/scenes/gal_*.html | wc -l | tr -d ' ') live samples"
 
 ./vedit doctor
-printf "\n\033[1;32mDone.\033[0m Start the Studio:  .venv/bin/python tools/editor/server.py   →  http://localhost:8765\n"
+printf "\n\033[1;32mDone.\033[0m Start the Studio:  ./vedit studio   →  http://localhost:8765\n"

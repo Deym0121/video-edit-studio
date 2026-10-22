@@ -1,422 +1,422 @@
 [
  {
   "n": 0,
-  "en": "Meet Video Edit Studio: your own AI video editor, on your Mac.",
+  "en": "Meet Video Edit Studio: your own AI video editor, on your computer.",
   "file": "000.mp3",
-  "dur": 5.72,
-  "asr": "Meet Video Edit Studio, your own AI video editor on your Mac.",
-  "asr_end": 4.64,
+  "dur": 6.96,
+  "asr": "Meet Video Edit Studio, your own AI video editor, on your computer.",
+  "asr_end": 5.4,
   "start": 0.0,
-  "end": 4.8
+  "end": 5.58
  },
  {
   "n": 1,
   "en": "Claude cuts the retakes, writes the captions and adds motion graphics. You pick the look.",
   "file": "001.mp3",
-  "dur": 7.16,
-  "asr": "Claude cuts the retakes, writes the captions and adds motion graphics. You pick the look.",
-  "asr_end": 5.68,
-  "start": 0.03,
-  "end": 5.88
+  "dur": 7.52,
+  "asr": "Claude cuts the retakes, writes the captions, and adds motion graphics. You pick the look.",
+  "asr_end": 5.5,
+  "start": 0.05,
+  "end": 5.66
  },
  {
   "n": 2,
   "en": "And this is the Studio, where every choice plays on your own video.",
   "file": "002.mp3",
-  "dur": 6.61,
+  "dur": 7.04,
   "asr": "And this is the studio where every choice plays on your own video.",
-  "asr_end": 3.64,
-  "start": 0.03,
-  "end": 3.84
+  "asr_end": 4.52,
+  "start": 0.05,
+  "end": 4.78
  },
  {
   "n": 3,
-  "en": "You need a Mac with Apple Silicon, and the Claude app.",
+  "en": "You need a Mac or a Windows PC, and the Claude app.",
   "file": "003.mp3",
-  "dur": 5.56,
-  "asr": "You need a Mac with Apple Silicon and the Claude app.",
-  "asr_end": 2.88,
-  "start": 0.03,
-  "end": 2.96
+  "dur": 6.4,
+  "asr": "You need a Mac or a Windows PC and the Claude app.",
+  "asr_end": 4.22,
+  "start": 0.0,
+  "end": 4.52
  },
  {
   "n": 4,
   "en": "Open your browser, and go to github.com.",
   "file": "004.mp3",
-  "dur": 3.71,
-  "asr": "open your browser and go to github.com.",
-  "asr_end": 2.94,
-  "start": 0.0,
-  "end": 3.08
+  "dur": 4.08,
+  "asr": "Open your browser and go to github.com.",
+  "asr_end": 2.46,
+  "start": 0.01,
+  "end": 2.64
  },
  {
   "n": 5,
   "en": "Search for video edit studio, and open the repository.",
   "file": "005.mp3",
-  "dur": 7.39,
-  "asr": "Search for Video Edit Studio and open the repository.",
-  "asr_end": 4.66,
+  "dur": 7.36,
+  "asr": "search for Video Edit Studio, and open the repository.",
+  "asr_end": 4.76,
   "start": 0.0,
-  "end": 4.92
+  "end": 5.1
  },
  {
   "n": 6,
   "en": "Click the green Code button, then Download ZIP.",
   "file": "006.mp3",
-  "dur": 4.75,
-  "asr": "click the green code button then download zip.",
-  "asr_end": 2.9,
-  "start": 0.01,
-  "end": 3.12
+  "dur": 5.6,
+  "asr": "Click the green code button, then download zip.",
+  "asr_end": 3.08,
+  "start": 0.0,
+  "end": 3.48
  },
  {
   "n": 7,
   "en": "Open the download. It unzips into a folder.",
   "file": "007.mp3",
-  "dur": 6.19,
-  "asr": "Open the download, it unzips into a folder.",
-  "asr_end": 2.56,
-  "start": 0.05,
-  "end": 2.78
+  "dur": 6.24,
+  "asr": "Open the download. It unzips into a folder.",
+  "asr_end": 2.78,
+  "start": 0.01,
+  "end": 3.04
  },
  {
   "n": 8,
   "en": "Drag the folder onto your Desktop.",
   "file": "008.mp3",
-  "dur": 3.08,
+  "dur": 3.44,
   "asr": "Drag the folder onto your desktop.",
-  "asr_end": 1.78,
-  "start": 0.05,
-  "end": 2.1
+  "asr_end": 1.6,
+  "start": 0.03,
+  "end": 1.82
  },
  {
   "n": 9,
   "en": "Using git? Clone it into your Desktop folder instead.",
   "file": "009.mp3",
-  "dur": 3.4,
+  "dur": 6.4,
   "asr": "Using Git, clone it into your desktop folder instead.",
-  "asr_end": 2.96,
-  "start": 0.03,
-  "end": 3.26
+  "asr_end": 3.42,
+  "start": 0.07,
+  "end": 3.72
  },
  {
   "n": 10,
   "en": "Open the Claude app, and go to the Code tab.",
   "file": "010.mp3",
-  "dur": 7.08,
-  "asr": "open the Claude app and go to the code tab.",
-  "asr_end": 3.16,
-  "start": 0.03,
-  "end": 3.4
+  "dur": 4.8,
+  "asr": "Open the Claude app and go to the Code tab.",
+  "asr_end": 3.1,
+  "start": 0.0,
+  "end": 3.36
  },
  {
   "n": 11,
   "en": "Choose the folder on your Desktop.",
   "file": "011.mp3",
-  "dur": 4.05,
-  "asr": "choose the folder on your desktop",
-  "asr_end": 1.54,
-  "start": 0.03,
-  "end": 1.82
+  "dur": 6.24,
+  "asr": "Choose the folder on your desktop.",
+  "asr_end": 1.56,
+  "start": 0.01,
+  "end": 1.86
  },
  {
   "n": 12,
   "en": "Then type: install this, and send it.",
   "file": "012.mp3",
-  "dur": 7.0,
-  "asr": "then type install this and send it",
-  "asr_end": 3.52,
-  "start": 0.05,
-  "end": 3.66
+  "dur": 6.24,
+  "asr": "Then type install this and send it.",
+  "asr_end": 2.74,
+  "start": 0.0,
+  "end": 2.76
  },
  {
   "n": 13,
   "en": "Claude asks before it runs anything. Click Allow.",
   "file": "013.mp3",
-  "dur": 5.8,
-  "asr": "Claude asks before he runs anything. Click Allow.",
-  "asr_end": 3.22,
-  "start": 0.01,
-  "end": 3.48
+  "dur": 6.48,
+  "asr": "Claude asks before it runs anything. Click allow.",
+  "asr_end": 2.94,
+  "start": 0.0,
+  "end": 3.24
  },
  {
   "n": 14,
   "en": "The first install takes ten to twenty minutes. Then Claude checks everything, and starts the Studio.",
   "file": "014.mp3",
-  "dur": 11.65,
+  "dur": 8.4,
   "asr": "The first install takes 10 to 20 minutes. Then Claude checks everything and starts the studio.",
   "asr_end": 6.56,
   "start": 0.0,
-  "end": 6.82
+  "end": 6.78
  },
  {
   "n": 15,
   "en": "Prefer Terminal? These three commands do the same.",
   "file": "015.mp3",
-  "dur": 5.07,
-  "asr": "preferred terminal, these three commands do the same.",
-  "asr_end": 2.9,
-  "start": 0.0,
-  "end": 3.14
+  "dur": 4.88,
+  "asr": "Prefer terminal? These three commands do the same.",
+  "asr_end": 3.34,
+  "start": 0.01,
+  "end": 3.52
  },
  {
   "n": 16,
   "en": "Click the link, and your Studio opens in the browser.",
   "file": "016.mp3",
-  "dur": 4.75,
+  "dur": 5.04,
   "asr": "Click the link and your studio opens in the browser.",
-  "asr_end": 2.64,
-  "start": 0.05,
-  "end": 2.92
+  "asr_end": 2.88,
+  "start": 0.0,
+  "end": 3.1
  },
  {
   "n": 17,
   "en": "Click the name at the top to make it your own brand.",
   "file": "017.mp3",
-  "dur": 7.81,
+  "dur": 4.72,
   "asr": "Click the name at the top to make it your own brand.",
-  "asr_end": 2.42,
-  "start": 0.05,
+  "asr_end": 2.46,
+  "start": 0.0,
   "end": 2.68
  },
  {
   "n": 18,
   "en": "Drag your video onto Upload a video.",
   "file": "018.mp3",
-  "dur": 4.68,
-  "asr": "drag your video on to upload a video",
-  "asr_end": 2.36,
+  "dur": 4.0,
+  "asr": "drag your video on to upload a video.",
+  "asr_end": 2.04,
   "start": 0.01,
-  "end": 2.58
+  "end": 2.24
  },
  {
   "n": 19,
   "en": "It transcribes it, and removes the retakes, repeats and dead air by itself.",
   "file": "019.mp3",
-  "dur": 7.55,
-  "asr": "it transcribes it and removes the retakes repeats and dead air by itself",
-  "asr_end": 5.24,
+  "dur": 7.76,
+  "asr": "It transcribes it and removes the retakes, repeats, and dead air by itself.",
+  "asr_end": 5.68,
   "start": 0.0,
-  "end": 5.56
+  "end": 5.82
  },
  {
   "n": 20,
   "en": "iPhone HDR is turned into natural colour, too.",
   "file": "020.mp3",
-  "dur": 6.53,
+  "dur": 5.44,
   "asr": "iPhone HDR is turned into natural color too.",
-  "asr_end": 3.18,
-  "start": 0.05,
-  "end": 3.32
+  "asr_end": 2.98,
+  "start": 0.0,
+  "end": 3.18
  },
  {
   "n": 21,
   "en": "Now tell Claude what you want. Tap where you'll post it, the vibe, the captions and the graphics.",
   "file": "021.mp3",
-  "dur": 6.35,
-  "asr": "Now tell Claude what you want. Tap where you posted the vibe, the captions, and the graphics.",
-  "asr_end": 5.82,
-  "start": 0.01,
+  "dur": 9.68,
+  "asr": "Now tell Claude what you want. Tap where you'll post it, the vibe, the captions, and the graphics.",
+  "asr_end": 5.88,
+  "start": 0.0,
   "end": 6.22
  },
  {
   "n": 22,
   "en": "Then say it in your own words, like: yellow keywords, big captions at the bottom, fast cuts.",
   "file": "022.mp3",
-  "dur": 8.52,
-  "asr": "then say it in your own words like yellow keywords big captions at the bottom fast cuts",
-  "asr_end": 7.0,
+  "dur": 8.72,
+  "asr": "Then say it in your own words, like yellow keywords, big captions at the bottom, fast cuts.",
+  "asr_end": 5.74,
   "start": 0.0,
-  "end": 7.38
+  "end": 6.02
  },
  {
   "n": 23,
   "en": "Click Build my look. Every change shows up, with the reason why.",
   "file": "023.mp3",
-  "dur": 5.72,
-  "asr": "click build my look every change shows up with the reason why",
-  "asr_end": 3.88,
-  "start": 0.0,
-  "end": 4.02
+  "dur": 8.08,
+  "asr": "Click Build My Look. Every change shows up with the reason why.",
+  "asr_end": 4.7,
+  "start": 0.01,
+  "end": 4.84
  },
  {
   "n": 24,
   "en": "Or learn a style from videos you like. Drag in a creator's video, and the Studio studies its captions, colours and pacing.",
   "file": "024.mp3",
-  "dur": 8.44,
-  "asr": "or learn a style from videos you like. Drag in a creator's video and the studio studies its captions, colors, and pacing.",
-  "asr_end": 7.98,
-  "start": 0.05,
-  "end": 8.26
+  "dur": 10.48,
+  "asr": "Or learn a style from videos you like. Drag in a creator's video and the studio studies its captions, colors, and pacing.",
+  "asr_end": 8.68,
+  "start": 0.03,
+  "end": 8.92
  },
  {
   "n": 25,
   "en": "Mix and match: take each part from the video you like best, then click Make it my style.",
   "file": "025.mp3",
-  "dur": 7.24,
-  "asr": "mix and match take each part from the video you like best then click make it my style",
-  "asr_end": 5.46,
+  "dur": 8.08,
+  "asr": "Mix and match. Take each part from the video you like best, then click Make It My Style.",
+  "asr_end": 6.14,
   "start": 0.0,
-  "end": 5.7
+  "end": 6.32
  },
  {
   "n": 26,
   "en": "Only the style is kept. The video is deleted once it's studied, and none of it goes in your edit.",
   "file": "026.mp3",
-  "dur": 5.33,
-  "asr": "only this style is kept the video is deleted once it's studied and none of it goes in your edit",
-  "asr_end": 5.02,
+  "dur": 7.68,
+  "asr": "Only the style is kept. The video is deleted once it's studied and none of it goes in your edit.",
+  "asr_end": 5.42,
   "start": 0.0,
-  "end": 5.28
+  "end": 5.56
  },
  {
   "n": 27,
   "en": "Have Claude Code? Click Auto-edit, and Claude edits the whole video the way you asked.",
   "file": "027.mp3",
-  "dur": 5.33,
-  "asr": "have Claude code click auto edit and Claude edits the whole video the way you asked",
-  "asr_end": 5.04,
-  "start": 0.05,
-  "end": 5.22
+  "dur": 7.2,
+  "asr": "Have Claude code? Click auto edit and Claude edits the whole video the way you asked.",
+  "asr_end": 5.78,
+  "start": 0.0,
+  "end": 5.98
  },
  {
   "n": 28,
   "en": "Fine-tune anything in the steps: your colours, and your fonts.",
   "file": "028.mp3",
-  "dur": 6.35,
-  "asr": "Fine-tune anything in the steps, your colors and your fonts.",
-  "asr_end": 3.44,
+  "dur": 7.36,
+  "asr": "fine-tune anything in the steps your colors and your fonts",
+  "asr_end": 4.28,
   "start": 0.0,
-  "end": 3.78
+  "end": 4.58
  },
  {
   "n": 29,
   "en": "In Hook, Hook Lab finds your strongest line. Click Use as cold open.",
   "file": "029.mp3",
-  "dur": 8.59,
+  "dur": 8.16,
   "asr": "In Hook, HookLab finds your strongest line. Click Use as Cold Open.",
-  "asr_end": 5.38,
-  "start": 0.05,
-  "end": 5.6
+  "asr_end": 5.1,
+  "start": 0.0,
+  "end": 5.3
  },
  {
   "n": 30,
   "en": "Pick a caption style. Safe zones shows what TikTok and Reels will cover.",
   "file": "030.mp3",
-  "dur": 6.27,
-  "asr": "Pick a caption style. Save Zones shows what TikTok and Reels will cover.",
-  "asr_end": 4.86,
-  "start": 0.09,
-  "end": 5.02
+  "dur": 6.24,
+  "asr": "Pick a caption style. Safe zones shows what TikTok and Reels will cover.",
+  "asr_end": 4.54,
+  "start": 0.0,
+  "end": 4.66
  },
  {
   "n": 31,
   "en": "Then in Visuals, open 2026 trends: 44 motion graphics, like this new before and after wipe.",
   "file": "031.mp3",
-  "dur": 8.99,
-  "asr": "Then in visuals open 2026 Trends 44 motion graphics like this new before and after wipe.",
-  "asr_end": 8.7,
+  "dur": 9.6,
+  "asr": "Then in visuals open 2026 Trends, 44 motion graphics, like this new before and after wipe.",
+  "asr_end": 7.86,
   "start": 0.0,
-  "end": 8.99
+  "end": 8.16
  },
  {
   "n": 32,
   "en": "Tick the ones you like, and Claude places them on the right lines.",
   "file": "032.mp3",
-  "dur": 6.69,
+  "dur": 3.92,
   "asr": "Take the ones you like and Claude places them on the right lines.",
-  "asr_end": 3.64,
-  "start": 0.05,
-  "end": 3.94
+  "asr_end": 3.52,
+  "start": 0.01,
+  "end": 3.86
  },
  {
   "n": 33,
   "en": "Next, Watch. Click Render preview.",
   "file": "033.mp3",
-  "dur": 7.39,
-  "asr": "next watch click render preview",
-  "asr_end": 2.8,
-  "start": 0.01,
-  "end": 2.98
+  "dur": 6.88,
+  "asr": "Next, watch. Click Render Preview.",
+  "asr_end": 2.5,
+  "start": 0.03,
+  "end": 2.62
  },
  {
   "n": 34,
   "en": "Run Edit Health. It finds repeated words, dead air and colour problems.",
   "file": "034.mp3",
-  "dur": 6.27,
+  "dur": 7.36,
   "asr": "run edit health it finds repeated words dead air and color problems",
-  "asr_end": 5.68,
+  "asr_end": 4.66,
   "start": 0.0,
-  "end": 6.08
+  "end": 4.96
  },
  {
   "n": 35,
   "en": "Each item has a fix. One click, and it's done.",
   "file": "035.mp3",
-  "dur": 3.55,
+  "dur": 4.96,
   "asr": "Each item has a fix. One click and it's done.",
-  "asr_end": 3.28,
-  "start": 0.07,
-  "end": 3.54
+  "asr_end": 3.06,
+  "start": 0.0,
+  "end": 3.26
  },
  {
   "n": 36,
   "en": "To change anything, pause there and leave a note, like: cut the dead air.",
   "file": "036.mp3",
-  "dur": 4.44,
-  "asr": "To change anything, pause there and leave a note like cut the dead air.",
-  "asr_end": 4.16,
+  "dur": 5.76,
+  "asr": "To change anything, pause there and leave a note, like, cut the dead air.",
+  "asr_end": 3.64,
   "start": 0.03,
-  "end": 4.32
+  "end": 3.8
  },
  {
   "n": 37,
   "en": "Then click Apply notes with Claude, and Claude fixes them all.",
   "file": "037.mp3",
-  "dur": 3.97,
-  "asr": "then click apply notes with Claude and Claude fixes them all.",
+  "dur": 3.92,
+  "asr": "Then click Apply Notes with Claude and Claude fixes them all.",
   "asr_end": 3.7,
-  "start": 0.01,
-  "end": 3.84
+  "start": 0.09,
+  "end": 3.8
  },
  {
   "n": 38,
   "en": "When it looks right, export the final 1080p.",
   "file": "038.mp3",
-  "dur": 3.47,
+  "dur": 5.04,
   "asr": "When it looks right, export the final 1080p.",
-  "asr_end": 3.16,
-  "start": 0.07,
-  "end": 3.34
+  "asr_end": 2.74,
+  "start": 0.05,
+  "end": 2.94
  },
  {
   "n": 39,
   "en": "Build the Post Kit: vertical, square and wide videos, captions and a cover, ready to post.",
   "file": "039.mp3",
-  "dur": 7.81,
+  "dur": 7.92,
   "asr": "Build the post kit, vertical, square, and wide videos, captions, and a cover ready to post.",
-  "asr_end": 6.86,
-  "start": 0.05,
-  "end": 7.1
+  "asr_end": 5.9,
+  "start": 0.01,
+  "end": 6.1
  },
  {
   "n": 40,
   "en": "And save your look as a Brand Kit, to use on every video.",
   "file": "040.mp3",
-  "dur": 4.44,
-  "asr": "and save your look as a brand kit to use on every video",
-  "asr_end": 4.04,
-  "start": 0.07,
-  "end": 4.26
+  "dur": 6.4,
+  "asr": "and save your look as a brand kit to use on every video.",
+  "asr_end": 4.28,
+  "start": 0.01,
+  "end": 4.46
  },
  {
   "n": 41,
   "en": "That's it! Grab it on GitHub, and happy editing.",
   "file": "041.mp3",
-  "dur": 3.08,
-  "asr": "That's it. Grab it on GitHub and happy editing.",
-  "asr_end": 2.64,
-  "start": 0.05,
-  "end": 2.88
+  "dur": 5.04,
+  "asr": "That's it. Grab it on GitHub, and happy editing.",
+  "asr_end": 2.48,
+  "start": 0.03,
+  "end": 2.7
  }
 ]

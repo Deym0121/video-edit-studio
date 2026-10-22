@@ -20,7 +20,7 @@ Lloyd's past edits needed many revisions because **words went missing and splice
 
 ## Workflow (do the steps in order; stay fast)
 
-**0. Setup (once per machine):** `./vedit doctor`. If it isn't ready → `./tools/setup.sh`.
+**0. Setup (once per machine):** `./vedit doctor`. If it isn't ready → `./tools/setup.sh` (Mac) or `powershell -ExecutionPolicy Bypass -File tools/setup.ps1` (Windows; Python is `.venv/Scripts/python.exe` there).
 
 **1. Intake.** Videos go in `input/` (or use the path Lloyd gives). Pick the format from the duration: ≤30s short · ≤60s mid · otherwise long (`reference/structures.md`). Defaults, no questions needed: captions ON (`pop`), grade OFF (natural footage, DESIGN_SYSTEM.md §1), logo if `assets/logo.png` exists. Ask only what you can't infer (e.g. "may logo file ka ba?" if there's no logo and it's client work).
 **iPhone HDR (HLG / Dolby Vision, check `ffprobe … color_transfer=arib-std-b67`):** convert to SDR with Apple's tone mapping BEFORE transcribing: `tools/bin/tosdr IN.MOV input/NAME.mov` (several clips: tosdr each, then a video+audio concat). Never ship an HLG render: it plays as "HDR" and Lloyd sees a filter (2026-10-20). Never ffmpeg-tonemap it either. DESIGN_SYSTEM.md has the details.

@@ -8,14 +8,17 @@ Simple at step-by-step ang gabay na ito, mula sa GitHub hanggang sa tapos mong v
 
 ## Bago magsimula
 
+Gumagana ito sa **Mac** at sa **Windows PC**.
+
 | Kailangan mo | Bakit | Paano i-check |
 |---|---|---|
-| **Mac na Apple Silicon** (M1, M2, M3 o M4) | Dito gumagana ang cut-out, ang pag-convert ng kulay at ang mabilis na transcription | Apple menu → About This Mac → "Chip: Apple M…" |
-| **Mga 10 GB na bakanteng space** | Para sa AI models at tools | Apple menu → System Settings → General → Storage |
-| **Xcode Command Line Tools** | Para mabuo ang tatlong maliit na Apple tool | Buksan ang Terminal at i-run ang `xcode-select --install`. Kung "already installed" ang lumabas, ayos na. |
-| **Claude app** (recommended) | Si Claude ang mag-i-install ng Studio, at siya rin ang gumagawa ng **Auto-edit** at **Apply notes** | I-download sa [claude.ai/download](https://claude.ai/download) at mag-sign in |
+| **Mac:** Apple Silicon (M1, M2, M3 o M4) | Mabilis na transcription, at ang sariling cut-out at color tools ng Apple | Apple menu → About This Mac → "Chip: Apple M…" |
+| **Windows:** Windows 10 o 11, 64-bit | Parehong Studio, gamit ang open-source na cut-out, face at text tools | Settings → System → About → "System type: 64-bit" |
+| **Mga 10 GB na bakanteng space** | Para sa AI models at tools | Mac: System Settings → General → Storage · Windows: Settings → System → Storage |
+| **Mac lang: Xcode Command Line Tools** | Para mabuo ang apat na maliit na Apple tool | Buksan ang Terminal at i-run ang `xcode-select --install`. Kung "already installed" ang lumabas, ayos na. |
+| **Claude app** (recommended) | Si Claude ang mag-i-install ng Studio, at siya rin ang gumagawa ng **Auto-edit** at **Apply notes** | I-download sa [claude.ai/download](https://claude.ai/download) at mag-sign in. Sa Windows, dumadaan sa [Git for Windows](https://git-scm.com/download/win) ang mga command ni Claude, kaya i-install mo rin iyon. |
 
-> Ang **Terminal** ay nasa Applications → Utilities → Terminal. Isang command ang bawat gray na box sa ibaba. I-paste ito at pindutin ang Return.
+> **Mac:** nasa Applications → Utilities → Terminal ang Terminal. **Windows:** buksan ang Studio folder sa File Explorer, i-click ang address bar, i-type ang `powershell` at pindutin ang Enter: magbubukas ang PowerShell sa folder na iyon. Isang command ang bawat gray na box sa ibaba. I-paste ito at pindutin ang Return (Enter).
 
 ---
 
@@ -46,14 +49,21 @@ Sa Terminal ka ba gumagamit ng Claude Code? Pumasok sa folder (`cd ~/Desktop/vid
 
 ### Option B: ikaw mismo ang mag-install
 
-Sa Terminal, pumasok muna sa folder: i-type ang `cd ` (may space sa dulo), i-drag ang folder mula sa Desktop papunta sa Terminal window, at pindutin ang Return. Tapos:
+**Mac.** Sa Terminal, pumasok muna sa folder: i-type ang `cd ` (may space sa dulo), i-drag ang folder mula sa Desktop papunta sa Terminal window, at pindutin ang Return. Tapos:
 
 ```bash
 ./tools/setup.sh
 ```
 
+**Windows.** Sa PowerShell na nakabukas sa folder (tingnan ang tip sa itaas):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\setup.ps1
+```
+
 - **10–20 minuto** ang unang install dahil nagda-download ito ng AI models (mga 8 GB). Sa susunod, nilalaktawan na nito ang tapos na.
-- Mas maliit ang `./tools/setup.sh --lite` dahil wala itong voice cleanup at isang QC model.
+- Mas maliit ang install kapag may `--lite` (Mac) o `-Lite` (Windows), dahil wala itong voice cleanup at isang QC model.
+- Hindi kailangan ng admin o ng Python sa computer: sa loob ng folder napupunta ang lahat.
 
 Pagkatapos, i-check kung kumpleto:
 
@@ -61,22 +71,27 @@ Pagkatapos, i-check kung kumpleto:
 ./vedit doctor
 ```
 
+Sa Windows: `.\vedit.cmd doctor`
+
 Dapat ✓ ang bawat linya. Kung hindi:
 
 | Lumabas | Gawin |
 |---|---|
-| `✗ could not build …` o "Needs the Xcode Command Line Tools" | I-run ang `xcode-select --install`, hintaying matapos, tapos i-run ulit ang `./tools/setup.sh` |
-| `✗ no whisper backend` | I-run ulit ang `./tools/setup.sh`; baka naputol ang download |
+| `✗ could not build …` o "Needs the Xcode Command Line Tools" (Mac) | I-run ang `xcode-select --install`, hintaying matapos, tapos i-run ulit ang `./tools/setup.sh` |
+| `✗ no whisper backend` | I-run ulit ang installer; baka naputol ang download |
+| `✗ … (not installed)` sa tabi ng isang finder (Windows) | I-run ulit ang `tools\setup.ps1`; may Python package na hindi natapos ma-install |
 | `– Claude Code CLI` | Optional ito. I-install lang ang Claude Code kung gusto mo ng Auto-edit |
-| `– voice cleanup` | Gumamit ka ng `--lite`. I-run ang `./tools/setup.sh` nang wala nito para maidagdag |
+| `– voice cleanup` | Gumamit ka ng `--lite`. I-run ulit ang installer nang wala nito para maidagdag |
 
 ## Step 3: buksan ang Studio
 
 ```bash
-.venv/bin/python tools/editor/server.py
+./vedit studio
 ```
 
-Buksan ang **http://localhost:8765** sa browser. Huwag isara ang Terminal habang ginagamit mo ang Studio, dahil titigil ang Studio kapag isinara mo ito.
+Sa Windows: `.\vedit.cmd studio`
+
+Kusa nitong bubuksan ang **http://localhost:8765** sa browser. Huwag isara ang Terminal (PowerShell) habang ginagamit mo ang Studio, dahil titigil ang Studio kapag isinara mo ito.
 
 **Gawing sa'yo:** i-click ang pangalan ng Studio sa itaas na kaliwa at i-type ang brand mo.
 
@@ -152,11 +167,12 @@ Elements (progress bar, kulay ng keyword, comment pop-up…) at Motion (punch-in
 
 ## Update · tanggalin
 
-- **Update:** `git pull`, tapos `./tools/setup.sh`.
+- **Update:** `git pull`, tapos i-run ulit ang installer (`./tools/setup.sh`, o `tools\setup.ps1` sa Windows).
 - **Tanggalin:** isara ang Studio at i-delete ang folder. Walang na-install sa labas nito.
 
 ## Mga tanong
 
-- **Windows o Linux?** Hindi pa. Gumagamit ng Apple frameworks ang cut-out at ang pag-convert ng kulay.
-- **Nasaan ang files ko?** Nasa `input/` ang videos, `work/` ang edits, at `output/` ang renders. Nasa Mac mo lang ang lahat, at hindi sila isasama ng git.
+- **Windows?** Oo, Windows 10 at 11 (64-bit). Pareho ang Studio at lahat ng features. Iba lang ang ilang tool sa loob: sa CPU tumatakbo ang transcription (mas mabagal kaysa sa Apple Silicon), at open-source models ang gamit ng cut-out, face finder at text finder sa halip na sa Apple. Bawat pagbabago ay tine-test sa malinis na Windows machine ng Windows check ng repo.
+- **Linux?** Hindi pa nate-test.
+- **Nasaan ang files ko?** Nasa `input/` ang videos, `work/` ang edits, at `output/` ang renders. Nasa computer mo lang ang lahat, at hindi sila isasama ng git.
 - **Private ba?** Sa `127.0.0.1` lang tumatakbo ang Studio. Ang Auto-edit ay nagpapadala ng transcript kay Claude gamit ang sarili mong Claude Code account; wala nang iba pang lumalabas sa computer mo.

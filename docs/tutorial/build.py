@@ -389,9 +389,9 @@ def gh_page():
           </div></span></div>
       <div class="gfiles"><div class="fh"><span class="gav s">J</span><b>{OWNER}</b><span class="fm">Tutorial + English and Taglish guides</span><span class="ft">1 hour ago · 24 commits</span></div>{fr}</div>
       <div class="grd"><div class="grh">README</div><h1>Video Edit with Claude — Studio</h1>
-        <p><b>Your own AI video editor, on your Mac.</b> Drop in a talking-head or screen-demo video. Claude cuts the retakes, repeats and dead air,
+        <p><b>Your own AI video editor, on your Mac or PC.</b> Drop in a talking-head or screen-demo video. Claude cuts the retakes, repeats and dead air,
         writes the captions, places motion graphics that never cover your face, and adds sound effects.</p></div>
-    </div><div class="gside"><h3>About</h3><p>Your own AI video editor, on your Mac: a step-by-step Studio + Claude.</p>
+    </div><div class="gside"><h3>About</h3><p>Your own AI video editor, on your Mac or PC: a step-by-step Studio + Claude.</p>
       <div class="topics"><span>video-editing</span><span>claude</span><span>macos</span><span>ai</span></div>
       <div class="sl">Readme</div><div class="sl">Activity</div><div class="sl">1 star · 1 watching · 0 forks</div></div></div>
   </div></div>'''
@@ -435,7 +435,7 @@ def gh_results():
     return f'''<div class="pg gh hid" id="pg_srch">{GH_HEAD % ""}
   <div class="gres"><div class="gfil"><h4>Filter by</h4><div class="on">Repositories <s>1</s></div><div>Code</div><div>Issues</div><div>Users</div></div>
     <div class="glist"><h3>1 result</h3><div class="grc"><div class="grt" data-t="sr_repo"><span class="gav s">J</span><a>{OWNER}/<b>video-edit-studio</b></a></div>
-      <p>Your own AI video editor, on your Mac: a step-by-step Studio + Claude. Cuts, captions, motion graphics.</p>
+      <p>Your own AI video editor, on your Mac or PC: a step-by-step Studio + Claude. Cuts, captions, motion graphics.</p>
       <div class="gtg"><span>video-editing</span><span>claude</span><span>macos</span></div><div class="gmeta">● Python · ☆ 1 · Updated today</div></div></div></div></div>'''
 
 
@@ -472,7 +472,7 @@ def claude_app(ci_html):
           <div class="cperm" id="cm_perm"><span>Installs Python, ffmpeg, the Apple tools and the AI models, inside this folder.</span><span class="grow"></span><b class="cbtn">Deny</b><b class="cbtn al" data-t="c_allow">Allow</b></div>
           <div class="cprog">{lines}</div></div>
         <div class="ctool hid" id="cm_t2"><div class="cth"><b>Run command</b><code>./vedit doctor</code><span class="cst ok">✓ ready</span></div></div>
-        <div class="ctool hid" id="cm_t3"><div class="cth"><b>Run command</b><code>.venv/bin/python tools/editor/server.py</code><span class="cst ok">✓ running</span></div></div>
+        <div class="ctool hid" id="cm_t3"><div class="cth"><b>Run command</b><code>./vedit studio</code><span class="cst ok">✓ running</span></div></div>
         <div class="ca hid" id="cm_done">All set! Your Studio is running: <a data-t="c_link">http://localhost:8765</a></div></div>
       <div class="ccomp low"><span class="mut">Reply to Claude…</span></div></div>
     <div class="dlg hid" id="dlg"><div class="dlgs"><em>Favourites</em><span>Recents</span><span>Applications</span><span class="on">Desktop</span><span>Documents</span><span>Downloads</span></div>
@@ -497,13 +497,13 @@ INTRO_CHIPS = [("cut", "Cuts retakes & dead air"), ("cc", "Writes the captions")
 def intro():
     chips = "".join(f'<div class="ich" id="ich{k}"><i><svg viewBox="0 0 24 24">{INTRO_ICONS[ic]}</svg></i>{esc(t)}</div>' for k, (ic, t) in enumerate(INTRO_CHIPS))
     return f'''<div id="intro"><div class="igrid"></div>
-  <div id="i_t"><div class="ik" id="i_k">OPEN SOURCE · FOR MAC</div>
+  <div id="i_t"><div class="ik" id="i_k">OPEN SOURCE · MAC &amp; WINDOWS</div>
     <div class="il"><span id="i_l1">Your own</span></div><div class="il"><span id="i_l2" class="o">AI video editor</span></div>
     <div class="iby" id="i_by"><b>✻</b> built with Claude</div></div>
   <div class="ichips">{chips}</div>
   <div id="i_rl"><div class="ik">INTRODUCING</div><h2>Video Edit Studio</h2></div>
   <div id="i_rev"><div class="bar"><span class="lights"><i></i><i></i><i></i></span><span class="u">localhost:8765</span></div><img src="assets/start.jpg" alt=""></div>
-  <div class="ireq" id="i_q0"><i><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></i><div><b>A Mac with Apple Silicon</b><small>M1, M2, M3 or M4</small></div></div>
+  <div class="ireq" id="i_q0"><i><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></i><div><b>A Mac or a Windows PC</b><small>Apple Silicon · Windows 10 / 11</small></div></div>
   <div class="ireq" id="i_q1"><i><b class="cl">✻</b></i><div><b>The Claude app</b><small>claude.ai/download</small></div></div></div>'''
 
 
@@ -553,8 +553,8 @@ def walkthrough(tg):
 
     # 0 · intro: what it is → the Studio reveal → what you need ----------
     T.chapter(0, "Intro", "Intro")
-    l1 = "Meet Video Edit Studio: your own AI video editor, on your Mac."
-    T.B(l1, "Ito ang Video Edit Studio: sarili mong AI video editor, sa Mac mo.")
+    l1 = "Meet Video Edit Studio: your own AI video editor, on your computer."
+    T.B(l1, "Ito ang Video Edit Studio: sarili mong AI video editor, sa computer mo.")
     J("tl.from(Q('i_k'), {opacity: 0, y: 20, duration: .5, ease: 'power3.out'}, .2);"
       "tl.from(Q('i_l1'), {yPercent: 110, duration: .7, ease: 'expo.out'}, .35);"
       "tl.from(Q('i_l2'), {yPercent: 110, duration: .7, ease: 'expo.out'}, .6);"
@@ -575,8 +575,8 @@ def walkthrough(tg):
       f"tl.to(Q('i_rev'), {{scale: 1.035, duration: 4, ease: 'none'}}, {T.t + 1.65:.3f});")
     T.snd.append((T.t + .35, "whoosh", 1))
     T.wait(T.need(l3))
-    l4 = "You need a Mac with Apple Silicon, and the Claude app."
-    T.B(l4, "Kailangan mo ng Mac na Apple Silicon, at ng Claude app.")
+    l4 = "You need a Mac or a Windows PC, and the Claude app."
+    T.B(l4, "Kailangan mo ng Mac o Windows PC, at ng Claude app.")
     J(f"tl.to(Q('i_rev'), {{x: -330, scale: .64, duration: .9, ease: 'power3.inOut'}}, {T.t:.3f});"
       f"tl.to(Q('i_rl'), {{x: -330, duration: .9, ease: 'power3.inOut'}}, {T.t:.3f});"
       f"tl.fromTo(Q('i_q0'), {{opacity: 0, x: 80}}, {{opacity: 1, x: 0, duration: .5, ease: 'expo.out'}}, {T.t + .6:.3f});"
@@ -1360,7 +1360,8 @@ def page(T, timeline=True):
             + '<div class="ghost hid" id="ghost"><img src="assets/file_a.jpg" alt=""></div>' + "".join(T.desk) + CURSOR)
     over = ("".join(T.over)
             + '''<div class="noc hid" id="noc"><em>PREFER TERMINAL?</em><h3>These three do the same</h3>
-                 <code><b>1</b>./tools/setup.sh</code><code><b>2</b>./vedit doctor</code><code><b>3</b>.venv/bin/python tools/editor/server.py</code></div>'''
+                 <code><b>Mac</b>./tools/setup.sh</code><code><b>Win</b>powershell -ExecutionPolicy Bypass -File tools\\setup.ps1</code>
+                 <code><b>then</b>vedit doctor · vedit studio</code></div>'''
             + f'''<div class="noc hid" id="gitc"><em>USING GIT?</em><h3>Clone it into your Desktop</h3>
                  <code><b>1</b>cd ~/Desktop</code><code><b>2</b>git clone https://{REPO}.git</code></div>'''
             + intro()
@@ -1401,7 +1402,7 @@ def srt(T, lang):
 
 
 def script_md(T, D):
-    rows = [f"# Tutorial voiceover script\n\n`Studio_Tutorial.mp4` ({mmss(D)}) is narrated with these lines (AI voice: ElevenLabs “Nathaniel Hartley”), over a "
+    rows = [f"# Tutorial voiceover script\n\n`Studio_Tutorial.mp4` ({mmss(D)}) is narrated with these lines (AI voice: ElevenLabs “Emmett Ashford”, American English), over a "
             "music bed. To use your own voice instead, record over `Studio_Tutorial_music_only.mp4` (the same video with music and clicks only): "
             "each line starts at the time shown, and the screen does what the line says while you say it.\n\n"
             "Teleprompter / subtitle files: `voiceover_en.srt` (English) and `voiceover_tl.srt` (Taglish). After you change a line, re-record it "

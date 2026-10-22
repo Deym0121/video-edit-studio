@@ -8,14 +8,17 @@ This guide takes you from the GitHub page to your first finished video, one step
 
 ## Before you start
 
+It runs on a **Mac** or a **Windows PC**.
+
 | You need | Why | How to check |
 |---|---|---|
-| A **Mac with Apple Silicon** (M1, M2, M3 or M4) | The person cut-out, colour conversion and fast transcription use Apple's chips | Apple menu → About This Mac → "Chip: Apple M…" |
-| **About 10 GB free** | AI models and tools | Apple menu → System Settings → General → Storage |
-| **Xcode Command Line Tools** | They build three small Apple tools | Open Terminal and run `xcode-select --install`. If it says "already installed", you're done. |
-| **The Claude app** (recommended) | Claude installs the Studio for you, and powers **Auto-edit** and **Apply notes** | Download it from [claude.ai/download](https://claude.ai/download) and sign in |
+| **Mac:** Apple Silicon (M1, M2, M3 or M4) | Fast transcription and Apple's own person cut-out and colour tools | Apple menu → About This Mac → "Chip: Apple M…" |
+| **Windows:** Windows 10 or 11, 64-bit | The same Studio, with open-source cut-out, face and text tools | Settings → System → About → "System type: 64-bit" |
+| **About 10 GB free** | AI models and tools | Mac: System Settings → General → Storage · Windows: Settings → System → Storage |
+| **Mac only: Xcode Command Line Tools** | They build four small Apple tools | Open Terminal and run `xcode-select --install`. If it says "already installed", you're done. |
+| **The Claude app** (recommended) | Claude installs the Studio for you, and powers **Auto-edit** and **Apply notes** | Download it from [claude.ai/download](https://claude.ai/download) and sign in. On Windows, Claude runs commands through [Git for Windows](https://git-scm.com/download/win), so install that too. |
 
-> **Terminal** is the app at Applications → Utilities → Terminal. Each grey block below is one command. Paste it in and press Return.
+> **Mac:** Terminal is at Applications → Utilities → Terminal. **Windows:** open the Studio folder in File Explorer, click the address bar, type `powershell` and press Enter: a PowerShell window opens in that folder. Each grey block below is one command. Paste it in and press Return (Enter).
 
 ---
 
@@ -46,14 +49,21 @@ Using Claude Code in Terminal instead? Go into the folder (`cd ~/Desktop/video-e
 
 ### Option B: install it yourself
 
-In Terminal, go into the folder first: type `cd ` with a space after it, drag the folder from your Desktop into the Terminal window, and press Return. Then:
+**Mac.** In Terminal, go into the folder first: type `cd ` with a space after it, drag the folder from your Desktop into the Terminal window, and press Return. Then:
 
 ```bash
 ./tools/setup.sh
 ```
 
+**Windows.** In PowerShell, opened in the folder (see the tip above):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\setup.ps1
+```
+
 - The first install takes **10–20 minutes**, because it downloads the AI models (about 8 GB). Later runs skip what's already done.
-- `./tools/setup.sh --lite` makes a smaller install that skips the voice cleanup and one QC model.
+- `--lite` (Mac) or `-Lite` (Windows) makes a smaller install that skips the voice cleanup and one QC model.
+- No admin rights, no system Python: everything goes inside the folder.
 
 Then check that everything is in place:
 
@@ -61,22 +71,27 @@ Then check that everything is in place:
 ./vedit doctor
 ```
 
+On Windows: `.\vedit.cmd doctor`
+
 Each line should show ✓. What to do if one doesn't:
 
 | You see | Fix |
 |---|---|
-| `✗ could not build …` or "Needs the Xcode Command Line Tools" | Run `xcode-select --install`, wait for it to finish, then run `./tools/setup.sh` again |
-| `✗ no whisper backend` | Run `./tools/setup.sh` again; the download was probably interrupted |
+| `✗ could not build …` or "Needs the Xcode Command Line Tools" (Mac) | Run `xcode-select --install`, wait for it to finish, then run `./tools/setup.sh` again |
+| `✗ no whisper backend` | Run the installer again; the download was probably interrupted |
+| `✗ … (not installed)` next to a finder (Windows) | Run `tools\setup.ps1` again; a Python package didn't finish installing |
 | `– Claude Code CLI` | That's optional. Install Claude Code only if you want Auto-edit |
-| `– voice cleanup` | You used `--lite`. Run `./tools/setup.sh` without it to add the voice cleanup |
+| `– voice cleanup` | You used `--lite`. Run the installer without it to add the voice cleanup |
 
 ## Step 3: open the Studio
 
 ```bash
-.venv/bin/python tools/editor/server.py
+./vedit studio
 ```
 
-Open **http://localhost:8765** in your browser. Keep the Terminal window open while you use the Studio; closing it stops the Studio.
+On Windows: `.\vedit.cmd studio`
+
+It opens **http://localhost:8765** in your browser. Keep the Terminal (PowerShell) window open while you use the Studio; closing it stops the Studio.
 
 **Make it yours:** click the Studio's name at the top left and type your brand.
 
@@ -152,11 +167,12 @@ Elements (progress bar, keyword colour, comment pop-up…) and Motion (punch-in 
 
 ## Update · uninstall
 
-- **Update:** run `git pull`, then `./tools/setup.sh`.
+- **Update:** run `git pull`, then the installer again (`./tools/setup.sh`, or `tools\setup.ps1` on Windows).
 - **Uninstall:** quit the Studio and delete the folder. Nothing was installed outside it.
 
 ## FAQ
 
-- **Windows or Linux?** Not yet. The cut-out and the colour tools use Apple frameworks.
-- **Where are my files?** Your videos are in `input/`, edits in `work/` and renders in `output/`. They stay on your Mac, and git ignores them.
+- **Windows?** Yes, Windows 10 and 11 (64-bit). The Studio and every feature are the same. A few tools differ under the hood: transcription runs on the CPU (slower than on Apple Silicon), and the person cut-out, face finder and text finder use open-source models instead of Apple's. Every change is tested on a clean Windows machine by the repo's Windows check.
+- **Linux?** Not tested yet.
+- **Where are my files?** Your videos are in `input/`, edits in `work/` and renders in `output/`. They stay on your computer, and git ignores them.
 - **Is it private?** The Studio runs on `127.0.0.1` only. Auto-edit sends your transcript to Claude through your own Claude Code account; nothing else leaves your computer.

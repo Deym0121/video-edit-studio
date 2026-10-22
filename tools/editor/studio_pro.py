@@ -191,12 +191,14 @@ def _context(name, src_t, span=4.0):
 
 
 # ================================================================ Claude runs (Claude Code, headless)
-ALLOWED = ["Read", "Edit", "Write", "Glob", "Grep", "Bash(.venv/bin/python:*)", "Bash(./vedit:*)", "Bash(ls:*)"]
+VPY = ".venv/Scripts/python.exe" if vedit.IS_WIN else ".venv/bin/python"  # what Claude types to run a tool
+ALLOWED = ["Read", "Edit", "Write", "Glob", "Grep", f"Bash({VPY}:*)", "Bash(./vedit:*)", "Bash(./vedit.cmd:*)", "Bash(ls:*)"]
 
 
 def claude_bin():
     s = sa.settings().get("claude_bin") or os.environ.get("STUDIO_CLAUDE")
     for c in (s, shutil.which("claude"), Path.home() / ".claude/local/claude", Path.home() / ".local/bin/claude",
+              Path.home() / ".local/bin/claude.exe",
               "/opt/homebrew/bin/claude", "/usr/local/bin/claude"):
         if c and Path(c).exists():
             return str(c)
@@ -254,7 +256,7 @@ def claude_run(name, kind, prompt, after=None):
 
 
 def auto_edit(name, after=None):
-    src = Path(_src(name)).relative_to(ROOT) if _src(name) else f"input/{name}.mov"
+    src = Path(_src(name)).relative_to(ROOT).as_posix() if _src(name) else f"input/{name}.mov"
     prompt = (f"Edit the video {src} with this toolkit, as the creator's editor. First read CLAUDE.md, DESIGN_SYSTEM.md and "
               f".claude/skills/bbd-video-edit/SKILL.md and follow them, including work/{name}/decisions.json \"look\" (the creator's "
               "Studio choices: palette, fonts, hook, captions, visuals density/types, extras; look.brief is the creator's own words about the "
@@ -277,7 +279,7 @@ def apply_comments(name, after=None):
               f"seconds and nearby transcript word indices are given):\n{notes}\n\nRead CLAUDE.md and "
               ".claude/skills/bbd-video-edit/SKILL.md first. Apply every note by editing work/{name}/decisions.json (remove by word "
               "index, cut_ranges in source seconds at energy dips, ring_out, hook) and/or scenes.json (graphics), then run "
-              f".venv/bin/python tools/vedit.py plan {Path(_src(name)).relative_to(ROOT)} and tools/splicecheck.py on the changed spots. "
+              f"{VPY} tools/vedit.py plan {Path(_src(name)).relative_to(ROOT).as_posix()} and tools/splicecheck.py on the changed spots. "
               "Do NOT render. Reply with one line per note saying what you changed, in the creator's language.")
 
     def done():
@@ -406,14 +408,14 @@ def hook_candidates(name, n=3):
 
 def _face_top(name, src_t):
     """Top of the face (px, 1920-high frame) at a source time, or None when no face (screen / back-cam shot)."""
-    fb = ROOT / "tools" / "bin" / "facebox"
-    if not fb.exists():
+    fb = vedit.finder("facebox")
+    if not fb:
         return None
     png = WORK / name / "studio" / "hookface.png"
     png.parent.mkdir(exist_ok=True)
     subprocess.run([vedit.binpath("ffmpeg"), "-v", "error", "-y", "-ss", f"{src_t:.2f}", "-i", _src(name), "-frames:v", "1",
                     "-vf", "scale=1080:1920", str(png)], capture_output=True)
-    r = subprocess.run([str(fb), str(png)], capture_output=True, text=True)
+    r = subprocess.run([*fb, str(png)], capture_output=True, text=True)
     try:
         faces = json.loads(r.stdout.splitlines()[0])["faces"]
     except (ValueError, IndexError, KeyError):

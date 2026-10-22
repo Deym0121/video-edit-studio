@@ -1,0 +1,23 @@
+# Installs the toolkit on a clean Windows machine exactly as a creator would (tools\setup.ps1), then runs the whole
+# path on a test clip (tools/ci_smoke.py): finders, transcribe, plan, render, style reference, the Studio, a motion graphic.
+name: Windows
+on:
+  push:
+    branches: [main, windows-support]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    env:
+      VEDIT_WHISPER: tiny  # small model for CI; creators get large-v3-turbo
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup (tools\setup.ps1 -Lite -NoModels)
+        shell: cmd
+        run: powershell -ExecutionPolicy Bypass -File tools\setup.ps1 -Lite -NoModels
+      - name: Smoke test
+        shell: cmd
+        run: .venv\Scripts\python.exe -X utf8 tools\ci_smoke.py

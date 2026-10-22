@@ -6,6 +6,7 @@ Use it on the edited output to confirm a join sounds complete before sending it 
 """
 import subprocess
 import sys
+import tempfile
 import wave
 from pathlib import Path
 
@@ -18,7 +19,7 @@ from listen import SR, mms_words  # noqa: E402
 
 def main():
     src = Path(sys.argv[1])
-    tmp = Path("/tmp") if not Path("/private/tmp").exists() else Path("/private/tmp")
+    tmp = Path(tempfile.gettempdir())
     wav = tmp / f"_hear_{src.stem}.wav"
     subprocess.run([vedit.binpath("ffmpeg"), "-y", "-v", "error", "-i", str(src), "-vn", "-ac", "1", "-ar", str(SR),
                     "-c:a", "pcm_s16le", str(wav)], check=True)

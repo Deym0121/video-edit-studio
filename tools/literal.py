@@ -42,7 +42,7 @@ def main():
     x = np.concatenate([full[int(a * SR):int(b * SR)] for a, b in segs])
     total = len(x) / SR
 
-    dev = "mps" if torch.backends.mps.is_available() else "cpu"
+    dev = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
     proc = AutoProcessor.from_pretrained(MODEL, target_lang="tgl")
     model = Wav2Vec2ForCTC.from_pretrained(MODEL, target_lang="tgl", ignore_mismatched_sizes=True)
     model.load_adapter("tgl")

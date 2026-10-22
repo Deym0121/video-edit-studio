@@ -8,6 +8,7 @@ Everything is written to work/<name>/decisions.json, the same file Claude edits.
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 import sys
@@ -22,13 +23,13 @@ sys.path.insert(0, str(ROOT / "tools"))
 import vedit  # noqa: E402
 sys.path.insert(0, str(Path(__file__).parent))
 import studio_api  # noqa: E402
-import studio_brief  # noqa: E402  (brief + style references)  (Studio wizard: look, frames, cut-outs, uploads)
+import studio_brief  # noqa: E402  (brief + style references)
 import studio_pro  # noqa: E402  (v2: Health, notes, Claude, Hook Lab, Post Kit, Brand Kits)
 from urllib.parse import parse_qs  # noqa: E402
 
 WORK, OUT, HERE = ROOT / "work", ROOT / "output", Path(__file__).parent
-PY = str(ROOT / ".venv" / "bin" / "python")
-PORT = 8765
+PY = str(vedit.venv_py()) if vedit.venv_py().exists() else sys.executable
+PORT = int(os.environ.get("VEDIT_PORT", 8765))
 jobs: dict[str, dict] = {}  # name -> {"state", "log"}
 
 
@@ -55,7 +56,7 @@ def ensure_proxy(name):
         tmp = wd / "proxy.tmp.mp4"
         r = subprocess.run([vedit.binpath("ffmpeg"), "-y", "-v", "error", "-i", meta["src"],
                             "-vf", "scale=-2:960" if meta["h"] >= meta["w"] else "scale=960:-2",
-                            "-c:v", "h264_videotoolbox", "-b:v", "2500k", "-g", "15",
+                            *vedit.h264("2500k", 23), "-g", "15",
                             "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", str(tmp)],
                            capture_output=True, text=True)
         if r.returncode == 0:
@@ -612,7 +613,7 @@ class H(BaseHTTPRequestHandler):
             m = re.fullmatch(r"/gfx/sample/([A-Za-z0-9_-]+)", path)
             if m:  # catalog sample: a real past render, as a browser-playable preview
                 src = next((p for ext in ("mp4", "mov") for p in [RENDERS / f"{m.group(1)}.{ext}"] if p.exists()), None)
-                url = gfx_preview(dict(file=str(src.relative_to(ROOT)))) if src else None
+                url = gfx_preview(dict(file=src.relative_to(ROOT).as_posix())) if src else None
                 return self.send_json(dict(url=url, ready=bool(url)))
             if path == "/api/projects":
                 items = []

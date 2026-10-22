@@ -25,7 +25,7 @@ def mms_words(x):
     import torch
     from transformers import AutoProcessor, Wav2Vec2ForCTC
     if not _mms:
-        dev = "mps" if torch.backends.mps.is_available() else "cpu"
+        dev = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
         proc = AutoProcessor.from_pretrained("facebook/mms-1b-all", target_lang="tgl")
         m = Wav2Vec2ForCTC.from_pretrained("facebook/mms-1b-all", target_lang="tgl", ignore_mismatched_sizes=True)
         m.load_adapter("tgl")

@@ -19,6 +19,8 @@ Inspiration video/
 .venv-df/
 tools/node/
 tools/bin/
+tools/uv/
+tools/python/
 node_modules/
 __pycache__/
 *.pyc

@@ -22,8 +22,8 @@ sys.path.insert(0, str(ROOT / "tools"))
 import brandkit  # noqa: E402
 import vedit  # noqa: E402
 
-TEXTBOX = ROOT / "tools" / "bin" / "textbox"
-FACEBOX = ROOT / "tools" / "bin" / "facebox"
+TEXTBOX = vedit.finder("textbox")  # Apple Vision on a Mac, RapidOCR elsewhere
+FACEBOX = vedit.finder("facebox")  # Apple Vision on a Mac, OpenCV elsewhere
 SPAN = 90.0     # seconds analysed (the opening of a short is where its style lives)
 NFRAMES = 16
 
@@ -62,9 +62,9 @@ def frames(src, span, out):
 
 def faces(files):
     """Which frames show a face (no face + text = a full-screen graphic page)."""
-    if not FACEBOX.exists():
+    if not FACEBOX:
         return {}
-    r = subprocess.run([str(FACEBOX)] + [str(f) for _, f in files], capture_output=True, text=True)
+    r = subprocess.run([*FACEBOX] + [str(f) for _, f in files], capture_output=True, text=True)
     out = {}
     for line in r.stdout.splitlines():
         try:
@@ -76,9 +76,9 @@ def faces(files):
 
 
 def text_lines(files):
-    if not TEXTBOX.exists():
+    if not TEXTBOX:
         return {}
-    r = subprocess.run([str(TEXTBOX)] + [str(f) for _, f in files], capture_output=True, text=True)
+    r = subprocess.run([*TEXTBOX] + [str(f) for _, f in files], capture_output=True, text=True)
     out = {}
     for line in r.stdout.splitlines():
         try:

@@ -153,7 +153,7 @@ def main():
     with wave.open(str(out), "wb") as w:
         w.setnchannels(1), w.setsampwidth(2), w.setframerate(SR)
         w.writeframes((mix * 32767).astype(np.int16).tobytes())
-    dec["sfx_track"] = str(out.relative_to(vedit.ROOT))
+    dec["sfx_track"] = out.relative_to(vedit.ROOT).as_posix()
     dec["sfx_level"] = 1.0
     vedit.jsave(wd / "decisions.json", dec)
     print(f"✓ music {D:.1f}s · {bpm} bpm · {' '.join(prog)} → {out.relative_to(vedit.ROOT)}")

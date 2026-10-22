@@ -22,7 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import vedit  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
-FACEBOX = ROOT / "tools" / "bin" / "facebox"
+FACEBOX = vedit.finder("facebox")  # Apple Vision on a Mac, OpenCV elsewhere
 PY = sys.executable
 PARTIAL = {"tag", "lockup", "thumb", "lower", "panel"}  # graphics that share the frame with the camera
 # where the TikTok / Reels / Shorts interface sits on a 1080×1920 frame
@@ -199,8 +199,8 @@ def check_graphics(src, wd, ed, dec):
                         "-frames:v", "1", "-vf", "scale=1080:1920", str(png)], capture_output=True)
         todo.append((o, a, png, o["at"] + dt))
     faces = {}
-    if FACEBOX.exists() and todo:
-        r = subprocess.run([str(FACEBOX), *[str(p) for _, _, p, _ in todo]], capture_output=True, text=True)
+    if FACEBOX and todo:
+        r = subprocess.run([*FACEBOX, *[str(p) for _, _, p, _ in todo]], capture_output=True, text=True)
         for line in r.stdout.splitlines():
             try:
                 j = json.loads(line)

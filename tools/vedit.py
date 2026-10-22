@@ -20,6 +20,7 @@ import bisect
 import difflib
 import json
 import math
+import os
 import re
 import shutil
 import subprocess
@@ -31,6 +32,63 @@ ROOT = Path(__file__).resolve().parent.parent
 WORK, OUT = ROOT / "work", ROOT / "output"
 STYLE = json.loads((ROOT / "tools" / "style.json").read_text())
 MODEL = "mlx-community/whisper-large-v3-turbo"
+FW_MODEL = os.environ.get("VEDIT_WHISPER", "large-v3-turbo")  # faster-whisper model (Windows / Intel Mac)
+
+# ----------------------------------------------------------------- Mac + Windows
+IS_WIN = os.name == "nt"
+IS_MAC = sys.platform == "darwin"
+if IS_WIN:
+    # Windows reads/writes text in the local code page by default; every file here is UTF-8 (emoji, “quotes”, Taglish).
+    # Re-run the tool in Python's UTF-8 mode, and let every process it starts inherit it.
+    os.environ["PYTHONUTF8"] = "1"
+    if not sys.flags.utf8_mode and sys.argv and sys.argv[0].endswith(".py"):
+        sys.exit(subprocess.call([sys.executable, "-X", "utf8", *sys.argv]))
+
+
+def venv_py(env=".venv"):
+    """The Python inside one of this folder's venvs (Windows keeps it in Scripts\\python.exe)."""
+    return ROOT / env / ("Scripts/python.exe" if IS_WIN else "bin/python")
+
+
+def node_dir():
+    """The private Node that tools/setup installs (node + npx sit in tools/node on Windows, tools/node/bin elsewhere)."""
+    return ROOT / "tools" / "node" if IS_WIN else ROOT / "tools" / "node" / "bin"
+
+
+def npx():
+    return shutil.which("npx", path=str(node_dir())) or shutil.which("npx") or "npx"
+
+
+FINDERS = {"facebox": "cv2", "textbox": "rapidocr_onnxruntime", "personmask": "torchvision"}  # Python twin → module it needs
+
+
+def finder(name):
+    """A finder as a command: the Apple Vision build (tools/bin/<name>, Mac) or its cross-platform Python twin
+    (tools/<name>.py: OpenCV faces, RapidOCR text, torchvision person cut-out). None when neither is installed."""
+    b = ROOT / "tools" / "bin" / name
+    if b.exists():
+        return [str(b)]
+    twin = ROOT / "tools" / f"{name}.py"
+    import importlib.util
+    if twin.exists() and name in FINDERS and importlib.util.find_spec(FINDERS[name]):
+        return [sys.executable, str(twin)]
+    return None
+
+
+_vt = None
+
+
+def has_vt():
+    """ffmpeg has Apple's hardware H.264 encoder (Mac)."""
+    global _vt
+    if _vt is None:
+        _vt = "h264_videotoolbox" in subprocess.run([binpath("ffmpeg"), "-hide_banner", "-encoders"], capture_output=True, text=True).stdout
+    return _vt
+
+
+def h264(bitrate="8M", crf=20):
+    """Encoder arguments: Apple's hardware H.264 on a Mac, libx264 everywhere else."""
+    return ["-c:v", "h264_videotoolbox", "-b:v", bitrate] if has_vt() else ["-c:v", "libx264", "-crf", str(crf), "-preset", "fast"]
 # Seeding the prompt with fillers makes Whisper transcribe them instead of
 # silently skipping them (otherwise "um"/"ano" hide inside word timings).
 PROMPT = "Umm, uh, ah, so, ano, kasi, like... Taglish na usapan, okay? Beyond Breakeven Digital."
@@ -81,11 +139,11 @@ def sh(args, capture=False):
 
 def jload(p, default=None):
     p = Path(p)
-    return json.loads(p.read_text()) if p.exists() else default
+    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else default
 
 
 def jsave(p, obj):
-    Path(p).write_text(json.dumps(obj, indent=1, ensure_ascii=False))
+    Path(p).write_text(json.dumps(obj, indent=1, ensure_ascii=False), encoding="utf-8")
 
 
 def tc(t):
@@ -161,7 +219,7 @@ def whisper_words(wav, language=None, prompt=PROMPT):
         return ws, r.get("language")
     except ImportError:
         from faster_whisper import WhisperModel
-        m = WhisperModel("large-v3-turbo", device="cpu", compute_type="int8")
+        m = WhisperModel(FW_MODEL, device="cpu", compute_type="int8")
         segs, info = m.transcribe(str(wav), word_timestamps=True, language=language,
                                   initial_prompt=prompt, condition_on_previous_text=False)
         ws = [(w.word, w.start, w.end, w.probability) for s in segs for w in (s.words or [])]
@@ -186,7 +244,7 @@ def cmd_doctor(a):
         enc = sh([binpath("ffmpeg"), "-hide_banner", "-encoders"], capture=True)
         flt = sh([binpath("ffmpeg"), "-hide_banner", "-filters"], capture=True)
         print(f"  {ver}")
-        print(f"  {'✓' if 'h264_videotoolbox' in enc else '–'} hardware encoder (videotoolbox)")
+        print(f"  {'✓' if 'h264_videotoolbox' in enc else '✓' if 'libx264' in enc else '✗'} H.264 encoder ({'videotoolbox' if 'h264_videotoolbox' in enc else 'libx264'})")
         print(f"  {'✓' if re.search(r'^ ... ass ', flt, re.M) else '✗'} captions (libass)")
     for mod in ("mlx_whisper", "faster_whisper"):
         try:
@@ -199,11 +257,16 @@ def cmd_doctor(a):
         print("✗ no whisper backend")
         ok = False
     import shutil  # the Studio's extras — each one is optional, the edit still runs without it
-    for b, what in (("personmask", "text behind you (Apple Vision cut-out)"), ("tosdr", "natural colour from iPhone HDR"),
-                    ("facebox", "Edit Health: graphics over the face"), ("textbox", "Style references: caption finder")):
-        print(f"{'✓' if (ROOT / 'tools' / 'bin' / b).exists() else '–'} {what} (tools/bin/{b})")
+    for b, what in (("personmask", "text behind you (person cut-out)"), ("facebox", "Edit Health: graphics over the face"),
+                    ("textbox", "Style references: caption finder")):
+        f = finder(b)
+        how = "Apple Vision" if f and len(f) == 1 else "Python" if f else "not installed"
+        print(f"{'✓' if f else '–'} {what} ({how})")
+    tm = (ROOT / "tools" / "bin" / "tosdr").exists()
+    print(f"{'✓' if tm else '✓' if 'zscale' in sh([binpath('ffmpeg'), '-hide_banner', '-filters'], capture=True) else '–'} natural colour from iPhone HDR "
+          f"({'Apple tone mapping' if tm else 'ffmpeg tone mapping'})")
     print(f"{'✓' if (ROOT / 'tools' / 'node' / 'bin' / 'node').exists() or shutil.which('node') else '✗'} node (motion-graphics renderer)")
-    print(f"{'✓' if (ROOT / '.venv-df' / 'bin' / 'python').exists() else '–'} voice cleanup (DeepFilterNet, .venv-df)")
+    print(f"{'✓' if venv_py('.venv-df').exists() else '–'} voice cleanup (DeepFilterNet, .venv-df)")
     try:
         __import__("transformers")
         print("✓ literal listening (MMS) for repeats / clipped words")
@@ -1114,10 +1177,11 @@ def behind_pass(out, items, ow, oh, fps_r, venc, wd, cube=None):
     """Text BEHIND the speaker: Apple Vision cuts the person out of the rendered frames (tools/bin/personmask),
     the text layer goes over the frame and the person goes back on top of it."""
     import subprocess as sp
-    ffmpeg, pm = binpath("ffmpeg"), ROOT / "tools" / "bin" / "personmask"
-    if not pm.exists():
-        die("tools/bin/personmask missing — build it: swiftc -O -sdk <MacOSX26.x.sdk> tools/personmask.swift -o tools/bin/personmask")
-    print(f"• text-behind: cutting the speaker out for {len(items)} moment(s)…", flush=True)
+    ffmpeg, pm = binpath("ffmpeg"), finder("personmask")
+    if pm:
+        print(f"• text-behind: cutting the speaker out for {len(items)} moment(s)…", flush=True)
+    else:
+        print("– text-behind: no person cut-out installed (tools/setup) — the text goes over the speaker instead", flush=True)
     hlg = cube is not None  # HLG source: composite in RGB on the untouched signal, text layer through the SDR→HLG LUT
     # Each moment reads its own seeked slice of the render (bug fix: one split of the whole video made ffmpeg queue every
     # frame before a late moment — a CTA at 3:17 in a 1080p final = ~37 GB of raw frames → killed by the OS).
@@ -1127,14 +1191,18 @@ def behind_pass(out, items, ow, oh, fps_r, venc, wd, cube=None):
     for k, o in enumerate(items):
         a0, a1 = o["at"], o["at"] + o["dur"]
         mk = wd / f"mask_{o['id']}.mkv"
-        p1 = sp.Popen([ffmpeg, "-v", "error", "-ss", f"{a0:.4f}", "-t", f"{a1 - a0:.4f}", "-i", str(out),
-                       "-f", "rawvideo", "-pix_fmt", "bgra", "-"], stdout=sp.PIPE)
-        p2 = sp.Popen([str(pm), str(ow), str(oh)], stdin=p1.stdout, stdout=sp.PIPE)
-        p3 = sp.Popen([ffmpeg, "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "gray", "-s", f"{ow}x{oh}", "-r", fps_r,
-                       "-i", "-", "-c:v", "ffv1", str(mk)], stdin=p2.stdout)
-        p1.stdout.close(), p2.stdout.close()
-        if p3.wait() or p2.wait() or p1.wait():
-            die(f"person mask failed for {o['id']}")
+        if not pm:  # an empty mask: nobody is put back on top of the text
+            sp.run([ffmpeg, "-v", "error", "-y", "-f", "lavfi", "-i", f"color=c=black:s={ow}x{oh}:r={fps_r}", "-t", f"{a1 - a0:.4f}",
+                    "-pix_fmt", "gray", "-c:v", "ffv1", str(mk)], check=True)
+        else:
+            p1 = sp.Popen([ffmpeg, "-v", "error", "-ss", f"{a0:.4f}", "-t", f"{a1 - a0:.4f}", "-i", str(out),
+                           "-f", "rawvideo", "-pix_fmt", "bgra", "-"], stdout=sp.PIPE)
+            p2 = sp.Popen([*pm, str(ow), str(oh)], stdin=p1.stdout, stdout=sp.PIPE)
+            p3 = sp.Popen([ffmpeg, "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "gray", "-s", f"{ow}x{oh}", "-r", fps_r,
+                           "-i", "-", "-c:v", "ffv1", str(mk)], stdin=p2.stdout)
+            p1.stdout.close(), p2.stdout.close()
+            if p3.wait() or p2.wait() or p1.wait():
+                die(f"person mask failed for {o['id']}")
         op = Path(o["file"]) if Path(o["file"]).is_absolute() else ROOT / o["file"]
         inputs += ["-ss", f"{a0:.4f}", "-t", f"{a1 - a0:.4f}", "-i", out, "-i", op, "-i", mk]
         fi, ti, mi = n_in, n_in + 1, n_in + 2
@@ -1524,11 +1592,23 @@ def cmd_locate(a):
         print(f"{tc(line_t)}  " + " ".join(line))
 
 
+def cmd_studio(a):
+    """Start the Studio (tools/editor/server.py) and open it in the browser."""
+    if not a.no_open:
+        import threading
+        import webbrowser
+        threading.Timer(1.5, webbrowser.open, [f"http://localhost:{os.environ.get('VEDIT_PORT', 8765)}"]).start()
+    sys.exit(subprocess.call([sys.executable, "-X", "utf8", str(ROOT / "tools" / "editor" / "server.py")]))
+
+
 # ----------------------------------------------------------------- cli
 def main():
     ap = argparse.ArgumentParser(prog="vedit", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sp = ap.add_subparsers(dest="cmd", required=True)
     sp.add_parser("doctor").set_defaults(fn=cmd_doctor)
+    p = sp.add_parser("studio", help="start the Studio → http://localhost:8765")
+    p.add_argument("--no-open", action="store_true", help="don't open the browser")
+    p.set_defaults(fn=cmd_studio)
     p = sp.add_parser("transcribe")
     p.add_argument("video")
     p.add_argument("--language", default=None, help="e.g. tl or en; default auto-detect")

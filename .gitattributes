@@ -1,0 +1,9 @@
+# Windows scripts keep CRLF, shell scripts keep LF — whatever the cloning machine's git settings are
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
+*.sh    text eol=lf
+vedit   text eol=lf
+*.mp3   binary
+*.mp4   binary
+*.jpg   binary
+*.png   binary

@@ -396,7 +396,7 @@ def main():
         w.setsampwidth(2)
         w.setframerate(SR)
         w.writeframes((track * 32767).astype(np.int16).tobytes())
-    dec["sfx_track"] = str(out.relative_to(ROOT))
+    dec["sfx_track"] = out.relative_to(ROOT).as_posix()
     vedit.jsave(wd / "decisions.json", dec)
     kinds = {}
     for _, s in cues:

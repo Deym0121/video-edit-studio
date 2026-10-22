@@ -120,7 +120,7 @@ def main():
     fc.append("[0:v]unsharp=5:5:0.45:5:5:0[vout]")  # upscaled screen/cam: light luma sharpen
     enc = subprocess.Popen([ff, "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", "30",
                             "-i", "-", "-i", a.src, "-filter_complex", ";".join(fc), "-map", "[vout]", "-map", "[aout]",
-                            "-c:v", "h264_videotoolbox", "-b:v", "24M", "-pix_fmt", "yuv420p",
+                            *vedit.h264("24M", 16), "-pix_fmt", "yuv420p",
                             "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
                             "-c:a", "aac", "-b:a", "192k", a.out], stdin=subprocess.PIPE)
     fsz, total = SW * SH * 3, 0

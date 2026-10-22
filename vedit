@@ -1,4 +1,6 @@
 #!/bin/bash
 # BBD video editor — see .claude/skills/bbd-video-edit/SKILL.md
 DIR="$(cd "$(dirname "$0")" && pwd)"
-exec "$DIR/.venv/bin/python" "$DIR/tools/vedit.py" "$@"
+PY="$DIR/.venv/bin/python"
+[ -x "$PY" ] || PY="$DIR/.venv/Scripts/python.exe"  # Windows (Git Bash, as Claude Code uses)
+exec "$PY" -X utf8 "$DIR/tools/vedit.py" "$@"

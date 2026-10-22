@@ -69,7 +69,7 @@ def deepfilter(x, wd):
     with wave.open(str(a), "wb") as w:
         w.setnchannels(1), w.setsampwidth(2), w.setframerate(SR)
         w.writeframes((np.clip(x, -1, 1) * 32767).astype(np.int16).tobytes())
-    sp.run([str(vedit.ROOT / ".venv-df" / "bin" / "python"), str(vedit.ROOT / "tools" / "df_denoise.py"), str(a), str(b)],
+    sp.run([str(vedit.venv_py(".venv-df")), str(vedit.ROOT / "tools" / "df_denoise.py"), str(a), str(b)],
            check=True, capture_output=True)
     with wave.open(str(b)) as w:
         y = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16).astype(np.float32) / 32768
@@ -113,7 +113,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("video")
     ap.add_argument("--strength", type=float, default=0.92, help="noisereduce only")
-    ap.add_argument("--engine", choices=["df", "nr"], default="df" if (vedit.ROOT / ".venv-df" / "bin" / "python").exists() else "nr")
+    ap.add_argument("--engine", choices=["df", "nr"], default="df" if vedit.venv_py(".venv-df").exists() else "nr")
     ap.add_argument("--test", help="a-b seconds: write work/<name>/clean_test_{before,after}.wav only")
     a = ap.parse_args()
     src, wd, _ = vedit.ctx(a.video)

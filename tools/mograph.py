@@ -28,7 +28,7 @@ import brandkit  # noqa: E402  (Studio look: colours + fonts)
 LOOK_DEC: dict = {}  # the project's decisions.json, so text_w measures the chosen font
 
 MOTION = ROOT / "motion"
-NODE_BIN = ROOT / "tools" / "node" / "bin"
+NODE_BIN = vedit.node_dir()
 W, H = 1080, 1920
 
 ICONS = {
@@ -1812,7 +1812,7 @@ def main():
     (MOTION / "scenes").mkdir(parents=True, exist_ok=True)
     (MOTION / "renders").mkdir(parents=True, exist_ok=True)
     only = set(a.only.split(",")) if a.only else None
-    env = dict(os.environ, PATH=f"{NODE_BIN}:{Path(vedit.binpath('ffmpeg')).parent}:{os.environ['PATH']}",
+    env = dict(os.environ, PATH=os.pathsep.join([str(NODE_BIN), str(Path(vedit.binpath('ffmpeg')).parent), os.environ['PATH']]),
                HYPERFRAMES_SKIP_SKILLS="1")
     overlays, prev, prev_end, prev_glass = [], 0.0, 0.0, False
     theme = dec.get("mograph_theme")
@@ -1864,7 +1864,7 @@ def main():
         sid = sc["id"]
         ext = "mov" if panel or glass or news is not None else "mp4"
         out = MOTION / "renders" / f"{sid}.{ext}"
-        overlays.append(dict(id=sid, file=str(out.relative_to(ROOT)), at=round(start, 3), dur=dur,
+        overlays.append(dict(id=sid, file=out.relative_to(ROOT).as_posix(), at=round(start, 3), dur=dur,
                              kind=("tag" if panel and panel.startswith("otag") else panel) or ("glass" if glass else "news" if news is not None else "full"),
                              caption=sc.get("caption", mograph_more.caption_of(sc) if sc["type"] in MORE_TYPES else "normal" if panel and panel.startswith("otag") else {"panel": "panel", "lower": "top", "band": "normal", "lockup": "hide", "behind": "normal", "thumb": "hide", "otag": "normal", "otag tbot": "normal", "shrink": "panel"}.get(panel, "low")),
                              **({"card": shrink_geom(sc)} if sc["type"] == "shrink" else {}),  # vedit scales the footage into it
@@ -1882,7 +1882,7 @@ def main():
               f"{'  (unchanged, reused)' if unchanged else ''}", flush=True)
         if a.no_render or unchanged:
             continue
-        cmd = ["npx", "-y", "hyperframes", "render", str(MOTION), "-c", f"scenes/{sid}.html", "-o", str(out),
+        cmd = [vedit.npx(), "-y", "hyperframes", "render", str(MOTION), "-c", f"scenes/{sid}.html", "-o", str(out),
                "--fps", "30", "--quiet", "--quality", a.quality]
         if ext == "mov":
             cmd += ["--format", "mov"]

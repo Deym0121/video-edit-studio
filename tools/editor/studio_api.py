@@ -19,7 +19,7 @@ import brandkit  # noqa: E402
 import vedit  # noqa: E402
 
 WORK, INPUT = ROOT / "work", ROOT / "input"
-PY = str(ROOT / ".venv" / "bin" / "python")
+PY = str(vedit.venv_py()) if vedit.venv_py().exists() else sys.executable
 HOOK_TYPES = ("behind", "lockup", "thumb", "pov", "redact", "island", "search", "glitch", "flap", "price", "flip")
 TONEMAP = ("zscale=t=linear:npl=203,format=gbrpf32le,zscale=p=bt709,tonemap=tonemap=hable:desat=0,"
            "zscale=t=bt709:m=bt709:r=tv,format=yuv420p,")
@@ -403,15 +403,15 @@ def cutout(name, t, w=360):
     out = wd / "studio" / f"cut_{t:.1f}_{w}.png"
     if out.exists():
         return out
-    pm = ROOT / "tools" / "bin" / "personmask"
+    pm = vedit.finder("personmask")
     src = frame(name, t, w)
-    if not src or not pm.exists():
+    if not src or not pm:
         return None
     h = round(w * meta["h"] / meta["w"] / 2) * 2
     ff = vedit.binpath("ffmpeg")
     raw = subprocess.run([ff, "-v", "error", "-i", str(src), "-vf", f"scale={w}:{h}", "-f", "rawvideo", "-pix_fmt", "bgra", "-"],
                          capture_output=True).stdout
-    mask = subprocess.run([str(pm), str(w), str(h)], input=raw, capture_output=True).stdout
+    mask = subprocess.run([*pm, str(w), str(h)], input=raw, capture_output=True).stdout
     if len(mask) < w * h:
         return None
     mp = out.with_suffix(".gray")
@@ -429,11 +429,21 @@ ON_IMPORTED: list = []  # callbacks(name) after a new upload is transcribed + pl
 TOSDR = ROOT / "tools" / "bin" / "tosdr"
 
 
+def _zscale():
+    """ffmpeg can tone-map (zscale) — the natural-colour fallback where Apple's tool isn't available."""
+    return "zscale" in subprocess.run([vedit.binpath("ffmpeg"), "-hide_banner", "-filters"], capture_output=True, text=True).stdout
+
+
 def to_sdr(src):
     """iPhone HDR (HLG + Dolby Vision) → SDR with Apple's own tone mapping, audio untouched. An HLG render plays as
     "HDR" and looks filtered next to the camera (DESIGN_SYSTEM.md); the original is kept in work/<name>/source_hdr.*"""
     v, out = src.with_name(src.stem + ".sdrv.mov"), src.with_name(src.stem + ".sdr.mov")
-    subprocess.run([str(TOSDR), str(src), str(v)], check=True, capture_output=True)
+    if TOSDR.exists():
+        subprocess.run([str(TOSDR), str(src), str(v)], check=True, capture_output=True)
+    else:  # Windows / Linux: ffmpeg's tone mapping (close to the camera, not Apple's exact rendering)
+        subprocess.run([vedit.binpath("ffmpeg"), "-y", "-v", "error", "-i", str(src), "-map", "0:v:0", "-vf", TONEMAP.rstrip(","),
+                        "-c:v", "prores_ks", "-profile:v", "3", "-pix_fmt", "yuv422p10le", "-color_primaries", "bt709", "-color_trc", "bt709",
+                        "-colorspace", "bt709", str(v)], check=True, capture_output=True)
     subprocess.run([vedit.binpath("ffmpeg"), "-y", "-v", "error", "-i", str(v), "-i", str(src), "-map", "0:v", "-map", "1:a:0?",
                     "-c", "copy", str(out)], check=True, capture_output=True)
     keep = WORK / src.stem
@@ -463,7 +473,7 @@ def upload(filename, stream, length):
 
     def run():
         nonlocal dest
-        if vedit.probe(str(dest)).get("trc") in ("arib-std-b67", "smpte2084") and TOSDR.exists():
+        if vedit.probe(str(dest)).get("trc") in ("arib-std-b67", "smpte2084") and (TOSDR.exists() or _zscale()):
             imports[name] = {"state": "running", "log": "iPhone HDR → natural colour…"}
             try:
                 dest = to_sdr(dest)
@@ -600,7 +610,7 @@ _jobs: dict[str, str] = {}
 def _make_hook_clip(wd, edl, bg, cut, secs):
     import subprocess as sp
     meta = vedit.jload(wd / "meta.json")
-    ff, pm = vedit.binpath("ffmpeg"), ROOT / "tools" / "bin" / "personmask"
+    ff, pm = vedit.binpath("ffmpeg"), vedit.finder("personmask")
     bg.parent.mkdir(exist_ok=True)
     segs, left = [], secs
     for a, b in edl["segments"]:
@@ -618,12 +628,12 @@ def _make_hook_clip(wd, edl, bg, cut, secs):
     if not tmp.exists():
         return
     tmp.rename(bg)
-    if not pm.exists():
+    if not pm:
         return
     mk = bg.with_suffix(".mask.gray")
     with open(mk, "wb") as mf:
         p1 = sp.Popen([ff, "-v", "error", "-i", str(bg), "-vf", "scale=360:640", "-f", "rawvideo", "-pix_fmt", "bgra", "-"], stdout=sp.PIPE)
-        p2 = sp.Popen([str(pm), "360", "640"], stdin=p1.stdout, stdout=mf)
+        p2 = sp.Popen([*pm, "360", "640"], stdin=p1.stdout, stdout=mf)
         p1.stdout.close()
         p2.wait()
         p1.wait()

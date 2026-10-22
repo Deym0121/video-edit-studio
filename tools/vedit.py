@@ -130,6 +130,11 @@ def binpath(name):
     return p
 
 
+def fpath(p):
+    """A file path inside an ffmpeg filter graph, for use in '…': "/" separators and the Windows drive colon escaped (D\\:/…)."""
+    return Path(p).as_posix().replace(":", "\\:")
+
+
 def sh(args, capture=False):
     args = [str(x) for x in args]
     r = subprocess.run(args, capture_output=capture, text=True)
@@ -256,7 +261,7 @@ def cmd_doctor(a):
         flt = sh([binpath("ffmpeg"), "-hide_banner", "-filters"], capture=True)
         print(f"  {ver}")
         print(f"  {'✓' if 'h264_videotoolbox' in enc else '✓' if 'libx264' in enc else '✗'} H.264 encoder ({'videotoolbox' if 'h264_videotoolbox' in enc else 'libx264'})")
-        print(f"  {'✓' if re.search(r'^ ... ass ', flt, re.M) else '✗'} captions (libass)")
+        print(f"  {'✓' if re.search(r'^ \S{3} ass ', flt, re.M) else '✗'} captions (libass)")
     for mod in ("mlx_whisper", "faster_whisper"):
         try:
             __import__(mod)
@@ -1221,7 +1226,7 @@ def behind_pass(out, items, ow, oh, fps_r, venc, wd, cube=None):
         fl.append(f"[{fi}:v]{rgb}setpts=PTS-STARTPTS,format={'gbrp' if hlg else 'yuv420p'}[f{k}]")
         fl.append(f"[{mi}:v]format=gray,tmix=frames=3:weights='1 2 1',gblur=sigma={max(1, round(oh / 1100))}[m{k}]")
         fl.append(f"[f{k}][m{k}]alphamerge,setpts=PTS+{a0:.4f}/TB[p{k}]")
-        fl.append(f"[{ti}:v]scale={ow}:{oh},{'lut3d=file=' + str(cube) + ':interp=tetrahedral,format=gbrap' if hlg else 'format=yuva420p'},setpts=PTS-STARTPTS+{a0:.4f}/TB[t{k}]")
+        fl.append(f"[{ti}:v]scale={ow}:{oh},{"lut3d=file='" + fpath(cube) + "':interp=tetrahedral,format=gbrap" if hlg else 'format=yuva420p'},setpts=PTS-STARTPTS+{a0:.4f}/TB[t{k}]")
         fl.append(f"{cur}[t{k}]overlay=eof_action=pass:format=auto[x{k}]")
         fl.append(f"[x{k}][p{k}]overlay=eof_action=pass:format=auto[y{k}]")
         cur = f"[y{k}]"
@@ -1361,7 +1366,7 @@ def cmd_render(a):
             nxt = next((g["at"] for g in news_sorted if g["at"] >= a1 - 0.01 and g is not o), None)
             pad = (f",tpad=stop_mode=clone:stop_duration={nxt - a1 + 0.6:.4f}"
                    if not o.get("wout", True) and nxt is not None and nxt - a1 < 0.5 else "")
-            fl.append(f"[{n_in}:v]scale={ow}:{oh},{"lut3d=file=" + str(cube) + ":interp=tetrahedral,format=gbrap" if hlg else "format=yuva420p"}{pad},setpts=PTS-STARTPTS+{o['at']:.4f}/TB[g{k}]")
+            fl.append(f"[{n_in}:v]scale={ow}:{oh},{"lut3d=file='" + fpath(cube) + "':interp=tetrahedral,format=gbrap" if hlg else "format=yuva420p"}{pad},setpts=PTS-STARTPTS+{o['at']:.4f}/TB[g{k}]")
             fl.append(f"{cur}[g{k}]overlay=eof_action=pass:format=auto[o{k}]")
             cur = f"[o{k}]"
             n_in += 1
@@ -1385,7 +1390,7 @@ def cmd_render(a):
                       f"fade=t=in:st={a0:.4f}:d=0.25:alpha=1,fade=t=out:st={a1 - to:.4f}:d={to - 0.05:.2f}:alpha=1[kl{k}]")
             fl.append(f"[ka{k}][kl{k}]overlay=eof_action=pass:format=auto[kd{k}]")
             # 2 the page (dim, ring, kicker, title, chips — never inside the card)
-            fl.append(f"[{n_in}:v]scale={ow}:{oh},{"lut3d=file=" + str(cube) + ":interp=tetrahedral,format=gbrap" if hlg else "format=yuva420p"},setpts=PTS-STARTPTS+{a0:.4f}/TB[g{k}]")
+            fl.append(f"[{n_in}:v]scale={ow}:{oh},{"lut3d=file='" + fpath(cube) + "':interp=tetrahedral,format=gbrap" if hlg else "format=yuva420p"},setpts=PTS-STARTPTS+{a0:.4f}/TB[g{k}]")
             fl.append(f"[kd{k}][g{k}]overlay=eof_action=pass:format=auto[ke{k}]")
             # 3 the untouched footage on top: rounded window (mask), scaled + placed per frame
             fl.append(f"[{n_in + 1}:v]format=gray,setpts=PTS-STARTPTS+{a0:.4f}/TB[km{k}]")
@@ -1404,7 +1409,7 @@ def cmd_render(a):
             pad = (f",tpad=stop_mode=clone:stop_duration={nxt - a1 + 1 / fps:.4f}" if not last and nxt is not None else "")
             fade = ((f",fade=t=in:st=0:d={GF - .05}:alpha=1" if first else "") +
                     (f",fade=t=out:st={max(0, o['dur'] - GF + .05):.4f}:d={GF - .05}:alpha=1" if last else ""))
-            fl.append(f"[{n_in}:v]scale={ow}:{oh},{"lut3d=file=" + str(cube) + ":interp=tetrahedral,format=gbrap" if hlg else "format=yuva420p"}{pad}{fade},setpts=PTS-STARTPTS+{a0:.4f}/TB[g{k}]")
+            fl.append(f"[{n_in}:v]scale={ow}:{oh},{"lut3d=file='" + fpath(cube) + "':interp=tetrahedral,format=gbrap" if hlg else "format=yuva420p"}{pad}{fade},setpts=PTS-STARTPTS+{a0:.4f}/TB[g{k}]")
             fl.append(f"{cur}[g{k}]overlay=eof_action=pass:format=auto[o{k}]")
             cur = f"[o{k}]"
             n_in += 1
@@ -1420,7 +1425,7 @@ def cmd_render(a):
             cur = f"[bd{k}]"
         fade = (f",fade=t=in:st=0:d=0.22:alpha=1,fade=t=out:st={max(0, o['dur'] - 0.2):.4f}:d=0.2:alpha=1"
                 if full else "")  # design system: face → blurred face → scene, and back
-        fl.append(f"[{n_in}:v]scale={ow}:{oh},{"lut3d=file=" + str(cube) + ":interp=tetrahedral,format=gbrap" if hlg else "format=yuva420p"}{fade},setpts=PTS-STARTPTS+{o['at']:.4f}/TB[g{k}]")
+        fl.append(f"[{n_in}:v]scale={ow}:{oh},{"lut3d=file='" + fpath(cube) + "':interp=tetrahedral,format=gbrap" if hlg else "format=yuva420p"}{fade},setpts=PTS-STARTPTS+{o['at']:.4f}/TB[g{k}]")
         fl.append(f"{cur}[g{k}]overlay=eof_action=pass:format=auto[o{k}]")
         cur = f"[o{k}]"
         n_in += 1
@@ -1472,7 +1477,7 @@ def cmd_render(a):
     if dec.get("captions", True):
         ass = wd / "captions.ass"
         write_captions(ass, OUT / f"{stem}.srt" if final else None, edl, words, dec, W, H)
-        fl.append(f"{cur}ass='{str(ass)}':fontsdir='{ROOT / 'assets' / 'fonts'}'[vs]")
+        fl.append(f"{cur}ass='{fpath(ass)}':fontsdir='{fpath(ROOT / 'assets' / 'fonts')}'[vs]")
         cur = "[vs]"
     fl.append(f"{cur}{'scale=out_color_matrix=bt2020:out_range=tv,' if hlg else ''}format=yuv420p[vout]")
     acur = "[ac]"

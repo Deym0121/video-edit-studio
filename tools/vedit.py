@@ -113,7 +113,10 @@ _bins: dict[str, str] = {}
 def binpath(name):
     if name in _bins:
         return _bins[name]
-    p = shutil.which(name)
+    own = ROOT / "tools" / "ffmpeg" / "bin" / (name + ".exe" if IS_WIN else name)  # Windows: setup.ps1's build, with libass
+    if own.exists():
+        os.environ["PATH"] = str(own.parent) + os.pathsep + os.environ["PATH"]
+    p = str(own) if own.exists() else shutil.which(name)
     if not p:
         try:
             import static_ffmpeg
@@ -122,7 +125,7 @@ def binpath(name):
         except ImportError:
             pass
     if not p:
-        die(f"{name} not found — run ./tools/setup.sh")
+        die(f"{name} not found — run {'tools/setup.ps1' if IS_WIN else './tools/setup.sh'}")
     _bins[name] = p
     return p
 
@@ -206,6 +209,9 @@ def extract_wav(src, wav):
         "-c:a", "pcm_s16le", wav])
 
 
+_FW = None  # the faster-whisper model, loaded once
+
+
 def whisper_words(wav, language=None, prompt=PROMPT):
     """Returns [(word, start, end, prob)] and detected language."""
     binpath("ffmpeg")  # Whisper shells out to ffmpeg; make sure the bundled one is on PATH
@@ -218,9 +224,14 @@ def whisper_words(wav, language=None, prompt=PROMPT):
               for s in r["segments"] for w in s.get("words", [])]
         return ws, r.get("language")
     except ImportError:
-        from faster_whisper import WhisperModel
-        m = WhisperModel(FW_MODEL, device="cpu", compute_type="int8")
-        segs, info = m.transcribe(str(wav), word_timestamps=True, language=language,
+        global _FW
+        if _FW is None:
+            from faster_whisper import WhisperModel
+            _FW = WhisperModel(FW_MODEL, device="cpu", compute_type="int8")
+        import numpy as np  # decode with our ffmpeg: faster-whisper's own decoder breaks on new PyAV releases
+        pcm = subprocess.run([binpath("ffmpeg"), "-v", "error", "-i", str(wav), "-ac", "1", "-ar", "16000", "-f", "f32le", "-"],
+                             capture_output=True, check=True).stdout
+        segs, info = _FW.transcribe(np.frombuffer(pcm, np.float32), word_timestamps=True, language=language,
                                   initial_prompt=prompt, condition_on_previous_text=False)
         ws = [(w.word, w.start, w.end, w.probability) for s in segs for w in (s.words or [])]
         return ws, info.language
@@ -265,7 +276,7 @@ def cmd_doctor(a):
     tm = (ROOT / "tools" / "bin" / "tosdr").exists()
     print(f"{'✓' if tm else '✓' if 'zscale' in sh([binpath('ffmpeg'), '-hide_banner', '-filters'], capture=True) else '–'} natural colour from iPhone HDR "
           f"({'Apple tone mapping' if tm else 'ffmpeg tone mapping'})")
-    print(f"{'✓' if (ROOT / 'tools' / 'node' / 'bin' / 'node').exists() or shutil.which('node') else '✗'} node (motion-graphics renderer)")
+    print(f"{'✓' if (node_dir() / ('node.exe' if IS_WIN else 'node')).exists() or shutil.which('node') else '✗'} node (motion-graphics renderer)")
     print(f"{'✓' if venv_py('.venv-df').exists() else '–'} voice cleanup (DeepFilterNet, .venv-df)")
     try:
         __import__("transformers")
@@ -273,7 +284,7 @@ def cmd_doctor(a):
     except ImportError:
         print("– literal listening (MMS) not installed")
     print(f"{'✓' if shutil.which('claude') else '–'} Claude Code CLI (Studio: Auto-edit, Apply notes)")
-    print("ready" if ok else "run ./tools/setup.sh")
+    print("ready" if ok else "run tools\\setup.ps1" if IS_WIN else "run ./tools/setup.sh")
 
 
 # ----------------------------------------------------------------- transcribe

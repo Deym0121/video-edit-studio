@@ -12,6 +12,6 @@ transformers>=4.40
 accelerate>=0.30
 huggingface_hub>=0.23
 # Windows: Python twins of the Apple Vision tools (tools/facebox.py, textbox.py, personmask.py)
-opencv-python>=4.8; sys_platform != "darwin"                 # face finder
+opencv-python>=4.8,<5; sys_platform != "darwin"              # face finder (OpenCV 5 dropped the Haar cascades)
 rapidocr-onnxruntime>=1.3; sys_platform != "darwin"          # text finder (style references)
 torchvision>=0.17; sys_platform != "darwin"                  # person cut-out (text behind the speaker)

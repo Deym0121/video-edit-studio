@@ -27,7 +27,7 @@ The installer fetches these into this folder. Check each license before you use 
 |---|---|---|
 | Python packages | `tools/requirements.txt` (mlx-whisper or faster-whisper, static-ffmpeg, numpy, pillow, fonttools, scipy, noisereduce, torch, transformers, accelerate, huggingface_hub; on Windows also opencv-python, rapidocr-onnxruntime, torchvision) | Each under its own license |
 | uv + Python 3.12 (Windows) | github.com/astral-sh/uv, python-build-standalone | Installs the Python env inside `tools/` |
-| ffmpeg / ffprobe | the `static-ffmpeg` package | ffmpeg is LGPL/GPL, depending on the build |
+| ffmpeg / ffprobe | the `static-ffmpeg` package (Mac); BtbN/FFmpeg-Builds win64-gpl (Windows) | ffmpeg is LGPL/GPL, depending on the build |
 | Whisper large-v3-turbo | `mlx-community/whisper-large-v3-turbo` (Mac) or the faster-whisper build (Windows) on Hugging Face | Transcription |
 | DeepLabV3 MobileNetV3 weights (Windows) | torchvision (PyTorch) | Person cut-out for "text behind you" |
 | RapidOCR models (Windows) | the `rapidocr-onnxruntime` package | Text finder for style references |

@@ -29,6 +29,7 @@ FAILS = []
 
 def step(name, fn):
     t = time.time()
+    print(f"• {name}…", flush=True)
     try:
         fn()
         print(f"✓ {name} ({time.time() - t:.0f}s)", flush=True)
@@ -37,12 +38,28 @@ def step(name, fn):
         print(f"✗ {name}: {e}", flush=True)
 
 
-def run(*cmd, inp=None):
-    r = subprocess.run([str(c) for c in cmd], input=inp, capture_output=True)
-    if r.returncode:
-        out = (r.stdout[-1500:] + r.stderr[-2500:]).decode("utf-8", "replace")
-        raise RuntimeError(f"exit {r.returncode}: {' '.join(str(c) for c in cmd[:5])}\n{out}")
-    return r.stdout
+def kill_tree(p):
+    """Stop a process and everything it started (on Windows a .cmd → node chain outlives a plain kill)."""
+    if vedit.IS_WIN:
+        subprocess.run(["taskkill", "/F", "/T", "/PID", str(p.pid)], capture_output=True)
+    else:
+        p.kill()
+
+
+def run(*cmd, inp=None, timeout=900, **kw):
+    p = subprocess.Popen([str(c) for c in cmd], stdin=subprocess.PIPE if inp is not None else subprocess.DEVNULL,
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kw)
+    try:
+        out, err = p.communicate(inp, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        kill_tree(p)
+        out, err = p.communicate()
+        raise RuntimeError(f"timed out after {timeout}s: {' '.join(str(c) for c in cmd[:5])}\n"
+                           + (out[-1500:] + err[-2500:]).decode("utf-8", "replace"))
+    if p.returncode:
+        raise RuntimeError(f"exit {p.returncode}: {' '.join(str(c) for c in cmd[:5])}\n"
+                           + (out[-1500:] + err[-2500:]).decode("utf-8", "replace"))
+    return out
 
 
 def vedit_cli(*args):
@@ -116,7 +133,7 @@ def studio():
     env = dict(os.environ, VEDIT_PORT=str(PORT), PYTHONUTF8="1")
     log = open(TMP / "studio.log", "wb")
     srv = subprocess.Popen([sys.executable, "-X", "utf8", str(ROOT / "tools" / "vedit.py"), "studio", "--no-open"],
-                           env=env, stdout=log, stderr=subprocess.STDOUT)
+                           env=env, stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT)
     base = f"http://127.0.0.1:{PORT}"
 
     def get(path, kind="json"):
@@ -146,7 +163,7 @@ def studio():
         print((TMP / "studio.log").read_text(encoding="utf-8", errors="replace")[-2500:])
         raise
     finally:
-        srv.terminate()
+        kill_tree(srv)
         srv.wait(10)
         log.close()
 
@@ -157,10 +174,9 @@ def motion():
     out = TMP / "mg.mp4"
     env = dict(os.environ, PATH=os.pathsep.join([str(vedit.node_dir()), str(Path(vedit.binpath("ffmpeg")).parent), os.environ["PATH"]]),
                HYPERFRAMES_SKIP_SKILLS="1")
-    r = subprocess.run([vedit.npx(), "-y", "hyperframes", "render", str(ROOT / "motion"), "-c", f"scenes/{page[0].name}",
-                        "-o", str(out), "--fps", "30", "--quiet", "--quality", "looks"],
-                       cwd=ROOT / "motion", env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
-    assert r.returncode == 0 and out.exists(), f"exit {r.returncode}\n{r.stdout[-1500:]}\n{r.stderr[-2500:]}"
+    run(vedit.npx(), "-y", "hyperframes", "render", ROOT / "motion", "-c", f"scenes/{page[0].name}",
+        "-o", out, "--fps", "30", "--quiet", "--quality", "looks", cwd=ROOT / "motion", env=env, timeout=1200)
+    assert out.exists(), "no video written"
     print(f"  {page[0].name} → {out.stat().st_size // 1024} KB")
 
 

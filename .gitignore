@@ -21,6 +21,7 @@ tools/node/
 tools/bin/
 tools/uv/
 tools/python/
+tools/ffmpeg/
 node_modules/
 __pycache__/
 *.pyc

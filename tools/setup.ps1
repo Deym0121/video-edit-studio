@@ -1,5 +1,5 @@
 # One-time setup - Windows 10 / 11 (64-bit). The twin of tools/setup.sh for the Mac.
-# Everything installs INSIDE this folder (.venv, .venv-df, tools\uv, tools\python, tools\node; models go to the
+# Everything installs INSIDE this folder (.venv, .venv-df, tools\uv, tools\python, tools\ffmpeg, tools\node; models go to the
 # usual user cache): nothing system-wide, no admin. Safe to re-run: finished steps are skipped.
 #
 #   powershell -ExecutionPolicy Bypass -File tools\setup.ps1            full install (about 8 GB with the models)
@@ -33,8 +33,11 @@ $PY = ".venv\Scripts\python.exe"
 if (-not (Test-Path $PY)) { & $UV venv --python 3.12 .venv; Check "uv" }
 & $UV pip install --python $PY -r tools\requirements.txt; Check "uv"
 
-Say "ffmpeg"
-& $PY -c "import static_ffmpeg; static_ffmpeg.add_paths()"; Check "python"
+Say "ffmpeg (with captions - a private copy in tools\ffmpeg)"
+if (-not (Test-Path tools\ffmpeg\bin\ffmpeg.exe)) {
+  Fetch "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip" "tools\ffmpeg.zip" "tools"
+  Rename-Item "tools\ffmpeg-master-latest-win64-gpl" ffmpeg
+}
 
 if (-not $Lite) {
   Say "Voice cleanup env (.venv-df: DeepFilterNet3 removes fans / aircon)"
